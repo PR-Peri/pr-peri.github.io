@@ -24,6 +24,7 @@ background: '/img/posts/NLP-01.jpg'
         height: 40px;
         margin-right: 5px;
     }
+
     #myBtn {
         display: none;
         position: fixed;
@@ -42,7 +43,7 @@ background: '/img/posts/NLP-01.jpg'
 
     #myBtn:hover {
         background-color: #555;
-    }    
+    }
 </style>
 <button onclick="topFunction()" id="myBtn" title="Back to top">
     <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30">
@@ -120,7 +121,7 @@ background: '/img/posts/NLP-01.jpg'
 
 <body>
     <h1>Analyzing Twitter Data: User Tweets and Hashtag Analysis</h1>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         In today's digital age, social media platforms have become a rich source of information and insights.
         Twitter, in particular, offers a wealth of user-generated content that can provide valuable insights into
         various topics,
@@ -130,7 +131,7 @@ background: '/img/posts/NLP-01.jpg'
     </p>
 
     <h2>Setting up the Environment</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Before we dive into the code, let's ensure that we have the necessary libraries and credentials in place.
         We will be using the Tweepy library to access the Twitter API, Pandas for data manipulation, and several other
         libraries
@@ -140,7 +141,7 @@ background: '/img/posts/NLP-01.jpg'
         First, make sure you have the required libraries installed by running the following command:
     </p>
     <pre><code>!pip install tweepy pandas numpy spacy torch seaborn matplotlib nltk gensim transformers sklearn wordcloud networkx</code></pre>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Next, you'll need to set up your Twitter API credentials. If you don't have them yet,
         you can apply for a developer account on the Twitter Developer Portal (<a
             href="https://developer.twitter.com/">https://developer.twitter.com/</a>).
@@ -149,34 +150,34 @@ background: '/img/posts/NLP-01.jpg'
     </p>
 
     <h2>Scraping User Tweets</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         The first task we'll tackle is scraping tweets from specific Twitter users.
         We have a list of target users, including "LloydsBank," "MyMaybank," "ZenithBank," "NatWest_Help," "Nedbank,"
         and "talktoBOI."
         We'll use the <code>scrape_user_tweets</code> function to fetch the tweets from these users.
         The function takes the list of usernames and the number of tweets to scrape as input.
     </p>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         The <code>scrape_user_tweets</code> function utilizes the Tweepy library to authenticate with the Twitter API
         and fetch user tweets using the <code>user_timeline</code> endpoint.
         For each tweet, we extract relevant information such as the tweet text, date, time, and Twitter handle.
         We also fetch additional details like reply count, retweet count, favorite count, hashtags, user mentions,
         media URLs, and more.
     </p>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         The scraped tweets are stored in a list of dictionaries, where each dictionary represents a tweet.
         Finally, we convert the list of dictionaries into a Pandas DataFrame for further analysis.
     </p>
 
     <h2>Scraping Hashtag Tweets</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Next, let's move on to scraping tweets based on specific hashtags.
         We have a list of hashtags, including "LloydsBank," "Maybank," "ZenithBank," "Natwest," "Nedbank," and
         "BankOfIreland."
         We'll use the <code>scrape_hashtag_tweets</code> function to fetch tweets containing these hashtags.
         The function takes the list of hashtags and the number of tweets to scrape as input.
     </p>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         The <code>scrape_hashtag_tweets</code> function utilizes the Tweepy library to authenticate with the Twitter API
         and fetch hashtag tweets using the <code>search_tweets</code> endpoint.
         Similar to scraping user tweets, we extract various details from each tweet, including the tweet text, date,
@@ -188,7 +189,7 @@ background: '/img/posts/NLP-01.jpg'
     </p>
 
     <h2>Data Preprocessing</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Now that we have scraped the user tweets and hashtag tweets, we can proceed with data preprocessing
         to clean and prepare the text data for analysis. We have several functions to help us in this process:
     </p>
@@ -216,7 +217,7 @@ background: '/img/posts/NLP-01.jpg'
     </p>
 
     <h2>Analyzing User Tweets</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         With the preprocessed user tweet data at our disposal, we can now perform various analyses
         and gain insights into user behavior and engagement. Here are a few examples:
     </p>
@@ -241,7 +242,7 @@ background: '/img/posts/NLP-01.jpg'
     </ol>
 
     <h2>Analyzing Hashtag Tweets</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Similar to user tweets, we can perform various analyses on the preprocessed hashtag tweet data.
         Here are a few examples:
     </p>
@@ -267,24 +268,24 @@ background: '/img/posts/NLP-01.jpg'
     </ol>
 
     <h2>Conclusion</h2>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         In this blog post, we explored how to scrape and analyze user tweets and hashtag tweets using Python.
         We covered the process of scraping tweets, preprocessing the data, and conducting various analyses
         to gain insights into user behavior, engagement, and sentiment.
     </p>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         By leveraging the power of social media data, we can uncover valuable information and trends
         that can inform decision-making, market research, and sentiment analysis.
         The techniques and examples presented in this blog post serve as a starting point for exploring Twitter data,
         and they can be further expanded and customized to suit specific analysis requirements.
     </p>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Social media platforms like Twitter continue to provide a rich source of data that can offer valuable insights
         into user behavior, trends, and public sentiment.
         By harnessing the power of data analysis, we can make sense of this vast amount of information
         and derive actionable insights for various applications.
     </p>
-    <p style = "text-align: justify;">
+    <p style="text-align: justify;">
         Happy analyzing!
     </p>
 

@@ -23,6 +23,7 @@ background: '/img/posts/FER-01.jpg'
         height: 40px;
         margin-right: 5px;
     }
+
     #myBtn {
         display: none;
         position: fixed;
@@ -41,7 +42,7 @@ background: '/img/posts/FER-01.jpg'
 
     #myBtn:hover {
         background-color: #555;
-    }    
+    }
 </style>
 <button onclick="topFunction()" id="myBtn" title="Back to top">
     <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30">
@@ -113,9 +114,9 @@ background: '/img/posts/FER-01.jpg'
 
 </script>
 
-<title> Exploring Facial Expression Recognition using Deep Convolutional Neural Networks </title>
+<h2> Exploring Facial Expression Recognition using Deep Convolutional Neural Networks </h2>
 
-<p align="justify">
+<p style="text-align: justify;">
     Facial expression recognition is a fascinating area of research that
     aims to understand and interpret human emotions through visual cues. In recent years, deep learning techniques,
     especially Convolutional Neural Networks (CNNs), have shown remarkable success in this domain. In this blog post, we
@@ -126,7 +127,7 @@ background: '/img/posts/FER-01.jpg'
 
 <h2>Understanding the Dataset</h2>
 
-<p align="justify">
+<p style="text-align: justify;">
     To begin our exploration, we need a dataset that consists
     of labeled facial expression images. For this purpose, we use a dataset containing 28,709 training images and 7,178
     testing images belonging to seven different classes of emotions: Angry, Disgusted, Fearful, Happy, Neutral, Sad, and
@@ -136,7 +137,7 @@ background: '/img/posts/FER-01.jpg'
 
 <h2>Building the CNN Model</h2>
 
-<p align="justify">
+<p style="text-align: justify;">
     Our CNN model is built using the TensorFlow Keras API. It
     consists of several layers, including convolutional layers, activation layers, batch normalization layers,
     max-pooling layers, dropout layers, and dense layers. These layers work together to extract relevant features from
@@ -146,7 +147,7 @@ background: '/img/posts/FER-01.jpg'
 
 <h2>Training and Evaluation</h2>
 
-<p align="justify">
+<p style="text-align: justify;">
     To train the model, we compile it with the Adam optimizer
     and sparse categorical cross-entropy loss function. We also define accuracy as a metric to monitor the model's
     performance during training. To prevent overfitting, we incorporate early stopping and learning rate scheduling
@@ -155,7 +156,7 @@ background: '/img/posts/FER-01.jpg'
 
 <h2>Results and Analysis</h2>
 
-<p align="justify">
+<p style="text-align: justify;">
     After training the model for 30 epochs, we analyze the
     training and validation accuracy to assess the model's performance. We observe that the model achieves a high
     accuracy on the training set, indicating its ability to learn the patterns in the data. The validation accuracy
@@ -165,7 +166,7 @@ background: '/img/posts/FER-01.jpg'
 
 <h2>Comparison with an alternative CNN Model</h2>
 
-<p align="justify">
+<p style="text-align: justify;">
     In addition to the initial CNN model, we
     introduce an alternative model architecture called "DCNN." This architecture also utilizes convolutional layers,
     batch normalization, max-pooling, and dropout layers. We compare the performance of both models and discuss the
@@ -173,7 +174,9 @@ background: '/img/posts/FER-01.jpg'
     weaknesses of each model and provides insights into improving facial expression recognition systems.
 </p>
 
-<p align="justify">
+<h2>Conclusion</h2>
+
+<p style="text-align: justify;">
     Facial expression recognition is an exciting field that has witnessed
     significant advancements with the advent of deep learning techniques, particularly CNNs. In this blog post, we
     explored the process of building a CNN model for facial expression recognition. We discussed the dataset, model
