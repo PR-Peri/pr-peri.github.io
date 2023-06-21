@@ -1,0 +1,105 @@
+---
+layout: post
+title: "Facial Expression Recognition using Deep Convolutional Neural Networks"
+subtitle: "Discover the power of smartphone data analysis to accurately classify and understand human activities in
+various domains."
+date: 2022-12-27 10:45:13 -0400
+background: '/img/posts/FER-01.jpg'
+---
+
+<style>
+    .github-link {
+        display: flex;
+        align-items: left;
+        justify-content: left;
+        text-align: left;
+        color: #0000FF;
+        font-style: italic;
+        font-size: medium;
+        text-decoration: none;
+    }
+
+    .github-link img {
+        width: 40px;
+        height: 40px;
+        margin-right: 5px;
+    }
+</style>
+
+<title> Exploring Facial Expression Recognition using Deep Convolutional Neural Networks </title>
+
+<p align="justify">
+    Facial expression recognition is a fascinating area of research that
+    aims to understand and interpret human emotions through visual cues. In recent years, deep learning techniques,
+    especially Convolutional Neural Networks (CNNs), have shown remarkable success in this domain. In this blog post, we
+    will delve into the world of facial expression recognition and explore how CNNs can be utilized to accurately
+    classify facial expressions. We will walk through a detailed code implementation of a CNN model and discuss its
+    architecture, training process, and evaluation.
+</p>
+
+<h2>Understanding the Dataset</h2>
+
+<p align="justify">
+    To begin our exploration, we need a dataset that consists
+    of labeled facial expression images. For this purpose, we use a dataset containing 28,709 training images and 7,178
+    testing images belonging to seven different classes of emotions: Angry, Disgusted, Fearful, Happy, Neutral, Sad, and
+    Surprised. The dataset is preprocessed using the TensorFlow ImageDataGenerator, which rescales the pixel values and
+    converts the images to grayscale to simplify the training process.
+</p>
+
+<h2>Building the CNN Model</h2>
+
+<p align="justify">
+    Our CNN model is built using the TensorFlow Keras API. It
+    consists of several layers, including convolutional layers, activation layers, batch normalization layers,
+    max-pooling layers, dropout layers, and dense layers. These layers work together to extract relevant features from
+    the input images and classify them into the corresponding emotion categories. The model architecture is designed to
+    gradually increase the complexity and abstraction of features learned by the network.
+</p>
+
+<h2>Training and Evaluation</h2>
+
+<p align="justify">
+    To train the model, we compile it with the Adam optimizer
+    and sparse categorical cross-entropy loss function. We also define accuracy as a metric to monitor the model's
+    performance during training. To prevent overfitting, we incorporate early stopping and learning rate scheduling
+    techniques as callbacks. The model is trained using the training dataset and validated using the testing dataset.
+</p>
+
+<h2>Results and Analysis</h2>
+
+<p align="justify">
+    After training the model for 30 epochs, we analyze the
+    training and validation accuracy to assess the model's performance. We observe that the model achieves a high
+    accuracy on the training set, indicating its ability to learn the patterns in the data. The validation accuracy
+    provides a measure of the model's generalization capability on unseen data. We also explore the confusion matrix and
+    precision-recall curves to gain insights into the model's performance for each emotion class.
+</p>
+
+<h2>Comparison with an alternative CNN Model</h2>
+
+<p align="justify">
+    In addition to the initial CNN model, we
+    introduce an alternative model architecture called "DCNN." This architecture also utilizes convolutional layers,
+    batch normalization, max-pooling, and dropout layers. We compare the performance of both models and discuss the
+    differences in their architectures and training processes. The comparison allows us to understand the strengths and
+    weaknesses of each model and provides insights into improving facial expression recognition systems.
+</p>
+
+<p align="justify">
+    Facial expression recognition is an exciting field that has witnessed
+    significant advancements with the advent of deep learning techniques, particularly CNNs. In this blog post, we
+    explored the process of building a CNN model for facial expression recognition. We discussed the dataset, model
+    architecture, training process, and evaluation metrics. By comparing different model architectures, we gained a
+    deeper understanding of the key factors influencing the performance of facial expression recognition models. With
+    further research and development, these models can be leveraged to enhance various applications such as emotion
+    recognition systems, human-computer interaction, and affective computing.
+</p>
+
+<p style="text-align: justify;" class="github-link">
+    <a href="https://github.com/PR-Peri/Deep-Learning-Projects/blob/main/Facial-Emotion-Recognition/"
+        title="Link to GitHub Repository" style="color: #0000FF;">
+        <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Link to GitHub Repository">
+        GitHub Repository
+    </a>
+</p>

@@ -1,0 +1,120 @@
+---
+layout: post
+title: "Human Activity Recognition Using Smartphone Data"
+subtitle: "Discover the power of smartphone data analysis to accurately classify and understand human activities in
+various domains."
+date: 2022-12-12 10:45:13 -0400
+background: '/img/posts/LSTM-01.jpg'
+---
+
+<style>
+    .github-link {
+        display: flex;
+        align-items: left;
+        justify-content: left;
+        text-align: left;
+        color: #0000FF;
+        font-style: italic;
+        font-size: medium;
+        text-decoration: none;
+    }
+
+    .github-link img {
+        width: 40px;
+        height: 40px;
+        margin-right: 5px;
+    }
+</style>
+
+<head>
+    <h2>Exploring Human Activity Recognition Using Smartphone Data Set</h2>
+</head>
+
+<body>
+
+    <p style="text-align: justify;">
+        Human Activity Recognition (HAR) plays a crucial role in various fields such as healthcare, sports, and smart
+        devices. It involves detecting and classifying human activities based on sensor data. In this blog post, we will
+        explore the Human Activity Recognition Using Smartphones Data Set, which consists of recordings of 30 subjects
+        performing daily activities while carrying a waist-mounted smartphone with embedded inertial sensors. We will
+        delve into the dataset, analyze the data, and build a deep learning model using LSTM to accurately classify
+        different activities.
+    </p>
+
+    <h2> Understanding the Dataset </h2>
+    <p style="text-align: justify;">
+        The dataset consists of experiments conducted with 30 volunteers, aged between 19 and 48 years. Each person
+        performed six activities: WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, and LAYING. The
+        smartphone, a Samsung Galaxy S II, was attached to the waist of each subject. The embedded accelerometer and
+        gyroscope sensors captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz.
+        The dataset was manually labeled using video recordings, and it was randomly partitioned into training and test
+        sets, with 70% and 30% of volunteers, respectively.
+    </p>
+
+    <h2> Data Preprocessing </h2>
+    <p style="text-align: justify;">Data Preprocessing:<br>
+        Before diving into the analysis, we need to preprocess the data. This involves applying noise filters,
+        separating gravitational and body motion components, and calculating variables from the time and frequency
+        domain. The preprocessed data is then stored in the training and test sets.
+    </p>
+
+    <h2> Exploratory Data Analysis </h2>
+    <p style="text-align: justify;">
+        To gain insights into the dataset, we perform exploratory data analysis. We start by checking the shape and
+        datatype of the training and test data. The training set contains 7352 rows and 562 columns, while the test set
+        contains 2947 rows and 562 columns. The dataset includes 561 features, which represent different aspects of
+        human activities.
+    </p>
+
+    <p style="text-align: justify;">We also examine the distribution of activities in the dataset. Through interactive
+        plots and bar graphs, we observe that the data is well-balanced, with activities equally distributed among the
+        subjects. Additionally, we analyze box plots to understand the distribution of acceleration features for
+        different activities. This helps us identify the significant features for classification, such as
+        tBodyAccMagmean and tBodyAccJerkMagmean.
+    </p>
+
+    <h2>Dimensionality Reduction </h2>
+    <p style="text-align: justify;">
+        Since the dataset has high dimensionality, it becomes challenging to visualize and interpret. To overcome this,
+        we employ t-SNE (t-Distributed Stochastic Neighbor Embedding) for dimensionality reduction. By reducing the
+        dimensions to two, we can plot the data points on a scatter plot and observe the separation of activities. The
+        t-SNE visualizations reveal that all activities except standing and sitting are well-distributed, indicating the
+        effectiveness of the smartphone in detecting movements.
+    </p>
+
+    <h2> Feature Engineering </h2>
+    <p style="text-align: justify;">
+        In addition to the raw sensor data, we can engineer additional features to improve the performance of our
+        classification model. By calculating statistical measures such as mean, standard deviation, and correlation
+        coefficients, we can capture more nuanced information about the activities. These engineered features provide a
+        more comprehensive representation of the data and enhance the discriminative power of our model.
+    </p>
+
+    <h2>Building a Deep Learning Model</h2>
+    <p style="text-align: justify;">
+        To classify the activities accurately, we construct a deep learning model using LSTM (Long Short-Term Memory).
+        LSTM is a type of recurrent neural network (RNN) that can capture temporal dependencies in sequential data. We
+        load the sensor
+        data and corresponding activity labels, splitting them into training and test sets. The LSTM model is trained
+        for 50 epochs to learn the patterns and relationships between sensor data and activities. We utilize techniques
+        such as batch normalization and dropout to improve the model's generalization and prevent overfitting. Finally,
+        we evaluate the model on the test set and report the accuracy achieved.
+    </p>
+
+    <p style="text-align: justify;">
+        Human Activity Recognition using smartphone data sets is a fascinating field with diverse applications. By
+        leveraging machine learning techniques, we can accurately classify various activities and gain insights into
+        human behavior. In this article, we explored the Human Activity Recognition Using Smartphones Data Set,
+        performed data preprocessing, conducted exploratory data analysis, employed dimensionality reduction, engineered
+        features, and built a deep learning model using LSTM. The results highlight the effectiveness of smartphone
+        sensor data in recognizing human activities and provide a foundation for further research and applications in
+        this domain.
+    </p>
+
+    <p style="text-align: justify;" class="github-link">
+        <a href="https://github.com/PR-Peri/Deep-Learning-Projects/blob/main/Human-Activity-Recognition-LSTM-Model/"
+            title="Link to GitHub Repository" style="color: #0000FF;">
+            <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Link to GitHub Repository">
+            GitHub Repository
+        </a>
+    </p>
