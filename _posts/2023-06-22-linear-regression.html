@@ -142,7 +142,7 @@ background: '/img/posts/LR-01.jpg'
         and machine learning. In this blog post, we will dive into the world of linear regression, focusing on both
         simple and multiple linear regression models. We will explain how the equations are derived and provide simple
         mathematical examples to illustrate the concepts.
-    </p>3
+    </p>
 
 
     <h3>1. Simple Linear Regression:</h3>
@@ -152,13 +152,28 @@ background: '/img/posts/LR-01.jpg'
         To derive the equation for a simple linear regression model, we assume that the relationship between x and y can
         be expressed as:<br>
 
-    <h2><code><strong> y = β₀ + β₁x + ε</strong></code></h2><br>
+    <h2><code><strong> y = mx + b</strong></code></h2><br>
 
-    Here, y represents the dependent variable, x is the independent variable, β₀ is the y-intercept, β₁ is the
-    slope, and ε is the error term. The objective is to estimate the values of β₀ and β₁ that minimize the sum of
-    squared errors.
+    In terms of linear regression, y in this equation stands for the predicted value, x means the independent variable
+    and m & b are the coefficients we need to optimize in order to fit the regression line to our data.
     </p>
 
+    Calculating coefficient of the equation:
+    To calculate the coefficients we need the formula for Covariance and Variance, so the formula for these are:
+
+    <p>
+        <img class="img-fluid" src="/img/posts/LR-02.png" , height="100%" , width="800%" , alt="Demo Image">
+    </p>
+
+    <p>
+        <img class="img-fluid" src="/img/posts/LR-03.png" , height="100%" , width="800%" , alt="Demo Image">
+    </p>
+    <p>
+        To calculate the coefficient m we will use the formula given below
+
+    <h2><code><strong>  m = cov(x, y) / var(x) </strong></code></h2><br>
+    <h2><code><strong>  b = mean(y) — m * mean(x) </strong></code></h2><br>
+    </p>
     <h4>1.2. Example:</h4>
     <p>
         Let's consider a simple example to illustrate the concept. Suppose we have a dataset of housing prices (y) and
@@ -173,19 +188,23 @@ background: '/img/posts/LR-01.jpg'
         </tr>
         <tr>
             <td>1000</td>
-            <td>250000</td>
+            <td>250</td>
         </tr>
         <tr>
             <td>1500</td>
-            <td>350000</td>
+            <td>400</td>
         </tr>
         <tr>
-            <td>1200</td>
-            <td>280000</td>
+            <td>2000</td>
+            <td>450</td>
         </tr>
         <tr>
-            <td>1800</td>
-            <td>400000</td>
+            <td>2500</td>
+            <td>500</td>
+        </tr>
+        <tr>
+            <td>3000</td>
+            <td>550</td>
         </tr>
     </table>
 
@@ -194,244 +213,152 @@ background: '/img/posts/LR-01.jpg'
         equation y = β₀ + β₁x, we can solve for β₀ and β₁. The steps are as follows:
     </p>
 
+
+    <p><strong>Step 1: Calculate the Means:</strong></p>
     <p>
-        Step 1: Calculate the means of x and y:
+        To begin, we calculate the mean of the house areas and the mean of the house prices. The mean is obtained by
+        summing up all the values and dividing by the total number of data points.
     </p>
-    <code>
-    <p style="color: #0000FF; ">
-        <b> 
-            x&#772; = (1000 + 1500 + 1200 + 1800) / 4 = 1375<br>
-            y&#772; = (250000 + 350000 + 280000 + 400000) / 4 = 320000 
-        </b>
+
+    <h3><em>Formula:</em></h3>
+    <h3><code>Mean (x̄) = Σx / n</code></h3>
+    <h3><code>Mean (ȳ) = Σy / n</code></h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3><code>House Area (x): [1000, 1500, 2000, 2500, 3000]</code></h3>
+    <h3><code> Price (y): [250, 400, 450, 500, 550]</code></h3>
+    <h3><code> Mean of x (x̄) = (1000 + 1500 + 2000 + 2500 + 3000) / 5 = 2000</code></h3>
+    <h3><code>Mean of y (ȳ) = (250 + 400 + 450 + 500 + 550) / 5 = 430</code></h3>
+
+    <p><strong>Step 2: Calculate the Deviations:</strong></p>
+    <p>
+        Next, we calculate the deviations of each house area (x) and house price (y) from their respective means.
+        Deviation is obtained by subtracting the mean from each value.
     </p>
-    </code>
+
+    <p><em>Formula:</em></p>
+
+    <h3><code>Deviation (x - x̄) = x - x̄</code></h3>
+    <h3><code>Deviation (y - ȳ) = y - ȳ</code></h3>
+
+    <p><em>Calculations:</em></p>
+    <h3>
+        <code>Deviation of x (x - x̄): [-1000, -500, 0, 500, 1000]</code>
+
+    </h3>
+    <h3>
+        <code>Deviation of y (y - ȳ): [-180, -30, 20, 70, 120]</code>
+    </h3>
 
     <p>
-        Step 2: Calculate the differences from the means:
+        <strong>Step 3: Calculate the Sum of Products and Squares:</strong>
     </p>
-    <code>
-    <p style="color: #0000FF; ">
-        <b>
-            Δx = [1000 - 1375, 1500 - 1375, 1200 - 1375, 1800 - 1375] = [-375, 125, -175, 425]<br>
-            Δy = [250000 - 320000, 350000 - 320000, 280000 - 320000, 400000 - 320000] = [-70000, 30000, -40000,
-            80000]</b>
-    </p>
-    </code>
-
-
 
     <p>
-        Step 3: Calculate the squared differences:</p>
-    <code>
-    <p style="color: #0000FF; ">
-        <b>
-            (Δx)² = [(-375)², 125², (-175)², 425²] = [140625, 15625, 30625, 180625]<br>
-            (Δy)² = [(-70000)², 30000², (-40000)², 80000²] = [4900000000, 900000000, 1600000000, 6400000000]</b>
+        Now, we calculate the sum of the product of deviations (Σxy) and the sum of squared deviations (Σx² and Σy²).
     </p>
-    </code>
+    <p>
+        <em>Formula:</em>
+    </p>
 
+    <h3><code>Sum of Products (Σxy) = Σ(x * y)</code></h3>
+    <h3><code>Sum of Squares of x (Σx²) = Σ(x²)</code></h3>
+    <h3><code>Sum of Squares of y (Σy²) = Σ(y²)</code></h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3>
+        <code>
+            Σxy = (-1000 * -180) + (-500 * -30) + (0 * 20) + (500 * 70) + (1000 * 120) = 470,000
+        </code>
+    </h3>
+    <h3>
+        <code>
+            Σx² = (-1000)² + (-500)² + 0² + 500² + 1000² = 3,500,000
+        </code>
+    </h3>
+    <h3>
+        <code>
+            Σy² = (-180)² + (-30)² + 20² + 70² + 120² = 56,700            
+        </code>
+    </h3>
+
+    <p><strong>Step 4: Calculate the Slope (β₁):</strong></p>
 
     <p>
-        Step 4: Calculate the cross-products of Δx and Δy:</p>
-    <code>
-        <p style="color: #0000FF; ">
-        <b>
-            (Δx)(Δy) = [(-375)(-70000), 125(30000), (-175)(-40000), 425(80000)] = [26250000, 3750000, 7000000,
-            34000000]</b>
+        The slope (β₁) of the regression line is calculated using the formula:
     </p>
-    </code>
+    <p><em>Formula:</em></p>
+
+    <h3>
+        <code>β₁ = Σxy / Σx² </code>
+    </h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3>
+        <code>β₁ = 470,000 / 3,500,000 = 0.1343
+            </code>
+    </h3>
+
+    <p><strong>Step 5: Calculate the Intercept (β₀):</strong></p>
+
     <p>
-        Step 5: Calculate the slope (β₁):</p>
-    <code>
-    <p style="color: #0000FF; ">
-        <b>
-            β₁ = Σ((Δx)(Δy)) / Σ(Δx)² = (26250000 + 3750000 + 7000000 + 34000000) / (140625 + 15625 + 30625 + 180625) =
-            101500000 / 387500 = 262.58 (approx.)</b>
+        Next, we calculate the intercept (β₀) of the regression line using the formula:
     </p>
-</code>
+    <p><em>Formula:</em></p>
+
+    <h3>
+        <code>β₀ = ȳ - β₁ * x̄ </code>
+    </h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3>
+        <code>
+            β₀ = 430 - 0.1343 * 2000 = 430 - 268.6 = 161.4
+        </code>
+    </h3>
+
+    <p><strong>Step 6: Build the Regression Line:</strong></p>
+
     <p>
-        Step 6: Calculate the y-intercept (β₀):</p>
-    <code>
-    <p style="color: #0000FF; ">
-        <b>
-            β₀ = y&#772; - β₁x&#772; = 320000 - 262.58(1375) = -19416.67 (approx.) </b>
+        Finally, we construct the equation of the regression line using the slope and intercept values obtained in the
+        previous steps:
     </p>
-</code>
+
+    <p><em>Formula:</em></p>
+    <h3>
+        <code>y = β₀ + β₁ * x</code>
+    </h3>
+
+    <p>Substituting the calculated values, we have:</p>
+    <h3>
+        <code>
+            y = 161.4 + 0.1343 * x
+        </code>
+    </h3>
+
+
+    <p><strong>Conclusion:</strong></p>
     <p>
-        Thus, the equation for the best-fitting line is:</p>
-</body>
-<code>
-    <p style="color: #0000FF; ">
-        <b>
-            y = -19416.67 + 262.58x
-        </b>
+        By manually calculating the slope (β₁) and intercept (β₀), we obtained the equation of the regression line: y =
+        161.4 + 0.1343 * x. This equation represents the best-fit line that predicts house prices based on house areas.
+        You can use this equation to make predictions for new house areas by substituting the corresponding x values
+        into the equation. Manual calculations provide a deeper understanding of the underlying mathematics behind
+        linear regression, allowing us to appreciate the algorithm's inner workings and make informed decisions when
+        working with regression problems.
     </p>
-</code>
 
-<h2>Multiple Linear Regression</h2>
-<p>
-    Multiple linear regression extends the concept of simple linear regression to include more than one independent
-    variable. The equation for multiple linear regression is as follows:
-</p>
 
-<h2><code><strong> y = β₀ + β₁x₁ + β₂x₂ + ... + βₚxₚ + ε</strong></code></h2><br>
-
-<p>
-    Here, y represents the dependent variable, x₁, x₂, ..., xₚ are the independent variables, β₀ is the y-intercept,
-    β₁, β₂, ..., βₚ are the slopes for each independent variable, and ε is the error term.
-</p>
-<p>
-    Let's dive into an example to understand the steps involved in multiple linear regression.
-</p>
-
-<h3>Example:</h3>
-<p>
-    Let's expand our previous example of housing prices (y) and their corresponding areas (x) to include an
-    additional independent variable, the number of bedrooms (z). The dataset now looks like this:
-</p>
-
-<table>
-    <tr>
-        <th>Area (x)</th>
-        <th>Bedrooms (z)</th>
-        <th>Price (y)</th>
-    </tr>
-    <tr>
-        <td>1000</td>
-        <td>2</td>
-        <td>250000</td>
-    </tr>
-    <tr>
-        <td>1500</td>
-        <td>3</td>
-        <td>350000</td>
-    </tr>
-    <tr>
-        <td>1200</td>
-        <td>2</td>
-        <td>280000</td>
-    </tr>
-    <tr>
-        <td>1800</td>
-        <td>4</td>
-        <td>400000</td>
-    </tr>
-</table>
-
-<p>Step 1: Calculate the means of x, z, and y:</p>
-<b>
-    <code>
-    <p style="color: #0000FF; ">
-        x&#772; = (1000 + 1500 + 1200 + 1800) / 4 = 1375
+    <p style="text-align: justify;" class="github-link">
+        <a href="https://github.com/PR-Peri/Understanding-Maths-Behind-Algorithm/" title="Link to GitHub Repository"
+            style="color: #0000FF;">
+            <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Link to GitHub Repository">
+            GitHub Repository
+        </a>
     </p>
-    <p style="color: #0000FF; ">
-        z&#772; = (2 + 3 + 2 + 4) / 4 = 2.75
-    </p>
-    <p style="color: #0000FF; ">
-        y&#772; = (250000 + 350000 + 280000 + 400000) / 4 = 320000
-    </p>
-    </code>
-</b>
-<p>Step 2: Calculate the differences from the means:</p>
-<b>
-    <code>
-    <p style="color: #0000FF; ">
-        Δx = [1000 - 1375, 1500 - 1375, 1200 - 1375, 1800 - 1375] = [-375, 125, -175, 425]
-    </p>
-    <p style="color: #0000FF; ">
-        Δz = [2 - 2.75, 3 - 2.75, 2 - 2.75, 4 - 2.75] = [-0.75, 0.25, -0.75, 1.25]
-
-    </p>
-    <p style="color: #0000FF; ">
-        Δy = [250000 - 320000, 350000 - 320000, 280000 - 320000, 400000 - 320000] = [-70000, 30000, -40000, 80000]
-    </p>
-    </code>
-</b>
-
-<p>Step 3: Calculate the squared differences:</p>
-<b>
-    <code>
-    <p style="color: #0000FF; ">
-        (Δx)² = [(-375)², 125², (-175)², 425²] = [140625, 15625, 30625, 180625]
-    </p>
-    <p style="color: #0000FF; ">
-        (Δz)² = [(-0.75)², 0.25², (-0.75)², 1.25²] = [0.5625, 0.0625, 0.5625, 1.5625]
-    </p>
-    <p style="color: #0000FF; ">
-        (Δy)² = [(-70000)², 30000², (-40000)², 80000²] = [49000000000, 900000000, 1600000000, 6400000000]
-    </p>
-    </code>
-</b>
-
-<p>Step 4: Calculate the cross-products of Δx, Δz, and Δy:</p>
-<b>
-    <code>
-    <p style="color: #0000FF; ">
-        (Δx)(Δy) = [(-375)(-70000), 125(30000), (-175)(-40000), 425(80000)] = [26250000, 3750000, 7000000, 34000000]
-    </p>
-    <p style="color: #0000FF; ">
-        (Δx)(Δz) = [(-375)(-0.75), 125(0.25), (-175)(-0.75), 425(1.25)] = [281.25, -31.25, 131.25, 531.25]
-    </p>
-    <p style="color: #0000FF; ">
-        (Δz)(Δy) = [(-0.75)(-70000), 0.25(30000), (-0.75)(-40000), 1.25(80000)] = [52500, 7500, 30000, 100000]
-    </p>
-    </code>
-</b>
-
-<p>Step 5: Calculate the coefficients (β₀, β₁, β₂):</p>
-<b>
-    <code>
-    <p style="color: #0000FF; ">
-        β₁ = [Σ((Δx)(Δy)) - Σ((Δx)(Δz))(Σ(Δz)(Δy))] / [Σ(Δx)² - Σ((Δx)(Δz))²]
-    </p>
-    <p style="color: #0000FF; "> = (26250000 + 3750000 + 7000000 + 34000000 - (281.25 + -31.25 + 131.25 +
-        531.25)(52500
-        + 7500 + 30000 + 100000))
-        / (140625 + 15625 + 30625 + 180625 - (281.25 + -31.25 + 131.25 + 531.25)²)</p>
-    <p style="color: #0000FF; "> = 2782.05 (approx.)</p>
-
-    <p style="color: #0000FF; ">
-        β₂ = [Σ((Δz)(Δy)) - Σ((Δx)(Δz))(Σ(Δx)(Δy))] / [Σ(Δz)² - Σ((Δx)(Δz))²]</p>
-    <p style="color: #0000FF; "> = (52500 + 7500 + 30000 + 100000 - (281.25 + -31.25 + 131.25 + 531.25)(26250000 +
-        3750000 + 7000000 + 34000000))
-        / (0.5625 + 0.0625 + 0.5625 + 1.5625 - (281.25 + -31.25 + 131.25 + 531.25)²)</p>
-    <p style="color: #0000FF; ">
-
-        = 50782.05 (approx.)</p>
-
-    <p style="color: #0000FF; ">β₀ = y&#772; - β₁x&#772; - β₂z&#772; = 320000 - 2782.05(1375) - 50782.05(2.75) =
-        -72067.18 (approx.)</p>
-    </code>
-</b>
-
-<p>Thus, the equation for the best-fitting plane is:</p>
-<code>
-<b>
-    <p style="color: #0000FF; ">y = -72067.18 + 2782.05x + 50782.05z</p>
-</b>
-</code>
-
-<p>In multiple linear regression, the coefficients (β₀, β₁, β₂) represent the intercept and slopes for each
-    independent variable, respectively. They determine the relationship between the variables and help predict the
-    dependent variable (price in this case) based on the given independent variables (area and number of bedrooms).
-</p>
-
-<p>By understanding the concepts and following the step-by-step process, you can apply multiple linear regression to
-    analyze and model relationships between multiple variables in various real-world scenarios.</p>
-
-<p>In conclusion, linear regression is a powerful statistical technique that allows us to understand and predict
-    relationships between variables. Simple linear regression is suitable when there is only one independent
-    variable, while multiple linear regression extends the analysis to multiple independent variables. Both methods
-    are widely used in research, data analysis, and machine learning to gain insights and make predictions.</p>
-
-
-<p style="text-align: justify;" class="github-link">
-    <a href="https://github.com/PR-Peri/Understanding-Maths-Behind-Algorithm/" title="Link to GitHub Repository"
-        style="color: #0000FF;">
-        <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Link to GitHub Repository">
-        GitHub Repository
-    </a>
-</p>
 
 </body>
 
