@@ -172,7 +172,7 @@ background: '/img/posts/LR-01.jpg'
     <p>
         <img class="img-fluid" src="/img/posts/LR-03.png" , height="100%" , width="800%" , alt="Demo Image">
     </p>
-    
+
     <p>
         To calculate the coefficient m we will use the formula given below
 
@@ -358,7 +358,213 @@ background: '/img/posts/LR-01.jpg'
 
     <h3>2.0 Multi Linear Regression</h3>
     <h4>2.1 Deriving the Equation: </h4>
-    
+
+    <p>
+        Multiple linear regression is a statistical technique used to model the relationship between a dependent
+        variable and two or more independent variables. It extends the concepts of simple linear regression by
+        considering multiple factors that can influence the dependent variable. In this article, we will explore the
+        world of multiple linear regression, explaining how the equations are derived and providing examples to
+        illustrate the concepts.
+    </p>
+
+    <p>
+        In multiple linear regression, the relationship between the dependent variable (y) and the independent variables
+        (x₁, x₂, ..., xn) can be expressed as:<br>
+    </p>
+
+    <h2><code><strong> y = b₀ + b₁x₁ + b₂x₂ + ... + bnxn</strong></code></h2><br>
+
+    <p>
+        In this equation, y represents the predicted value, x₁, x₂, ..., xn represent the independent variables, and b₀,
+        b₁, b₂, ..., bn are the coefficients that need to be optimized to fit the regression model to the data.
+    </p>
+
+    <h4>1.2. Example:</h4>
+    <p>
+        Let's consider an example to illustrate the concept of multiple linear regression. Suppose we have a dataset of
+        housing prices (y) and their corresponding areas (x₁) and number of bedrooms (x₂). We want to find the linear
+        relationship between the area, number of bedrooms, and the price. Here's a small dataset:
+    </p>
+
+    <table>
+        <tr>
+            <th>Area (x₁)</th>
+            <th>Number of Bedrooms (x₂)</th>
+            <th>Price (y)</th>
+        </tr>
+        <tr>
+            <td>1000</td>
+            <td>2</td>
+            <td>250</td>
+        </tr>
+        <tr>
+            <td>1500</td>
+            <td>3</td>
+            <td>400</td>
+        </tr>
+        <tr>
+            <td>2000</td>
+            <td>4</td>
+            <td>450</td>
+        </tr>
+        <tr>
+            <td>2500</td>
+            <td>3</td>
+            <td>500</td>
+        </tr>
+        <tr>
+            <td>3000</td>
+            <td>5</td>
+            <td>550</td>
+        </tr>
+    </table>
+
+    <p>
+        Using the least squares method, we can find the best-fitting line. By substituting the given values into the
+        equation y = b₀ + b₁x₁ + b₂x₂, we can solve for b₀, b₁, and b₂. The steps are as follows:
+    </p>
+
+    <p><strong>Step 1: Calculate the Means:</strong></p>
+    <p>
+        To begin, we calculate the means of the independent variables (x₁ and x₂) and the dependent variable (y). The
+        mean is obtained by summing up all the values and dividing by the total number of data points.
+    </p>
+
+    <h3><em>Formula:</em></h3>
+    <h3><code>Mean (x̄₁) = Σx₁ / n</code></h3>
+    <h3><code>Mean (x̄₂) = Σx₂ / n</code></h3>
+    <h3><code>Mean (ȳ) = Σy / n</code></h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3><code>Area (x₁): [1000, 1500, 2000, 2500, 3000]</code></h3>
+    <h3><code>Number of Bedrooms (x₂): [2, 3, 4, 3, 5]</code></h3>
+    <h3><code>Price (y): [250, 400, 450, 500, 550]</code></h3>
+    <h3><code>Mean of x₁ (x̄₁) = (1000 + 1500 + 2000 + 2500 + 3000) / 5 = 2000</code></h3>
+    <h3><code>Mean of x₂ (x̄₂) = (2 + 3 + 4 + 3 + 5) / 5 = 3.4</code></h3>
+    <h3><code>Mean of y (ȳ) = (250 + 400 + 450 + 500 + 550) / 5 = 430</code></h3>
+
+    <p><strong>Step 2: Calculate the Deviations:</strong></p>
+    <p>
+        Next, we calculate the deviations of each independent variable (x₁, x₂) and the dependent variable (y) from
+        their respective means. Deviation is obtained by subtracting the mean from each value.
+    </p>
+
+    <p><em>Formula:</em></p>
+
+    <h3><code>Deviation (x₁ - x̄₁) = x₁ - x̄₁</code></h3>
+    <h3><code>Deviation (x₂ - x̄₂) = x₂ - x̄₂</code></h3>
+    <h3><code>Deviation (y - ȳ) = y - ȳ</code></h3>
+
+    <p><em>Calculations:</em></p>
+    <h3>
+        <code>Deviation of x₁ (x₁ - x̄₁): [-1000, -500, 0, 500, 1000]</code>
+    </h3>
+    <h3>
+        <code>Deviation of x₂ (x₂ - x̄₂): [-1.4, -0.4, 0.6, -0.4, 1.6]</code>
+    </h3>
+    <h3>
+        <code>Deviation of y (y - ȳ): [-180, -30, 20, 70, 120]</code>
+    </h3>
+
+    <p>
+        <strong>Step 3: Calculate the Sum of Products and Squares:</strong>
+    </p>
+
+    <p>
+        Now, we calculate the sum of the product of deviations (Σxy), the sum of squared deviations for x₁ (Σx₁²), the
+        sum of squared deviations for x₂ (Σx₂²),and the sum of squared deviations for y (Σy²).
+    </p>
+    <p>
+        <em>Formula:</em>
+    </p>
+
+    <h3><code>Sum of Products (Σxy) = Σ((x₁ - x̄₁) * (x₂ - x̄₂) * (y - ȳ))</code></h3>
+    <h3><code>Sum of Squares of x₁ (Σx₁²) = Σ((x₁ - x̄₁)²)</code></h3>
+    <h3><code>Sum of Squares of x₂ (Σx₂²) = Σ((x₂ - x̄₂)²)</code></h3>
+    <h3><code>Sum of Squares of y (Σy²) = Σ((y - ȳ)²)</code></h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3>
+        <code>
+            Σxy = (-1000 * -1.4 * -180) + (-500 * -0.4 * -30) + (0 * 0.6 * 20) + (500 * -0.4 * 70) + (1000 * 1.6 * 120) = 353,800
+        </code>
+    </h3>
+    <h3>
+        <code>
+            Σx₁² = (-1000)² + (-500)² + 0² + 500² + 1000² = 3,500,000
+        </code>
+    </h3>
+    <h3>
+        <code>
+            Σx₂² = (-1.4)² + (-0.4)² + 0.6² + (-0.4)² + 1.6² = 5.2
+        </code>
+    </h3>
+    <h3>
+        <code>
+            Σy² = (-180)² + (-30)² + 20² + 70² + 120² = 56,700
+        </code>
+    </h3>
+
+    <p><strong>Step 4: Calculate the Coefficients (b₀, b₁, b₂):</strong></p>
+
+    <p>
+        The coefficients (b₀, b₁, b₂) of the multiple linear regression equation are calculated using the formulas:
+    </p>
+    <p><em>Formula:</em></p>
+
+    <h3>
+        <code>b₁ = Σxy / Σx₁²</code>
+    </h3>
+    <h3>
+        <code>b₂ = Σxy / Σx₂²</code>
+    </h3>
+    <h3>
+        <code>b₀ = ȳ - b₁ * x̄₁ - b₂ * x̄₂</code>
+    </h3>
+
+    <p><em>Calculations:</em></p>
+
+    <h3>
+        <code>b₁ = 353,800 / 3,500,000 = 0.1011</code>
+    </h3>
+    <h3>
+        <code>b₂ = 353,800 / 5.2 = 68,038.46</code>
+    </h3>
+    <h3>
+        <code>b₀ = 430 - 0.1011 * 2000 - 68,038.46 * 3.4 = -128,164.61</code>
+    </h3>
+
+    <p><strong>Step 5: Build the Regression Equation:</strong></p>
+
+    <p>
+        Finally, we construct the equation of the multiple linear regression line using the coefficients (b₀, b₁, b₂)
+        obtained in the previous steps:
+    </p>
+
+    <p><em>Formula:</em></p>
+    <h3>
+        <code>y = b₀ + b₁ * x₁ + b₂ * x₂</code>
+    </h3>
+
+    <p>Substituting the calculated values, we have:</p>
+    <h3>
+        <code>y = -128,164.61 + 0.1011 * x₁ + 68,038.46 * x₂</code>
+    </h3>
+
+    <p><strong>Conclusion:</strong></p>
+    <p>
+        By manually calculating the coefficients (b₀, b₁, b₂), we obtained the equation of the multiple linear
+        regression line: y = -128,164.61 + 0.1011 * x₁ + 68,038.46 * x₂. This equation represents the best-fit line that
+        predicts house prices based on the area (x₁) and number of bedrooms (x₂). You can use this equation to make
+        predictions for new data points by substituting the corresponding x₁ and x₂ values into the equation. Manual
+        calculations provide a deeper understanding of the underlying mathematics behind multiple linear regression,
+        allowing us to interpret the coefficients and make informed decisions when working with regression problems
+        involving multiple independent variables.
+    </p>
+
+
     <p style="text-align: justify;" class="github-link">
         <a href="https://github.com/PR-Peri/Understanding-Maths-Behind-Algorithm/" title="Link to GitHub Repository"
             style="color: #0000FF;">
