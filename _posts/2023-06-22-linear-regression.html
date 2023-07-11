@@ -57,6 +57,7 @@ background: '/img/posts/LR-01.jpg'
         background-color: #555;
     }
 </style>
+
 <button onclick="topFunction()" id="myBtn" title="Back to top">
     <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30">
 </button>
@@ -86,7 +87,6 @@ background: '/img/posts/LR-01.jpg'
 
     var mybutton = document.getElementById("myBtn");
     var message = "Right- Click Function Disabled!";
-
 
     // When the user scrolls down 20px from the top of the document, show the button
     window.onscroll = function () { scrollFunction() };
@@ -152,7 +152,12 @@ background: '/img/posts/LR-01.jpg'
         To derive the equation for a simple linear regression model, we assume that the relationship between x and y can
         be expressed as:<br>
 
-    <h2><code><strong> y = mx + b</strong></code></h2><br>
+    <h2>
+        <code>
+            <strong> y = mx + b</strong>
+        </code>
+    </h2>
+    <br>
 
     In terms of linear regression, y in this equation stands for the predicted value, x means the independent variable
     and m & b are the coefficients we need to optimize in order to fit the regression line to our data.
@@ -176,8 +181,17 @@ background: '/img/posts/LR-01.jpg'
     <p>
         To calculate the coefficient m we will use the formula given below
 
-    <h2><code><strong>  m = cov(x, y) / var(x) </strong></code></h2><br>
-    <h2><code><strong>  b = mean(y) — m * mean(x) </strong></code></h2><br>
+    <h2>
+        <code><strong>  m = cov(x, y) / var(x) </strong>
+        </code>
+    </h2>
+    <br>
+    <h2>
+        <code>
+            <strong>  b = mean(y) — m * mean(x) </strong>
+        </code>
+    </h2>
+    <br>
     </p>
     <h4>1.2. Example:</h4>
     <p>
@@ -563,7 +577,6 @@ background: '/img/posts/LR-01.jpg'
         allowing us to interpret the coefficients and make informed decisions when working with regression problems
         involving multiple independent variables.
     </p>
-
 
     <p style="text-align: justify;" class="github-link">
         <a href="https://github.com/PR-Peri/Understanding-Maths-Behind-Algorithm/" title="Link to GitHub Repository"
