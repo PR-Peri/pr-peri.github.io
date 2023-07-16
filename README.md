@@ -1,6 +1,6 @@
 # My Personal Website
 
-Welcome to my personal website! This repository contains the source code and assets for my website, where I showcase my work, share my thoughts, and provide information about myself.
+Welcome to my personal website! This repository contains the source code and assets for my website, where I showcase my work, share my thoughts, and provide information about my projects.
 
 ## Table of Contents
 - [Overview](#overview)
