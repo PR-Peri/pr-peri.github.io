@@ -173,8 +173,10 @@ background: '/img/posts/LR-01.jpg'
             <td>Cat</td>
         </tr>
     </table>
+    <br>
 
     <h2>Step 2: Introduce the Naive Bayes Algorithm</h2>
+
     <p>Before diving into the enchanting world of mathematics, let's take a moment to understand the Naive Bayes
         algorithm itself. Naive Bayes is a probabilistic algorithm based on Bayes' theorem and the "naive" assumption of
         conditional independence of features given the class label. Despite its simplicity, Naive Bayes has proven to be
@@ -182,9 +184,11 @@ background: '/img/posts/LR-01.jpg'
         classification, and spam filtering.</p>
 
     <h2>Step 3: Present Bayes' Theorem - Unraveling the Enigma</h2>
+
     <p>Behold Bayes' theorem, a magical revelation in probability theory that forms the very essence of Naive Bayes. It
         reveals the posterior probability of an event A given the evidence B, conjured from the product of the prior
         probability of A and the likelihood of observing B given A, all divided by the probability of observing B:</p>
+
     <pre><code>P(A|B) = P(A) * P(B|A) / P(B)</code></pre>
     <p>Where:</p>
     <ul>
@@ -194,8 +198,9 @@ background: '/img/posts/LR-01.jpg'
         <li>P(B|A) is the likelihood of observing evidence B given that event A has occurred.</li>
         <li>P(B) is the probability of observing evidence B.</li>
     </ul>
-
+    <br>
     <h2>Step 4: Explain the "Naive" Assumption - A Masterstroke of Simplicity</h2>
+
     <p>Now, in the context of Naive Bayes, we introduce the "naive" assumption. This assumption states that the features
         (variables) in the dataset are conditionally independent of each other, given the class label. In simple terms,
         it means that the presence or absence of one feature does not influence the presence or absence of another
@@ -205,15 +210,21 @@ background: '/img/posts/LR-01.jpg'
         feature given the class label:</p>
     <pre><code>P(x_1, x_2, ..., x_n | C) = P(x_1 | C) * P(x_2 | C) * ... * P(x_n | C)</code></pre>
 
+    <br>
     <h2>Step 5: Introduce the Naive Bayes Equations</h2>
+
     <p>Now that we've set the stage with Bayes' theorem and the "naive" assumption, let us conjure the magical equations
         of Naive Bayes. Imagine a dataset with an ensemble of features X = {x_1, x_2, ..., x_n}, and a mysterious class
         label C. We can now derive the Naive Bayes equation as follows:</p>
+
     <pre><code>P(C | X) = P(C) * P(x_1 | C) * P(x_2 | C) * ... * P(x_n | C) / P(X)</code></pre>
+
     <p>This is the derived Naive Bayes equation! It allows us to calculate the posterior probability of a class label
         given a set of features and use it to make predictions for new instances.</p>
 
+    <br>
     <h2>Step 6: Applying the Naive Bayes Equation</h2>
+
     <p>In practice, to make predictions, we calculate the posterior probabilities for each class label, and the class
         with the highest probability becomes our predicted class for the new instance.</p>
 
@@ -250,30 +261,43 @@ background: '/img/posts/LR-01.jpg'
     </table>
     <p>Now, let's calculate the probabilities required for Naive Bayes to predict the class of a new instance with
         features X_new = {x_1=1, x_2=1}.</p>
+
+    <br>
     <h3>Step 1: Calculate the prior probabilities P(Dog) and P(Cat):</h3>
+
     <pre><code>P(Dog) = Number of instances of Dog / Total number of instances = 2 / 4 = 0.5</code></pre>
     <pre><code>P(Cat) = Number of instances of Cat / Total number of instances = 2 / 4 = 0.5</code></pre>
+    <br>
 
     <h3>Step 2: Calculate the conditional probabilities P(x_i|C):</h3>
+
     <pre><code>P(x_1=1|Dog) = Number of instances of Dog with x_1=1 / Total number of instances of Dog = 2 / 2 = 1</code></pre>
     <pre><code>P(x_2=1|Dog) = Number of instances of Dog with x_2=1 / Total number of instances of Dog = 1 / 2 = 0.5</code></pre>
     <pre><code>P(x_1=1|Cat) = Number of instances of Cat with x_1=1 / Total number of instances of Cat = 0 / 2 = 0</code></pre>
     <pre><code>P(x_2=1|Cat) = Number of instances of Cat with x_2=1 / Total number of instances of Cat = 1 / 2 = 0.5</code></pre>
 
+    <br>
+
     <h3>Step 3: Calculate the likelihood of the new instance P(X_new|C):</h3>
+
     <pre><code>P(X_new|Dog) = P(x_1=1|Dog) * P(x_2=1|Dog) = 1 * 0.5 = 0.5</code></pre>
     <pre><code>P(X_new|Cat) = P(x_1=1|Cat) * P(x_2=1|Cat) = 0 * 0.5 = 0</code></pre>
 
+    <br>
+
     <h3>Step 4: Calculate the posterior probabilities P(Dog|X_new) and P(Cat|X_new):</h3>
+
     <pre><code>P(Dog|X_new) = P(Dog) * P(X_new|Dog) / P(X_new) = 0.5 * 0.5 / P(X_new)</code></pre>
     <pre><code>P(Cat|X_new) = P(Cat) * P(X_new|Cat) / P(X_new) = 0.5 * 0 / P(X_new)</code></pre>
 
+    <br>
     <h3>Step 5: Normalize the probabilities:</h3>
     <p>As P(Dog|X_new) + P(Cat|X_new) = 1, we can normalize the probabilities:</p>
     <pre><code>P(Dog|X_new) = 0.5 / (0.5 + 0) = 1</code></pre>
     <pre><code>P(Cat|X_new) = 0 / (0.5 + 0) = 0</code></pre>
-
+    <br>
     <h2>Conclusion: Embrace the Magic of Naive Bayes</h2>
+
     <p>As our mystical journey comes to an end, we've unveiled the mathematical charm behind Naive Bayes, illuminated by
         the radiant glow of Bayes' theorem and the "naive" assumption. We've mastered the magical equations and summoned
         its power to predict the unseen. Naive Bayes, a beguiling combination of simplicity and potency, continues to
@@ -284,8 +308,7 @@ background: '/img/posts/LR-01.jpg'
 
 
     <p style="text-align: justify;" class="github-link">
-        <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
-            style="color: #0000FF;">
+        <a href="" title="Link to GitHub Repository" style="color: #0000FF;">
             <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Link to GitHub Repository">
             GitHub Repository
         </a>
