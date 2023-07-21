@@ -260,16 +260,16 @@ background: '/img/posts/NB_01.jpeg'
         </tr>
     </table>
     <p>Now, let's calculate the probabilities required for Naive Bayes to predict the class of a new instance with
-        features X_new = {x_1=1, x_2=1}.</p>
+        features X_new = {x_1=1, x_2=1}</p>
 
     <br>
-    <h3>Step 1: Calculate the prior probabilities P(Dog) and P(Cat):</h3>
+    <h3>Step 1: Calculate the prior probabilities P(Dog) and P(Cat)</h3>
 
     <p><strong><code>P(Dog) = Number of instances of Dog / Total number of instances = 2 / 4 = 0.5</code></strong></p>
     <p><strong><code>P(Cat) = Number of instances of Cat / Total number of instances = 2 / 4 = 0.5</code></strong></p>
     <br>
 
-    <h3>Step 2: Calculate the conditional probabilities P(x_i|C):</h3>
+    <h3>Step 2: Calculate the conditional probabilities P(x_i|C)</h3>
 
     <p><strong><code>P(x_1=1|Dog) = Number of instances of Dog with x_1=1 / Total number of instances of Dog = 2 / 2 = 1</code></strong></p>
     <p><strong><code>P(x_2=1|Dog) = Number of instances of Dog with x_2=1 / Total number of instances of Dog = 1 / 2 = 0.5</code></strong></p>
@@ -278,25 +278,25 @@ background: '/img/posts/NB_01.jpeg'
 
     <br>
 
-    <h3>Step 3: Calculate the likelihood of the new instance P(X_new|C):</h3>
+    <h3>Step 3: Calculate the likelihood of the new instance P(X_new|C)</h3>
 
     <p><strong><code>P(X_new|Dog) = P(x_1=1|Dog) * P(x_2=1|Dog) = 1 * 0.5 = 0.5</code></strong></p>
     <p><strong><code>P(X_new|Cat) = P(x_1=1|Cat) * P(x_2=1|Cat) = 0 * 0.5 = 0</code></strong></p>
 
     <br>
 
-    <h3>Step 4: Calculate the posterior probabilities P(Dog|X_new) and P(Cat|X_new):</h3>
+    <h3>Step 4: Calculate the posterior probabilities P(Dog|X_new) and P(Cat|X_new)</h3>
 
     <p><strong><code>P(Dog|X_new) = P(Dog) * P(X_new|Dog) / P(X_new) = 0.5 * 0.5 / P(X_new)</code></strong></p>
     <p><strong><code>P(Cat|X_new) = P(Cat) * P(X_new|Cat) / P(X_new) = 0.5 * 0 / P(X_new)</code></strong></p>
 
     <br>
-    <h3>Step 5: Normalize the probabilities:</h3>
+    <h3>Step 5: Normalize the probabilities</h3>
     <p>As P(Dog|X_new) + P(Cat|X_new) = 1, we can normalize the probabilities:</p>
     <p><strong><code>P(Dog|X_new) = 0.5 / (0.5 + 0) = 1</code></strong></p>
     <p><strong><code>P(Cat|X_new) = 0 / (0.5 + 0) = 0</code></strong></p>
     <br>
-    <h2>Conclusion: Embrace the Magic of Naive Bayes</h2>
+    <h2>Conclusion</h2>
 
     <p>As our mystical journey comes to an end, we've unveiled the mathematical charm behind Naive Bayes, illuminated by
         the radiant glow of Bayes' theorem and the "naive" assumption. We've mastered the magical equations and summoned
