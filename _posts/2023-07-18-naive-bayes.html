@@ -189,7 +189,7 @@ background: '/img/posts/NB_01.jpeg'
         reveals the posterior probability of an event A given the evidence B, conjured from the product of the prior
         probability of A and the likelihood of observing B given A, all divided by the probability of observing B:</p>
 
-    <pre><code>P(A|B) = P(A) * P(B|A) / P(B)</code></pre>
+    <p><strong><code>P(A|B) = P(A) * P(B|A) / P(B)</code></strong></p>
     <p>Where:</p>
     <ul>
         <li>P(A|B) is the posterior probability of event A occurring given that event B has occurred.</li>
@@ -208,7 +208,7 @@ background: '/img/posts/NB_01.jpeg'
     <p>This assumption simplifies the calculations significantly and allows us to express the joint probability of
         observing all features given the class label C as the product of individual probabilities of observing each
         feature given the class label:</p>
-    <pre><code>P(x_1, x_2, ..., x_n | C) = P(x_1 | C) * P(x_2 | C) * ... * P(x_n | C)</code></pre>
+    <p><strong><code>P(x_1, x_2, ..., x_n | C) = P(x_1 | C) * P(x_2 | C) * ... * P(x_n | C)</code></strong></p>
 
     <br>
     <h2>Step 5: Introduce the Naive Bayes Equations</h2>
@@ -217,7 +217,7 @@ background: '/img/posts/NB_01.jpeg'
         of Naive Bayes. Imagine a dataset with an ensemble of features X = {x_1, x_2, ..., x_n}, and a mysterious class
         label C. We can now derive the Naive Bayes equation as follows:</p>
 
-    <pre><code>P(C | X) = P(C) * P(x_1 | C) * P(x_2 | C) * ... * P(x_n | C) / P(X)</code></pre>
+    <p><strong><code>P(C | X) = P(C) * P(x_1 | C) * P(x_2 | C) * ... * P(x_n | C) / P(X)</code></strong></p>
 
     <p>This is the derived Naive Bayes equation! It allows us to calculate the posterior probability of a class label
         given a set of features and use it to make predictions for new instances.</p>
@@ -265,36 +265,36 @@ background: '/img/posts/NB_01.jpeg'
     <br>
     <h3>Step 1: Calculate the prior probabilities P(Dog) and P(Cat):</h3>
 
-    <pre><code>P(Dog) = Number of instances of Dog / Total number of instances = 2 / 4 = 0.5</code></pre>
-    <pre><code>P(Cat) = Number of instances of Cat / Total number of instances = 2 / 4 = 0.5</code></pre>
+    <p><strong><code>P(Dog) = Number of instances of Dog / Total number of instances = 2 / 4 = 0.5</code></strong></p>
+    <p><strong><code>P(Cat) = Number of instances of Cat / Total number of instances = 2 / 4 = 0.5</code></strong></p>
     <br>
 
     <h3>Step 2: Calculate the conditional probabilities P(x_i|C):</h3>
 
-    <pre><code>P(x_1=1|Dog) = Number of instances of Dog with x_1=1 / Total number of instances of Dog = 2 / 2 = 1</code></pre>
-    <pre><code>P(x_2=1|Dog) = Number of instances of Dog with x_2=1 / Total number of instances of Dog = 1 / 2 = 0.5</code></pre>
-    <pre><code>P(x_1=1|Cat) = Number of instances of Cat with x_1=1 / Total number of instances of Cat = 0 / 2 = 0</code></pre>
-    <pre><code>P(x_2=1|Cat) = Number of instances of Cat with x_2=1 / Total number of instances of Cat = 1 / 2 = 0.5</code></pre>
+    <p><strong><code>P(x_1=1|Dog) = Number of instances of Dog with x_1=1 / Total number of instances of Dog = 2 / 2 = 1</code></strong></p>
+    <p><strong><code>P(x_2=1|Dog) = Number of instances of Dog with x_2=1 / Total number of instances of Dog = 1 / 2 = 0.5</code></strong></p>
+    <p><strong><code>P(x_1=1|Cat) = Number of instances of Cat with x_1=1 / Total number of instances of Cat = 0 / 2 = 0</code></strong></p>
+    <p><strong><code>P(x_2=1|Cat) = Number of instances of Cat with x_2=1 / Total number of instances of Cat = 1 / 2 = 0.5</code></strong></p>
 
     <br>
 
     <h3>Step 3: Calculate the likelihood of the new instance P(X_new|C):</h3>
 
-    <pre><code>P(X_new|Dog) = P(x_1=1|Dog) * P(x_2=1|Dog) = 1 * 0.5 = 0.5</code></pre>
-    <pre><code>P(X_new|Cat) = P(x_1=1|Cat) * P(x_2=1|Cat) = 0 * 0.5 = 0</code></pre>
+    <p><strong><code>P(X_new|Dog) = P(x_1=1|Dog) * P(x_2=1|Dog) = 1 * 0.5 = 0.5</code></strong></p>
+    <p><strong><code>P(X_new|Cat) = P(x_1=1|Cat) * P(x_2=1|Cat) = 0 * 0.5 = 0</code></strong></p>
 
     <br>
 
     <h3>Step 4: Calculate the posterior probabilities P(Dog|X_new) and P(Cat|X_new):</h3>
 
-    <pre><code>P(Dog|X_new) = P(Dog) * P(X_new|Dog) / P(X_new) = 0.5 * 0.5 / P(X_new)</code></pre>
-    <pre><code>P(Cat|X_new) = P(Cat) * P(X_new|Cat) / P(X_new) = 0.5 * 0 / P(X_new)</code></pre>
+    <p><strong><code>P(Dog|X_new) = P(Dog) * P(X_new|Dog) / P(X_new) = 0.5 * 0.5 / P(X_new)</code></strong></p>
+    <p><strong><code>P(Cat|X_new) = P(Cat) * P(X_new|Cat) / P(X_new) = 0.5 * 0 / P(X_new)</code></strong></p>
 
     <br>
     <h3>Step 5: Normalize the probabilities:</h3>
     <p>As P(Dog|X_new) + P(Cat|X_new) = 1, we can normalize the probabilities:</p>
-    <pre><code>P(Dog|X_new) = 0.5 / (0.5 + 0) = 1</code></pre>
-    <pre><code>P(Cat|X_new) = 0 / (0.5 + 0) = 0</code></pre>
+    <p><strong><code>P(Dog|X_new) = 0.5 / (0.5 + 0) = 1</code></strong></p>
+    <p><strong><code>P(Cat|X_new) = 0 / (0.5 + 0) = 0</code></strong></p>
     <br>
     <h2>Conclusion: Embrace the Magic of Naive Bayes</h2>
 
