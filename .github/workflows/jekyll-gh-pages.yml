@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4        # or @v5 if you trust it / want the newest
+        uses: actions/checkout@v4
 
       - name: Setup Pages metadata
         uses: actions/configure-pages@v5
@@ -30,8 +30,8 @@ jobs:
           source: ./
           destination: ./_site
 
-      - name: Upload built site
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload built site (Pages artifact)
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./_site
 
