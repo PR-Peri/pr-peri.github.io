@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Obstacle Avoiding Robot Using Intel VHDL"
-subtitle: "Unlock the Power of Intel FPGAs to Build Intelligent and Flexible Robots — Step-by-Step Guide with Code Insights"
+subtitle: "Unlock the Power of Intel FPGAs to Build Intelligent and Flexible Robots with a Step-by-Step Guide and Code Insights"
 date: 2020-07-23 10:45:13 -0400
 background: '/img/posts/RBT-01.jpg'
 ---
@@ -97,79 +97,79 @@ background: '/img/posts/RBT-01.jpg'
 </head>
 
 <body>
-    <h1>Building an Intel FPGA Robot: Unleashing the Power of Programmable Logic</h1>
+    <h1>Building an Intel FPGA Robot</h1>
 
     <p>
-        Robotics is where hardware meets software in an intricate dance to create machines capable of intelligent, autonomous behavior. But how do you build a robot that is not just smart, but flexible and lightning fast? Enter Intel FPGAs (Field-Programmable Gate Arrays) — a game-changing platform that lets you program hardware to your exact needs, unlocking immense performance and adaptability.
+        Robotics is where hardware meets software in an intricate dance to create machines capable of intelligent, autonomous behavior. But how do you build a robot that is not just smart, but also flexible and lightning fast? Intel FPGAs (Field-Programmable Gate Arrays) provide the answer. They let you program hardware to your exact needs, giving you both performance and adaptability.
     </p>
 
     <p>
-        In this post, we’ll embark on an exciting journey to build an obstacle-avoiding robot using Intel FPGAs and VHDL. I’ll walk you through every step, from setting up your environment to diving into the code — inspired by the comprehensive <a href="https://github.com/PR-Peri/Intel-FGPA_Robot">Intel-FPGA_Robot GitHub project</a>. Whether you're a beginner or a seasoned FPGA enthusiast, this guide aims to make FPGA robotics approachable and fun.
+        In this post, we’ll explore how to build an obstacle-avoiding robot using Intel FPGAs and VHDL. I’ll walk you through each step, from setting up your environment to diving into the code. The guide is based on the <a href="https://github.com/PR-Peri/Intel-FGPA_Robot">Intel-FPGA_Robot GitHub project</a>. Whether you're just starting out or already familiar with FPGAs, this tutorial aims to make the journey fun and approachable.
     </p>
 
     <h2>Step 1: Getting to Know the Project</h2>
     <p>
-        Before jumping in, spend some time exploring the Intel-FPGA_Robot repository on GitHub. It’s packed with detailed hardware schematics, software source files, and clear module explanations. Understanding the overall system layout gives you the big picture — the first step toward building your own robot.
+        Before jumping in, take some time to explore the Intel-FPGA_Robot repository on GitHub. It contains hardware schematics, software source files, and clear explanations of each module. Understanding the overall system layout helps you see the big picture and is the first step toward building your own robot.
     </p>
 
     <h2>Step 2: Setting Up Your Development Environment</h2>
     <p>
-        To work your FPGA magic, you'll need Intel's Quartus Prime software, the industry-standard for FPGA design. Download it from Intel’s official site and configure it for the FPGA device used in the project. With Quartus Prime ready, you’re equipped to translate your VHDL designs into hardware.
+        To design with FPGAs, you'll need Intel's Quartus Prime software, the standard tool for FPGA development. Download it from Intel’s official site and configure it for the FPGA device used in the project. Once Quartus Prime is ready, you can start translating your VHDL designs into hardware.
     </p>
 
     <h2>Step 3: Crafting the Hardware Design</h2>
     <p>
-        The hardware design phase involves connecting motors, sensors, and communication lines to the FPGA board. The project documentation provides detailed wiring diagrams and guidelines — from motor drivers to sensor inputs — enabling you to bring the robot’s skeleton to life.
+        The hardware design phase involves connecting motors, sensors, and communication lines to the FPGA board. The project documentation provides wiring diagrams and guidelines, covering everything from motor drivers to sensor inputs. These resources help you bring the robot’s physical structure to life.
     </p>
 
     <h2>Step 4: Writing the Software</h2>
     <p>
-        Here’s where VHDL and C come into play. VHDL defines the FPGA’s hardware behavior, like controlling motors and processing sensor signals at lightning speed. Meanwhile, C code manages higher-level logic such as interpreting sensor data and steering decisions. The project’s repository is your treasure trove of examples, helping you understand how these pieces fit together.
+        This is where VHDL and C come into play. VHDL defines how the FPGA behaves at the hardware level, such as controlling motors and processing sensor signals. Meanwhile, C code manages higher-level logic like interpreting sensor data and steering decisions. The repository includes plenty of examples to help you connect these pieces together.
     </p>
 
     <h2>Step 5: Compiling and Programming the FPGA</h2>
     <p>
-        After you finish coding, use Quartus Prime to compile your VHDL into a configuration file. This file programs the FPGA to behave as your designed circuit. Follow the project's instructions carefully — successful programming is your robot’s brainpower coming to life.
+        Once your code is ready, use Quartus Prime to compile the VHDL into a configuration file. This file programs the FPGA to behave exactly as you designed. Follow the project’s instructions carefully. A successful upload means your robot’s brain has come to life.
     </p>
 
     <h2>Step 6: Testing and Debugging</h2>
     <p>
-        No robot is perfect on the first try. The project includes test benches and debugging tips — essential tools to simulate behavior, catch bugs, and fine-tune performance. Test your robot in various scenarios to ensure reliable obstacle detection and smooth navigation.
+        No robot works perfectly on the first try. The project includes test benches and debugging tips, which are essential for simulating behavior, catching bugs, and fine-tuning performance. Try your robot in different scenarios to confirm that it can detect obstacles and navigate smoothly.
     </p>
 
     <h2>Step 7: Refining and Iterating</h2>
     <p>
-        Robotics development is an evolving process. With your robot up and running, experiment with tweaks and new features. Add smarter algorithms, integrate additional sensors, or optimize motor control. Intel FPGAs make it easy to iterate and improve without changing hardware.
+        Robotics development is never static. Once your robot is running, experiment with new features and improvements. Add smarter algorithms, integrate more sensors, or optimize motor control. With Intel FPGAs, you can iterate quickly without changing the hardware.
     </p>
 
     <h2>Conclusion</h2>
     <p>
-        Building a robot with Intel FPGAs merges the art of hardware design with the science of software development — empowering you to create machines that are fast, flexible, and intelligent. Thanks to the Intel-FPGA_Robot project, you have a clear roadmap and code samples to kickstart your adventure. Dive in, experiment, and push the boundaries of what your robot can do. The future of robotics is programmable — and it’s in your hands!
+        Building a robot with Intel FPGAs combines the art of hardware design with the science of software development. It empowers you to create machines that are fast, flexible, and intelligent. Thanks to the Intel-FPGA_Robot project, you already have a roadmap and code samples to get started. Dive in, experiment, and see how far you can push your robot. The future of robotics is programmable, and it’s in your hands.
     </p>
 
     <h2>Understanding the Code: A Deep Dive into Motor Control</h2>
     <p>
-        VHDL is the language of digital hardware design, and mastering it is key to controlling your robot’s motors precisely. The provided code snippet defines a motor control module that takes in direction and speed signals and outputs the correct PWM (Pulse Width Modulation) signals to drive the motors.
+        VHDL is the language of digital hardware design, and mastering it is key to controlling your robot’s motors precisely. The motor control module in the project takes in direction and speed signals and outputs the correct PWM (Pulse Width Modulation) signals to drive the motors.
     </p>
 
     <p>
-        The entity section declares inputs like direction control and speed signals, and outputs that activate the motors. Inside the architecture, you'll find internal signals and the logic that determines motor behavior based on these inputs.
+        The entity section declares inputs like direction and speed, along with outputs that activate the motors. Inside the architecture, you’ll find the internal signals and logic that determine motor behavior based on these inputs.
     </p>
 
     <p>
-        The heart of the code lies in the process block — a sequence of commands executed when inputs change. A case statement evaluates the control signals and sets the motor outputs accordingly. For example, if the command says “go forward at high speed,” the PWM signals adjust to power the motor at the required speed and direction.
+        The process block is the heart of the code. It runs whenever inputs change and uses a case statement to evaluate the control signals and set the motor outputs. For example, if the command says “go forward at high speed,” the PWM signals adjust to power the motor accordingly.
     </p>
 
     <p>
-        Keep in mind, this snippet is a simplified example. The full project includes more complex control logic and integration with sensors for real-time obstacle avoidance. Exploring the GitHub repository will give you deeper insights into these advanced features.
+        This snippet is only a simplified example. The full project includes more advanced logic and sensor integration for real-time obstacle avoidance. Going through the GitHub repository will give you a deeper look at these features.
     </p>
 
     <p>
-        With the power of VHDL, you’re not just writing software — you’re shaping the hardware itself. This ability to tailor motor control logic to your exact needs is what makes FPGA-based robotics truly revolutionary.
+        With VHDL, you’re not just writing software. You’re shaping the hardware itself. This ability to define motor control logic at such a low level is what makes FPGA-based robotics so powerful.
     </p>
 
     <p>
-        Ready to take your robot to the next level? Experiment with the code, adapt it to your hardware, and watch as your intelligent obstacle-avoiding robot springs to life!
+        Want to take your robot further? Experiment with the code, adapt it to your own setup, and watch as your intelligent obstacle-avoiding robot comes to life.
     </p>
 
     <p style="text-align: justify;" class="github-link">
