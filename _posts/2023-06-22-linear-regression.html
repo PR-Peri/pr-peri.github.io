@@ -7,589 +7,616 @@ date: 2023-06-22 10:45:13 -0400
 background: '/img/posts/LR-01.jpg'
 ---
 
-<style>
-    body {
-        background-image: url('https://cutewallpaper.org/27/bokeh-wallpaper-gif/clean-bokeh-hd-motion-graphics-background-loop-gif-gfycat.gif');
-        background-size: cover;
-        height: 100vh;
-        padding: 0;
-        margin: 0;
-    }
-
-    p {
-        text-align: justify;
-    }
-
-    .github-link {
-        display: flex;
-        align-items: left;
-        justify-content: left;
-        text-align: left;
-        color: #0000FF;
-        font-style: italic;
-        font-size: medium;
-        text-decoration: none;
-    }
-
-    .github-link img {
-        width: 40px;
-        height: 40px;
-        margin-right: 5px;
-    }
-
-    #myBtn {
-        display: none;
-        position: fixed;
-        bottom: 20px;
-        right: 30px;
-        z-index: 99;
-        font-size: 15px;
-        border: none;
-        outline: none;
-        background-color: rgb(238, 208, 37);
-        color: white;
-        cursor: pointer;
-        padding: 10px;
-        border-radius: 4px;
-    }
-
-    #myBtn:hover {
-        background-color: #555;
-    }
-</style>
-
-<button onclick="topFunction()" id="myBtn" title="Back to top">
-    <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30">
-</button>
-
-<script>
-    document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    }
-    );
-    document.onkeydown = function (e) {
-        if (event.keyCode == 123) {
-            return false;
-        }
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-            return false;
-        }
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-            return false;
-        }
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-            return false;
-        }
-        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-            return false;
-        }
-    }
-
-    var mybutton = document.getElementById("myBtn");
-    var message = "Right- Click Function Disabled!";
-
-    // When the user scrolls down 20px from the top of the document, show the button
-    window.onscroll = function () { scrollFunction() };
-
-    function scrollFunction() {
-        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-            mybutton.style.display = "block";
-        } else {
-            mybutton.style.display = "none";
-        }
-    }
-
-    // When the user clicks on the button, scroll to the top of the document
-    function topFunction() {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-    }
-
-    function disableselect(e) {
-        return false
-    }
-
-    function reEnable() {
-        return true
-    }
-
-    //if IE4+  
-    document.onselectstart = new Function("return false")
-    document.oncontextmenu = new Function("return false")
-    document.oncontextmenu = new Function("alert(message);return false")
-
-    //if NS6  
-    if (window.sidebar) {
-        document.onmousedown = disableselect
-        document.onclick = reEnable
-
-    }
-
-</script>
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Understanding Linear Regression: A Step-by-Step Guide</title>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background-image: url('https://cutewallpaper.org/27/bokeh-wallpaper-gif/clean-bokeh-hd-motion-graphics-background-loop-gif-gfycat.gif');
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Understanding Linear Regression: A Step-by-Step Guide</h1>
-
-    <p>
-        Linear regression is a fundamental statistical technique used to model the relationship between a dependent
-        variable and one or more independent variables. It is widely used in various fields, such as economics, finance,
-        and machine learning. In this blog post, we will dive into the world of linear regression, focusing on both
-        simple and multiple linear regression models. We will explain how the equations are derived and provide simple
-        mathematical examples to illustrate the concepts.
-    </p>
-
-
-    <h3>1. Simple Linear Regression</h3>
-
-    <h4>1.1 Deriving the Equation:</h4>
-    <p>
-        To derive the equation for a simple linear regression model, we assume that the relationship between x and y can
-        be expressed as:<br>
-
-    <h2>
-        <code>
-            <strong> y = mx + b</strong>
-        </code>
-    </h2>
-    <br>
-
-    In terms of linear regression, y in this equation stands for the predicted value, x means the independent variable
-    and m & b are the coefficients we need to optimize in order to fit the regression line to our data.
-    </p>
-
-    <p>Calculating coefficient of the equation: </p>
-    <p>
-        Covariance is a measure of how two random variables vary together. It quantifies the relationship between two
-        variables and indicates the direction (positive or negative) and strength of their linear association. The
-        covariance between two variables, X and Y, is calculated as the average of the products of the differences
-        between
-        the values of X and the mean of X, and the values of Y and the mean of Y. To calculate the coefficients we need
-        the
-        formula for Covariance and Variance, so the formula for these are:
-    </p>
-
-    <p>
-        <img class="img-fluid" src="/img/posts/LR-02.png" , height="100%" , width="800%" , alt="Demo Image">
-    </p>
-
-    <p>
-        <img class="img-fluid" src="/img/posts/LR-03.png" , height="100%" , width="800%" , alt="Demo Image">
-    </p>
-
-    <p>
-        To calculate the coefficient m we will use the formula given below
-
-    <h2>
-        <code><strong>  m = cov(x, y) / var(x) </strong>
-        </code>
-    </h2>
-    <br>
-    <h2>
-        <code>
-            <strong>  b = mean(y) — m * mean(x) </strong>
-        </code>
-    </h2>
-    <br>
-    </p>
-    <h4>1.2. Example:</h4>
-    <p>
-        Let's consider a simple example to illustrate the concept. Suppose we have a dataset of housing prices (y) and
-        their corresponding areas (x). We want to find the linear relationship between the area and the price. Here's a
-        small dataset:
-    </p>
-
-    <table>
-        <tr>
-            <th>Area (x)</th>
-            <th>Price (y)</th>
-        </tr>
-        <tr>
-            <td>1000</td>
-            <td>250</td>
-        </tr>
-        <tr>
-            <td>1500</td>
-            <td>400</td>
-        </tr>
-        <tr>
-            <td>2000</td>
-            <td>450</td>
-        </tr>
-        <tr>
-            <td>2500</td>
-            <td>500</td>
-        </tr>
-        <tr>
-            <td>3000</td>
-            <td>550</td>
-        </tr>
-    </table>
-
-    <p>
-        Using the least squares method, we can find the best-fitting line. By substituting the given values into the
-        equation y = β₀ + β₁x, we can solve for β₀ and β₁. The steps are as follows:
-    </p>
-
-
-    <p><strong>Step 1: Calculate the Means:</strong></p>
-    <p>
-        To begin, we calculate the mean of the house areas and the mean of the house prices. The mean is obtained by
-        summing up all the values and dividing by the total number of data points.
-    </p>
-
-    <p><em>Formula:</em></p>
-    <h3><code>Mean (x̄) = Σx / n</code></h3>
-    <h3><code>Mean (ȳ) = Σy / n</code></h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3><code>House Area (x): [1000, 1500, 2000, 2500, 3000]</code></h3>
-    <h3><code> Price (y): [250, 400, 450, 500, 550]</code></h3>
-    <h3><code> Mean of x (x̄) = (1000 + 1500 + 2000 + 2500 + 3000) / 5 = 2000</code></h3>
-    <h3><code>Mean of y (ȳ) = (250 + 400 + 450 + 500 + 550) / 5 = 430</code></h3>
-
-    <p><strong>Step 2: Calculate the Deviations:</strong></p>
-    <p>
-        Next, we calculate the deviations of each house area (x) and house price (y) from their respective means.
-        Deviation is obtained by subtracting the mean from each value.
-    </p>
-
-    <p><em>Formula:</em></p>
-
-    <h3><code>Deviation (x - x̄) = x - x̄</code></h3>
-    <h3><code>Deviation (y - ȳ) = y - ȳ</code></h3>
-
-    <p><em>Calculations:</em></p>
-    <h3>
-        <code>Deviation of x (x - x̄): [-1000, -500, 0, 500, 1000]</code>
-
-    </h3>
-    <h3>
-        <code>Deviation of y (y - ȳ): [-180, -30, 20, 70, 120]</code>
-    </h3>
-
-    <p>
-        <strong>Step 3: Calculate the Sum of Products and Squares:</strong>
-    </p>
-
-    <p>
-        Now, we calculate the sum of the product of deviations (Σxy) and the sum of squared deviations (Σx² and Σy²).
-    </p>
-    <p>
-        <em>Formula:</em>
-    </p>
-
-    <h3><code>Sum of Products (Σxy) = Σ(x * y)</code></h3>
-    <h3><code>Sum of Squares of x (Σx²) = Σ(x²)</code></h3>
-    <h3><code>Sum of Squares of y (Σy²) = Σ(y²)</code></h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3>
-        <code>
-            Σxy = (-1000 * -180) + (-500 * -30) + (0 * 20) + (500 * 70) + (1000 * 120) = 470,000
-        </code>
-    </h3>
-    <h3>
-        <code>
-            Σx² = (-1000)² + (-500)² + 0² + 500² + 1000² = 3,500,000
-        </code>
-    </h3>
-    <h3>
-        <code>
-            Σy² = (-180)² + (-30)² + 20² + 70² + 120² = 56,700            
-        </code>
-    </h3>
-
-    <p><strong>Step 4: Calculate the Slope (β₁):</strong></p>
-
-    <p>
-        The slope (β₁) of the regression line is calculated using the formula:
-    </p>
-    <p><em>Formula:</em></p>
-
-    <h3>
-        <code>β₁ = Σxy / Σx² </code>
-    </h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3>
-        <code>β₁ = 470,000 / 3,500,000 = 0.1343
-            </code>
-    </h3>
-
-    <p><strong>Step 5: Calculate the Intercept (β₀):</strong></p>
-
-    <p>
-        Next, we calculate the intercept (β₀) of the regression line using the formula:
-    </p>
-    <p><em>Formula:</em></p>
-
-    <h3>
-        <code>β₀ = ȳ - β₁ * x̄ </code>
-    </h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3>
-        <code>
-            β₀ = 430 - 0.1343 * 2000 = 430 - 268.6 = 161.4
-        </code>
-    </h3>
-
-    <p><strong>Step 6: Build the Regression Line:</strong></p>
-
-    <p>
-        Finally, we construct the equation of the regression line using the slope and intercept values obtained in the
-        previous steps:
-    </p>
-
-    <p><em>Formula:</em></p>
-    <h3>
-        <code>y = β₀ + β₁ * x</code>
-    </h3>
-
-    <p>Substituting the calculated values, we have:</p>
-    <h3>
-        <code>
-            y = 161.4 + 0.1343 * x
-        </code>
-    </h3>
-
-
-    <p><strong>Conclusion:</strong></p>
-    <p>
-        By manually calculating the slope (β₁) and intercept (β₀), we obtained the equation of the regression line: y =
-        161.4 + 0.1343 * x. This equation represents the best-fit line that predicts house prices based on house areas.
-        You can use this equation to make predictions for new house areas by substituting the corresponding x values
-        into the equation. Manual calculations provide a deeper understanding of the underlying mathematics behind
-        linear regression, allowing us to appreciate the algorithm's inner workings and make informed decisions when
-        working with regression problems.
-    </p>
-
-    <h3>2.0 Multi Linear Regression</h3>
-    <h4>2.1 Deriving the Equation: </h4>
-
-    <p>
-        Multiple linear regression is a statistical technique used to model the relationship between a dependent
-        variable and two or more independent variables. It extends the concepts of simple linear regression by
-        considering multiple factors that can influence the dependent variable. In this article, we will explore the
-        world of multiple linear regression, explaining how the equations are derived and providing examples to
-        illustrate the concepts.
-    </p>
-
-    <p>
-        In multiple linear regression, the relationship between the dependent variable (y) and the independent variables
-        (x₁, x₂, ..., xn) can be expressed as:<br>
-    </p>
-
-    <h2><code><strong> y = b₀ + b₁x₁ + b₂x₂ + ... + bnxn</strong></code></h2><br>
-
-    <p>
-        In this equation, y represents the predicted value, x₁, x₂, ..., xn represent the independent variables, and b₀,
-        b₁, b₂, ..., bn are the coefficients that need to be optimized to fit the regression model to the data.
-    </p>
-
-    <h4>1.2. Example:</h4>
-    <p>
-        Let's consider an example to illustrate the concept of multiple linear regression. Suppose we have a dataset of
-        housing prices (y) and their corresponding areas (x₁) and number of bedrooms (x₂). We want to find the linear
-        relationship between the area, number of bedrooms, and the price. Here's a small dataset:
-    </p>
-
-    <table>
-        <tr>
-            <th>Area (x₁)</th>
-            <th>Number of Bedrooms (x₂)</th>
-            <th>Price (y)</th>
-        </tr>
-        <tr>
-            <td>1000</td>
-            <td>2</td>
-            <td>250</td>
-        </tr>
-        <tr>
-            <td>1500</td>
-            <td>3</td>
-            <td>400</td>
-        </tr>
-        <tr>
-            <td>2000</td>
-            <td>4</td>
-            <td>450</td>
-        </tr>
-        <tr>
-            <td>2500</td>
-            <td>3</td>
-            <td>500</td>
-        </tr>
-        <tr>
-            <td>3000</td>
-            <td>5</td>
-            <td>550</td>
-        </tr>
-    </table>
-
-    <p>
-        Using the least squares method, we can find the best-fitting line. By substituting the given values into the
-        equation y = b₀ + b₁x₁ + b₂x₂, we can solve for b₀, b₁, and b₂. The steps are as follows:
-    </p>
-
-    <p><strong>Step 1: Calculate the Means:</strong></p>
-    <p>
-        To begin, we calculate the means of the independent variables (x₁ and x₂) and the dependent variable (y). The
-        mean is obtained by summing up all the values and dividing by the total number of data points.
-    </p>
-
-    <p><em>Formula:</em></p>
-    <h3><code>Mean (x̄₁) = Σx₁ / n</code></h3>
-    <h3><code>Mean (x̄₂) = Σx₂ / n</code></h3>
-    <h3><code>Mean (ȳ) = Σy / n</code></h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3><code>Area (x₁): [1000, 1500, 2000, 2500, 3000]</code></h3>
-    <h3><code>Number of Bedrooms (x₂): [2, 3, 4, 3, 5]</code></h3>
-    <h3><code>Price (y): [250, 400, 450, 500, 550]</code></h3>
-    <h3><code>Mean of x₁ (x̄₁) = (1000 + 1500 + 2000 + 2500 + 3000) / 5 = 2000</code></h3>
-    <h3><code>Mean of x₂ (x̄₂) = (2 + 3 + 4 + 3 + 5) / 5 = 3.4</code></h3>
-    <h3><code>Mean of y (ȳ) = (250 + 400 + 450 + 500 + 550) / 5 = 430</code></h3>
-
-    <p><strong>Step 2: Calculate the Deviations:</strong></p>
-    <p>
-        Next, we calculate the deviations of each independent variable (x₁, x₂) and the dependent variable (y) from
-        their respective means. Deviation is obtained by subtracting the mean from each value.
-    </p>
-
-    <p><em>Formula:</em></p>
-
-    <h3><code>Deviation (x₁ - x̄₁) = x₁ - x̄₁</code></h3>
-    <h3><code>Deviation (x₂ - x̄₂) = x₂ - x̄₂</code></h3>
-    <h3><code>Deviation (y - ȳ) = y - ȳ</code></h3>
-
-    <p><em>Calculations:</em></p>
-    <h3>
-        <code>Deviation of x₁ (x₁ - x̄₁): [-1000, -500, 0, 500, 1000]</code>
-    </h3>
-    <h3>
-        <code>Deviation of x₂ (x₂ - x̄₂): [-1.4, -0.4, 0.6, -0.4, 1.6]</code>
-    </h3>
-    <h3>
-        <code>Deviation of y (y - ȳ): [-180, -30, 20, 70, 120]</code>
-    </h3>
-
-    <p>
-        <strong>Step 3: Calculate the Sum of Products and Squares:</strong>
-    </p>
-
-    <p>
-        Now, we calculate the sum of the product of deviations (Σxy), the sum of squared deviations for x₁ (Σx₁²), the
-        sum of squared deviations for x₂ (Σx₂²),and the sum of squared deviations for y (Σy²).
-    </p>
-    <p>
-        <em>Formula:</em>
-    </p>
-
-    <h3><code>Sum of Products (Σxy) = Σ((x₁ - x̄₁) * (x₂ - x̄₂) * (y - ȳ))</code></h3>
-    <h3><code>Sum of Squares of x₁ (Σx₁²) = Σ((x₁ - x̄₁)²)</code></h3>
-    <h3><code>Sum of Squares of x₂ (Σx₂²) = Σ((x₂ - x̄₂)²)</code></h3>
-    <h3><code>Sum of Squares of y (Σy²) = Σ((y - ȳ)²)</code></h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3>
-        <code>
-            Σxy = (-1000 * -1.4 * -180) + (-500 * -0.4 * -30) + (0 * 0.6 * 20) + (500 * -0.4 * 70) + (1000 * 1.6 * 120) = 353,800
-        </code>
-    </h3>
-    <h3>
-        <code>
-            Σx₁² = (-1000)² + (-500)² + 0² + 500² + 1000² = 3,500,000
-        </code>
-    </h3>
-    <h3>
-        <code>
-            Σx₂² = (-1.4)² + (-0.4)² + 0.6² + (-0.4)² + 1.6² = 5.2
-        </code>
-    </h3>
-    <h3>
-        <code>
-            Σy² = (-180)² + (-30)² + 20² + 70² + 120² = 56,700
-        </code>
-    </h3>
-
-    <p><strong>Step 4: Calculate the Coefficients (b₀, b₁, b₂):</strong></p>
-
-    <p>
-        The coefficients (b₀, b₁, b₂) of the multiple linear regression equation are calculated using the formulas:
-    </p>
-    <p><em>Formula:</em></p>
-
-    <h3>
-        <code>b₁ = Σxy / Σx₁²</code>
-    </h3>
-    <h3>
-        <code>b₂ = Σxy / Σx₂²</code>
-    </h3>
-    <h3>
-        <code>b₀ = ȳ - b₁ * x̄₁ - b₂ * x̄₂</code>
-    </h3>
-
-    <p><em>Calculations:</em></p>
-
-    <h3>
-        <code>b₁ = 353,800 / 3,500,000 = 0.1011</code>
-    </h3>
-    <h3>
-        <code>b₂ = 353,800 / 5.2 = 68,038.46</code>
-    </h3>
-    <h3>
-        <code>b₀ = 430 - 0.1011 * 2000 - 68,038.46 * 3.4 = -128,164.61</code>
-    </h3>
-
-    <p><strong>Step 5: Build the Regression Equation:</strong></p>
-
-    <p>
-        Finally, we construct the equation of the multiple linear regression line using the coefficients (b₀, b₁, b₂)
-        obtained in the previous steps:
-    </p>
-
-    <p><em>Formula:</em></p>
-    <h3>
-        <code>y = b₀ + b₁ * x₁ + b₂ * x₂</code>
-    </h3>
-
-    <p>Substituting the calculated values, we have:</p>
-    <h3>
-        <code>y = -128,164.61 + 0.1011 * x₁ + 68,038.46 * x₂</code>
-    </h3>
-
-    <p><strong>Conclusion:</strong></p>
-    <p>
-        By manually calculating the coefficients (b₀, b₁, b₂), we obtained the equation of the multiple linear
-        regression line: y = -128,164.61 + 0.1011 * x₁ + 68,038.46 * x₂. This equation represents the best-fit line that
-        predicts house prices based on the area (x₁) and number of bedrooms (x₂). You can use this equation to make
-        predictions for new data points by substituting the corresponding x₁ and x₂ values into the equation. Manual
-        calculations provide a deeper understanding of the underlying mathematics behind multiple linear regression,
-        allowing us to interpret the coefficients and make informed decisions when working with regression problems
-        involving multiple independent variables.
-    </p>
-
-    <p style="text-align: justify;" class="github-link">
-        <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
-            style="color: #0000FF;">
-            <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Link to GitHub Repository">
-            GitHub Repository
-        </a>
-    </p>
 
+    <div class="content">
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <h1>Understanding Linear Regression: A Step-by-Step Guide</h1>
+
+        <p>
+            Linear regression is a fundamental statistical technique used to model the relationship between a dependent
+            variable and one or more independent variables. It is widely used in various fields, such as economics,
+            finance, and machine learning. In this blog post, we will dive into the world of linear regression, focusing
+            on both simple and multiple linear regression models. We will explain how the equations are derived and
+            provide simple mathematical examples to illustrate the concepts.
+        </p>
+
+        <h3>1. Simple Linear Regression</h3>
+
+        <h4>1.1 Deriving the Equation:</h4>
+        <p>
+            To derive the equation for a simple linear regression model, we assume that the relationship between \(x\)
+            and \(y\) can
+            be expressed as:
+        </p>
+
+        <h2>$$ y = m x + b $$</h2>
+
+        <p>
+            In terms of linear regression, <strong>y</strong> in this equation stands for the predicted value,
+            <strong>x</strong>
+            means the independent variable and <strong>m</strong> &amp; <strong>b</strong> are the coefficients we need
+            to optimize
+            in order to fit the regression line to our data.
+        </p>
+
+        <p><strong>Calculating coefficient of the equation:</strong></p>
+        <p>
+            Covariance is a measure of how two random variables vary together. It quantifies the relationship between
+            two
+            variables and indicates the direction (positive or negative) and strength of their linear association. The
+            covariance between two variables, \(X\) and \(Y\), is calculated as:
+        </p>
+
+        <h3>$$
+            \operatorname{Cov}(X,Y) = \frac{\sum_{i=1}^{n} (X_i - \bar{X})(Y_i - \bar{Y})}{n}
+            $$</h3>
+
+        <p>
+            Variance of \(X\) is:
+        </p>
+
+        <h3>$$
+            \operatorname{Var}(X) = \frac{\sum_{i=1}^{n} (X_i - \bar{X})^2}{n}
+            $$</h3>
+
+        <p>To calculate the coefficient \(m\) we will use the formula given below</p>
+
+        <h2>$$ m = \frac{\operatorname{Cov}(x, y)}{\operatorname{Var}(x)} $$</h2>
+
+        <h2>$$ b = \bar{y} - m \, \bar{x} $$</h2>
+
+        <h4>1.2. Example:</h4>
+        <p>
+            Let's consider a simple example to illustrate the concept. Suppose we have a dataset of housing prices
+            (\(y\)) and
+            their corresponding areas (\(x\)). We want to find the linear relationship between the area and the price.
+            Here's a
+            small dataset:
+        </p>
+
+        <table>
+            <tr>
+                <th>Area (x)</th>
+                <th>Price (y)</th>
+            </tr>
+            <tr>
+                <td>1000</td>
+                <td>250</td>
+            </tr>
+            <tr>
+                <td>1500</td>
+                <td>400</td>
+            </tr>
+            <tr>
+                <td>2000</td>
+                <td>450</td>
+            </tr>
+            <tr>
+                <td>2500</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>3000</td>
+                <td>550</td>
+            </tr>
+        </table>
+
+        <p>
+            Using the least squares method, we can find the best-fitting line. By substituting the given values into the
+            equation \(y = \beta_0 + \beta_1 x\), we can solve for \(\beta_0\) and \(\beta_1\). The steps are as
+            follows:
+        </p>
+
+        <p><strong>Step 1: Calculate the Means:</strong></p>
+        <p>
+            To begin, we calculate the mean of the house areas and the mean of the house prices. The mean is obtained by
+            summing up all the values and dividing by the total number of data points.
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ \bar{x} = \frac{\sum x}{n} $$</h3>
+        <h3>$$ \bar{y} = \frac{\sum y}{n} $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>$$ \text{House Area }(x): [1000, 1500, 2000, 2500, 3000] $$</h3>
+        <h3>$$ \text{Price }(y): [250, 400, 450, 500, 550] $$</h3>
+        <h3>$$ \bar{x} = \frac{1000 + 1500 + 2000 + 2500 + 3000}{5} = 2000 $$</h3>
+        <h3>$$ \bar{y} = \frac{250 + 400 + 450 + 500 + 550}{5} = 430 $$</h3>
+
+        <p><strong>Step 2: Calculate the Deviations:</strong></p>
+        <p>
+            Next, we calculate the deviations of each house area (\(x\)) and house price (\(y\)) from their respective
+            means.
+            Deviation is obtained by subtracting the mean from each value.
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ \text{Deviation }(x - \bar{x}) = x - \bar{x} $$</h3>
+        <h3>$$ \text{Deviation }(y - \bar{y}) = y - \bar{y} $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>$$ x - \bar{x} = [-1000, -500, 0, 500, 1000] $$</h3>
+        <h3>$$ y - \bar{y} = [-180, -30, 20, 70, 120] $$</h3>
+
+        <p><strong>Step 3: Calculate the Sum of Products and Squares:</strong></p>
+        <p>
+            Now, we calculate the sum of the product of deviations (\(\Sigma xy\)) and the sum of squared deviations
+            (\(\Sigma x^2\) and \(\Sigma y^2\)).
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ \Sigma xy = \sum (x - \bar{x})(y - \bar{y}) $$</h3>
+        <h3>$$ \Sigma x^2 = \sum (x - \bar{x})^2 $$</h3>
+        <h3>$$ \Sigma y^2 = \sum (y - \bar{y})^2 $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>
+            $$ \Sigma xy = (-1000 \times -180) + (-500 \times -30) + (0 \times 20) + (500 \times 70) + (1000 \times 120)
+            = 470{,}000 $$
+        </h3>
+        <h3>
+            $$ \Sigma x^2 = (-1000)^2 + (-500)^2 + 0^2 + 500^2 + 1000^2 = 3{,}500{,}000 $$
+        </h3>
+        <h3>
+            $$ \Sigma y^2 = (-180)^2 + (-30)^2 + 20^2 + 70^2 + 120^2 = 56{,}700 $$
+        </h3>
+
+        <p><strong>Step 4: Calculate the Slope (\(\beta_1\)):</strong></p>
+        <p>The slope (\(\beta_1\)) of the regression line is calculated using the formula:</p>
+        <p><em>Formula:</em></p>
+        <h3>$$ \beta_1 = \frac{\Sigma xy}{\Sigma x^2} $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>$$ \beta_1 = \frac{470{,}000}{3{,}500{,}000} = 0.1343 $$</h3>
+
+        <p><strong>Step 5: Calculate the Intercept (\(\beta_0\)):</strong></p>
+        <p>
+            Next, we calculate the intercept (\(\beta_0\)) of the regression line using the formula:
+        </p>
+        <p><em>Formula:</em></p>
+        <h3>$$ \beta_0 = \bar{y} - \beta_1 \bar{x} $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>$$ \beta_0 = 430 - 0.1343 \times 2000 = 430 - 268.6 = 161.4 $$</h3>
+
+        <p><strong>Step 6: Build the Regression Line:</strong></p>
+        <p>
+            Finally, we construct the equation of the regression line using the slope and intercept values obtained in
+            the
+            previous steps:
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ y = \beta_0 + \beta_1 x $$</h3>
+
+        <p>Substituting the calculated values, we have:</p>
+        <h3>$$ y = 161.4 + 0.1343 x $$</h3>
+
+        <p><strong>Conclusion:</strong></p>
+        <p>
+            By manually calculating the slope (\(\beta_1\)) and intercept (\(\beta_0\)), we obtained the equation of the
+            regression line:
+            <span style="white-space:nowrap;">\(y = 161.4 + 0.1343 x\)</span>. This equation represents the best-fit
+            line that predicts house prices based
+            on house areas. You can use this equation to make predictions for new house areas by substituting the
+            corresponding
+            \(x\) values into the equation. Manual calculations provide a deeper understanding of the underlying
+            mathematics behind
+            linear regression, allowing us to appreciate the algorithm's inner workings and make informed decisions when
+            working with regression problems.
+        </p>
+
+        <h3>2.0 Multi Linear Regression</h3>
+        <h4>2.1 Deriving the Equation: </h4>
+
+        <p>
+            Multiple linear regression is a statistical technique used to model the relationship between a dependent
+            variable and two or more independent variables. It extends the concepts of simple linear regression by
+            considering multiple factors that can influence the dependent variable. In this article, we will explore the
+            world of multiple linear regression, explaining how the equations are derived and providing examples to
+            illustrate the concepts.
+        </p>
+
+        <p>
+            In multiple linear regression, the relationship between the dependent variable (\(y\)) and the independent
+            variables
+            (\(x_1, x_2, \dots, x_n\)) can be expressed as:
+        </p>
+
+        <h2>$$ y = b_0 + b_1 x_1 + b_2 x_2 + \dots + b_n x_n $$</h2>
+
+        <p>
+            In this equation, \(y\) represents the predicted value, \(x_1, x_2, \dots, x_n\) represent the independent
+            variables, and \(b_0,
+            b_1, b_2, \dots, b_n\) are the coefficients that need to be optimized to fit the regression model to the
+            data.
+        </p>
+
+        <h4>Example:</h4>
+        <p>
+            Let's consider an example to illustrate the concept of multiple linear regression. Suppose we have a dataset
+            of
+            housing prices (\(y\)) and their corresponding areas (\(x_1\)) and number of bedrooms (\(x_2\)). We want to
+            find the linear
+            relationship between the area, number of bedrooms, and the price. Here's a small dataset:
+        </p>
+
+        <table>
+            <tr>
+                <th>Area (x₁)</th>
+                <th>Number of Bedrooms (x₂)</th>
+                <th>Price (y)</th>
+            </tr>
+            <tr>
+                <td>1000</td>
+                <td>2</td>
+                <td>250</td>
+            </tr>
+            <tr>
+                <td>1500</td>
+                <td>3</td>
+                <td>400</td>
+            </tr>
+            <tr>
+                <td>2000</td>
+                <td>4</td>
+                <td>450</td>
+            </tr>
+            <tr>
+                <td>2500</td>
+                <td>3</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>3000</td>
+                <td>5</td>
+                <td>550</td>
+            </tr>
+        </table>
+
+        <p>
+            Using the least squares method, we can find the best-fitting line. By substituting the given values into the
+            equation \(y = b_0 + b_1 x_1 + b_2 x_2\), we can solve for \(b_0\), \(b_1\), and \(b_2\). The steps are as
+            follows:
+        </p>
+
+        <p><strong>Step 1: Calculate the Means:</strong></p>
+        <p>
+            To begin, we calculate the means of the independent variables (\(x_1\) and \(x_2\)) and the dependent
+            variable (\(y\)). The
+            mean is obtained by summing up all the values and dividing by the total number of data points.
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ \bar{x}_1 = \frac{\sum x_1}{n} $$</h3>
+        <h3>$$ \bar{x}_2 = \frac{\sum x_2}{n} $$</h3>
+        <h3>$$ \bar{y} = \frac{\sum y}{n} $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>$$ x_1: [1000, 1500, 2000, 2500, 3000] $$</h3>
+        <h3>$$ x_2: [2, 3, 4, 3, 5] $$</h3>
+        <h3>$$ y: [250, 400, 450, 500, 550] $$</h3>
+        <h3>$$ \bar{x}_1 = \frac{1000 + 1500 + 2000 + 2500 + 3000}{5} = 2000 $$</h3>
+        <h3>$$ \bar{x}_2 = \frac{2 + 3 + 4 + 3 + 5}{5} = 3.4 $$</h3>
+        <h3>$$ \bar{y} = \frac{250 + 400 + 450 + 500 + 550}{5} = 430 $$</h3>
+
+        <p><strong>Step 2: Calculate the Deviations:</strong></p>
+        <p>
+            Next, we calculate the deviations of each independent variable (\(x_1, x_2\)) and the dependent variable
+            (\(y\)) from
+            their respective means. Deviation is obtained by subtracting the mean from each value.
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ x_1 - \bar{x}_1 = x_1 - \bar{x}_1 $$</h3>
+        <h3>$$ x_2 - \bar{x}_2 = x_2 - \bar{x}_2 $$</h3>
+        <h3>$$ y - \bar{y} = y - \bar{y} $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>$$ x_1 - \bar{x}_1 = [-1000, -500, 0, 500, 1000] $$</h3>
+        <h3>$$ x_2 - \bar{x}_2 = [-1.4, -0.4, 0.6, -0.4, 1.6] $$</h3>
+        <h3>$$ y - \bar{y} = [-180, -30, 20, 70, 120] $$</h3>
+
+        <p><strong>Step 3: Calculate the Sum of Products and Squares:</strong></p>
+        <p>
+            Now, we calculate the sum of the product of deviations (Σxy), the sum of squared deviations for \(x_1\)
+            (Σx₁²), the
+            sum of squared deviations for \(x_2\) (Σx₂²),and the sum of squared deviations for y (Σy²).
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ \Sigma xy = \sum ((x_1 - \bar{x}_1) \times (x_2 - \bar{x}_2) \times (y - \bar{y})) $$</h3>
+        <h3>$$ \Sigma x_1^2 = \sum (x_1 - \bar{x}_1)^2 $$</h3>
+        <h3>$$ \Sigma x_2^2 = \sum (x_2 - \bar{x}_2)^2 $$</h3>
+        <h3>$$ \Sigma y^2 = \sum (y - \bar{y})^2 $$</h3>
+
+        <p><em>Calculations:</em></p>
+        <h3>
+            $$ \Sigma xy = (-1000 \times -1.4 \times -180) + (-500 \times -0.4 \times -30) + (0 \times 0.6 \times 20) +
+            (500 \times -0.4 \times 70) + (1000 \times 1.6 \times 120) = 353{,}800 $$
+        </h3>
+        <h3>$$ \Sigma x_1^2 = (-1000)^2 + (-500)^2 + 0^2 + 500^2 + 1000^2 = 3{,}500{,}000 $$</h3>
+        <h3>$$ \Sigma x_2^2 = (-1.4)^2 + (-0.4)^2 + 0.6^2 + (-0.4)^2 + 1.6^2 = 5.2 $$</h3>
+        <h3>$$ \Sigma y^2 = (-180)^2 + (-30)^2 + 20^2 + 70^2 + 120^2 = 56{,}700 $$</h3>
+
+        <p><strong>Step 4: Calculate the Coefficients (b₀, b₁, b₂):</strong></p>
+
+        <p>
+            The coefficients (b₀, b₁, b₂) of the multiple linear regression equation are calculated using the formulas:
+        </p>
+        <p><em>Formula:</em></p>
+
+        <h3>$$ b_1 = \frac{\Sigma xy}{\Sigma x_1^2} $$</h3>
+        <h3>$$ b_2 = \frac{\Sigma xy}{\Sigma x_2^2} $$</h3>
+        <h3>$$ b_0 = \bar{y} - b_1 \bar{x}_1 - b_2 \bar{x}_2 $$</h3>
+
+        <p><em>Calculations:</em></p>
+
+        <h3>$$ b_1 = \frac{353{,}800}{3{,}500{,}000} = 0.1011 $$</h3>
+        <h3>$$ b_2 = \frac{353{,}800}{5.2} = 68{,}038.46 $$</h3>
+        <h3>$$ b_0 = 430 - 0.1011 \times 2000 - 68{,}038.46 \times 3.4 = -128{,}164.61 $$</h3>
+
+        <p><strong>Step 5: Build the Regression Equation:</strong></p>
+        <p>
+            Finally, we construct the equation of the multiple linear regression line using the coefficients (b₀, b₁,
+            b₂)
+            obtained in the previous steps:
+        </p>
+
+        <p><em>Formula:</em></p>
+        <h3>$$ y = b_0 + b_1 x_1 + b_2 x_2 $$</h3>
+
+        <p>Substituting the calculated values, we have:</p>
+        <h3>$$ y = -128{,}164.61 + 0.1011 x_1 + 68{,}038.46 x_2 $$</h3>
+
+        <p><strong>Conclusion:</strong></p>
+        <p>
+            By manually calculating the coefficients (b₀, b₁, b₂), we obtained the equation of the multiple linear
+            regression line: </p>
+
+        <h3>$$ y = -128{,}164.61 + 0.1011 x_1 + 68{,}038.46 x_2 $$</h3>
+        
+        <p> This equation represents the
+            best-fit line that predicts house prices based on the area (\(x_1\)) and number of bedrooms (\(x_2\)). You
+            can use this
+            equation to make predictions for new data points by substituting the corresponding \(x_1\) and \(x_2\)
+            values into the
+            equation. Manual calculations provide a deeper understanding of the underlying mathematics behind multiple
+            linear regression, allowing us to interpret the coefficients and make informed decisions when working with
+            regression problems involving multiple independent variables.
+        </p>
+
+        <p style="text-align: left;" class="github-link">
+            <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
+                style="color: #0000FF; text-decoration: none;">
+                <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Git icon">
+                GitHub Repository
+            </a>
+        </p>
+    </div>
+
+    <script>
+        // Message shown on right-click (keeps original behavior)
+        const message = "Right- Click Function Disabled!";
+
+        // Right-click: alert message and prevent default context menu
+        document.addEventListener('contextmenu', function (e) {
+            try { alert(message); } catch (err) { /* fallback: no-op */ }
+            e.preventDefault();
+        });
+
+        // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
+        document.addEventListener('keydown', function (e) {
+            // Normalize key for comparisons
+            const key = (e.key || '').toUpperCase();
+
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+(I/J/C)
+            if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+U (view-source / page source)
+            if (e.ctrlKey && key === 'U') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
+        function disableselect(e) { return false; }
+        function reEnable() { return true; }
+
+        // Legacy handlers retained for compatibility (keeps original intent)
+        document.onselectstart = disableselect; // IE/Old browsers
+        if (window.sidebar) { // Netscape / old browsers
+            document.onmousedown = disableselect;
+            document.onclick = reEnable;
+        }
+
+        // Back-to-top button logic
+        const mybutton = document.getElementById("myBtn");
+        window.onscroll = function () { scrollFunction(); };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 </body>
 
 </html>
