@@ -15,6 +15,8 @@ background: '/img/posts/LR-01.jpg'
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Understanding Linear Regression: A Step-by-Step Guide</title>
 
+
+
     <!-- MathJax for LaTeX rendering -->
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
     <style>
@@ -159,17 +161,68 @@ background: '/img/posts/LR-01.jpg'
             display: block;
             max-width: 100%;
         }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
     </style>
+
 </head>
 
 <body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
 
     <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
 
         <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
             <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
         </button>
 
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
         <h1>Understanding Linear Regression: A Step-by-Step Guide</h1>
 
         <p>
@@ -312,13 +365,13 @@ background: '/img/posts/LR-01.jpg'
         <p><em>Calculations:</em></p>
         <h3>
             $$ \Sigma xy = (-1000 \times -180) + (-500 \times -30) + (0 \times 20) + (500 \times 70) + (1000 \times 120)
-            = 470{,}000 $$
+            = 350{,}000 $$
         </h3>
         <h3>
-            $$ \Sigma x^2 = (-1000)^2 + (-500)^2 + 0^2 + 500^2 + 1000^2 = 3{,}500{,}000 $$
+            $$ \Sigma x^2 = (-1000)^2 + (-500)^2 + 0^2 + 500^2 + 1000^2 = 2{,}500{,}000 $$
         </h3>
         <h3>
-            $$ \Sigma y^2 = (-180)^2 + (-30)^2 + 20^2 + 70^2 + 120^2 = 56{,}700 $$
+            $$ \Sigma y^2 = (-180)^2 + (-30)^2 + 20^2 + 70^2 + 120^2 = 53{,}000 $$
         </h3>
 
         <p><strong>Step 4: Calculate the Slope (\(\beta_1\)):</strong></p>
@@ -327,7 +380,7 @@ background: '/img/posts/LR-01.jpg'
         <h3>$$ \beta_1 = \frac{\Sigma xy}{\Sigma x^2} $$</h3>
 
         <p><em>Calculations:</em></p>
-        <h3>$$ \beta_1 = \frac{470{,}000}{3{,}500{,}000} = 0.1343 $$</h3>
+        <h3>$$ \beta_1 = \frac{350{,}000}{2{,}500{,}000} = 0.14 $$</h3>
 
         <p><strong>Step 5: Calculate the Intercept (\(\beta_0\)):</strong></p>
         <p>
@@ -337,7 +390,7 @@ background: '/img/posts/LR-01.jpg'
         <h3>$$ \beta_0 = \bar{y} - \beta_1 \bar{x} $$</h3>
 
         <p><em>Calculations:</em></p>
-        <h3>$$ \beta_0 = 430 - 0.1343 \times 2000 = 430 - 268.6 = 161.4 $$</h3>
+        <h3>$$ \beta_0 = 430 - 0.14 \times 2000 = 430 - 280 = 150 $$</h3>
 
         <p><strong>Step 6: Build the Regression Line:</strong></p>
         <p>
@@ -350,13 +403,13 @@ background: '/img/posts/LR-01.jpg'
         <h3>$$ y = \beta_0 + \beta_1 x $$</h3>
 
         <p>Substituting the calculated values, we have:</p>
-        <h3>$$ y = 161.4 + 0.1343 x $$</h3>
+        <h3>$$ y = 150 + 0.14 x $$</h3>
 
         <p><strong>Conclusion:</strong></p>
         <p>
             By manually calculating the slope (\(\beta_1\)) and intercept (\(\beta_0\)), we obtained the equation of the
             regression line:
-            <span style="white-space:nowrap;">\(y = 161.4 + 0.1343 x\)</span>. This equation represents the best-fit
+            <span style="white-space:nowrap;">\(y = 150 + 0.14 x\)</span>. This equation represents the best-fit
             line that predicts house prices based
             on house areas. You can use this equation to make predictions for new house areas by substituting the
             corresponding
@@ -545,6 +598,7 @@ background: '/img/posts/LR-01.jpg'
             linear regression, allowing us to interpret the coefficients and make informed decisions when working with
             regression problems involving multiple independent variables.
         </p>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
 
         <p style="text-align: left;" class="github-link">
             <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"

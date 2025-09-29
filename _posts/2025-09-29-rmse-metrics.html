@@ -1,0 +1,594 @@
+---
+layout: post
+title: "Understanding RMSE Evaluation Metrics"
+subtitle: "The Complete Beginner’s Guide to Understanding Prediction Errors"
+date: 2025-09-28 19:05:13 -0400
+background: '/img/posts/NB_01.jpeg'
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding RMSE: A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background-image: url('https://cutewallpaper.org/27/bokeh-wallpaper-gif/clean-bokeh-hd-motion-graphics-background-loop-gif-gfycat.gif');
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 20px;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>RMSE Explained: The Complete Beginner’s Guide</h1>
+
+        <h2>Introduction</h2>
+
+        <p>Whenever we build a predictive model whether it’s estimating house prices, sales numbers, or tomorrow’s
+            temperature we need to check how accurate those predictions are.</p>
+        <p>One of the most common ways to measure this accuracy is something called <strong>RMSE</strong>, which stands
+            for <strong>Root Mean Squared Error</strong>. The name may look intimidating, but it’s actually a very
+            logical idea with a rich mathematical history. Let’s break it down step by step, look at where it comes
+            from, and explore why it matters, using a real example and clear visuals.</p>
+
+        <h2>1. What Is RMSE ?</h2>
+
+        <p><strong>RMSE</strong> is a single number that tells you, on average, how far your model’s predictions are
+            from the actual values measured in the same units as the thing you are predicting.</p>
+        <ul>
+            <li>If RMSE is small, your predictions are typically close to reality.</li>
+            <li>If RMSE is large, your predictions are often far off.</li>
+        </ul>
+        <p>Think of it like the “typical distance” between what your model predicts and what actually happens.</p>
+
+        <h3>A Simple Analogy</h3>
+        <p>Imagine you are throwing darts at a target. Each dart is a prediction, and the bullseye is the actual value.
+            RMSE is like measuring the average distance of all your darts from the center, but with a twist: it gives
+            extra weight to darts that miss badly.</p>
+
+        <h2>2. Where RMSE Comes From</h2>
+        <p>RMSE has its origins in <strong>statistics</strong> and the method of <strong>least squares
+                estimation</strong>, which dates back to the early 19th century.</p>
+        <ul>
+            <li>Mathematicians like <strong>Carl Friedrich Gauss</strong> and <strong>Adrien-Marie Legendre</strong>
+                developed the <strong>method of least squares</strong> to find the best-fitting line through data.</li>
+            <li>The idea was to minimize the <strong>sum of squared errors</strong> the squared differences between
+                observed values and model predictions.</li>
+        </ul>
+        <p>From this framework:</p>
+        <ol>
+            <li><strong>Mean Squared Error (MSE)</strong> became a natural way to measure average squared deviations.
+            </li>
+            <li><strong>Root Mean Squared Error (RMSE)</strong> is simply the square root of MSE, which brings the
+                measure back to the original units so it is easier to interpret.</li>
+        </ol>
+
+        <h3>Why Square the Errors?</h3>
+        <p>Squaring the errors does two important things:</p>
+        <ol>
+            <li><strong>Eliminates negatives</strong> so positive and negative errors do not cancel each other out.</li>
+            <li><strong>Penalizes large mistakes</strong> more heavily than small ones.</li>
+        </ol>
+        <p>For example, a 20-unit mistake hurts four times more than a 10-unit mistake because \(20^2 = 400\) while
+            \(10^2 = 100\). This is why RMSE is especially useful when big errors are costly and you want a model that
+            avoids them.</p>
+
+        <h2>3. The Formula</h2>
+        <p>The formula for RMSE is:</p>
+        <p class="math-display">$$
+            \mathrm{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n} \bigl(y_i - \hat{y}_i\bigr)^2}
+            $$</p>
+        <p>It simply means:</p>
+        <ol>
+            <li>Take each actual value (\(y_i\)) and subtract the predicted value (\(\hat{y}_i\)) to get the error.</li>
+            <li>Square each error.</li>
+            <li>Average all the squared errors.</li>
+            <li>Take the square root.</li>
+        </ol>
+
+        <h2>4. Example</h2>
+        <p>Consider this small dataset of house sizes (X) and actual selling prices (Y):</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Size (sq.ft.)</th>
+                    <th>Actual Price (Y)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1000</td>
+                    <td>250</td>
+                </tr>
+                <tr>
+                    <td>1500</td>
+                    <td>400</td>
+                </tr>
+                <tr>
+                    <td>2000</td>
+                    <td>450</td>
+                </tr>
+                <tr>
+                    <td>2500</td>
+                    <td>500</td>
+                </tr>
+                <tr>
+                    <td>3000</td>
+                    <td>550</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Suppose a model predicts these prices:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Size (sq.ft.)</th>
+                    <th>Predicted Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1000</td>
+                    <td>260</td>
+                </tr>
+                <tr>
+                    <td>1500</td>
+                    <td>390</td>
+                </tr>
+                <tr>
+                    <td>2000</td>
+                    <td>470</td>
+                </tr>
+                <tr>
+                    <td>2500</td>
+                    <td>480</td>
+                </tr>
+                <tr>
+                    <td>3000</td>
+                    <td>560</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Step 1 – Find the Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Size</th>
+                    <th>Actual</th>
+                    <th>Predicted</th>
+                    <th>Error (Actual − Predicted)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1000</td>
+                    <td>250</td>
+                    <td>260</td>
+                    <td>-10</td>
+                </tr>
+                <tr>
+                    <td>1500</td>
+                    <td>400</td>
+                    <td>390</td>
+                    <td>+10</td>
+                </tr>
+                <tr>
+                    <td>2000</td>
+                    <td>450</td>
+                    <td>470</td>
+                    <td>-20</td>
+                </tr>
+                <tr>
+                    <td>2500</td>
+                    <td>500</td>
+                    <td>480</td>
+                    <td>+20</td>
+                </tr>
+                <tr>
+                    <td>3000</td>
+                    <td>550</td>
+                    <td>560</td>
+                    <td>-10</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Step 2 – Square the Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error</th>
+                    <th>Squared Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>-10</td>
+                    <td>100</td>
+                </tr>
+                <tr>
+                    <td>+10</td>
+                    <td>100</td>
+                </tr>
+                <tr>
+                    <td>-20</td>
+                    <td>400</td>
+                </tr>
+                <tr>
+                    <td>+20</td>
+                    <td>400</td>
+                </tr>
+                <tr>
+                    <td>-10</td>
+                    <td>100</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Step 3 – Find the Average</h3>
+        <p class="math-display">$$
+            \mathrm{MSE} = \frac{100 + 100 + 400 + 400 + 100}{5} = \frac{1100}{5} = 220
+            $$</p>
+
+        <h3>Step 4 – Take the Square Root</h3>
+        <p class="math-display">$$
+            \mathrm{RMSE} = \sqrt{220} \approx 14.83
+            $$</p>
+        <p>This means that on average, our model’s predictions are about 15 price units away from the real prices.</p>
+
+        <h2>5. Seeing RMSE Visually</h2>
+        <p>Numbers are helpful, but visuals make RMSE easier to understand. Below are three charts
+            that show the same data from different perspectives. Together, they make the concept of
+            RMSE much more intuitive.</p>
+
+        <h3>Actual vs. Predicted Prices</h3>
+        <p>This scatter plot compares the <strong>actual house prices</strong> (x-axis) with the
+            <strong>predicted prices</strong> (y-axis). The dashed diagonal line represents perfect
+            prediction. Points close to the line indicate accurate predictions; points above the line
+            mean the model predicted too high; points below the line mean it predicted too low. The
+            vertical distance from each point to the line is the prediction error. RMSE summarizes
+            all of these distances into a single number.
+        </p>
+        <img class="img-fluid" src="/img/posts/rmse-post/actual_vs_predicted.png" alt="Actual vs Predicted Chart">
+
+        <h3>Residual Plot</h3>
+        <p>This plot shows the <strong>residuals</strong> (actual minus predicted) on the y-axis and
+            the predicted price on the x-axis. The horizontal zero line represents perfect predictions.
+            Points close to zero indicate small errors, while points far above or below zero represent
+            larger mistakes. Large deviations heavily influence RMSE. Patterns in the residuals can
+            indicate if the model is missing important relationships in the data.</p>
+        <img class="img-fluid" src="/img/posts/rmse-post/residual_plot.png" alt="Residual Plot">
+
+        <h3>Combined View</h3>
+        <p>Finally, here is a <strong>combined chart</strong> showing the <em>Actual vs. Predicted</em>
+            plot on the left and the <em>Residual Plot</em> on the right. Viewing them together provides
+            both a direct comparison and an error analysis in one glance.</p>
+        <img class="img-fluid" src="/img/posts/rmse-post/rmse_combined_charts.png" alt="Combined RMSE Charts">
+
+
+        <h2>6. Quick Python Code</h2>
+        <pre><code class="language-python">
+import math
+
+actual = [250, 400, 450, 500, 550]
+pred   = [260, 390, 470, 480, 560]
+
+squared_errors = [(a - p)**2 for a, p in zip(actual, pred)]
+mse  = sum(squared_errors) / len(squared_errors)
+rmse = math.sqrt(mse)
+
+print("RMSE:", rmse)   # Output: 14.83
+</code></pre>
+
+        <h2>7. Why RMSE Is So Popular</h2>
+        <p>RMSE remains one of the standard metrics in data science and statistics because:</p>
+        <ul>
+            <li>It is easy to interpret: the result is in the same units as your data.</li>
+            <li>It is mathematically grounded: directly tied to the least squares method.</li>
+            <li>It penalizes large errors, which is valuable in fields like finance, healthcare, and engineering where
+                big mistakes can be costly.</li>
+        </ul>
+        <p>However, RMSE is sensitive to outliers. If your data contains extreme values, it is often wise to also check
+            other metrics such as <strong>Mean Absolute Error (MAE)</strong> for a more balanced view.</p>
+
+        <h2>8. Key Takeaways</h2>
+        <ul>
+            <li>RMSE is the square root of the average squared prediction errors.</li>
+            <li>It comes from the least squares tradition developed by Gauss and Legendre.</li>
+            <li>Lower RMSE indicates better model performance.</li>
+            <li>Use RMSE when large errors matter and you want a measure that is easy to interpret in the same units as
+                your target variable.</li>
+        </ul>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://statisticsbyjim.com/regression/root-mean-square-error-rmse/">Statistics by Jim – Root
+                    Mean Square Error (RMSE)</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Mean_squared_error">Wikipedia – Mean Squared Error</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Root-mean-square_deviation">Wikipedia – Root Mean Square
+                    Deviation</a></li>
+            <li><a href="https://gmd.copernicus.org/articles/15/5481/2022/">Copernicus GMD – RMSE vs. MAE Discussion</a>
+            </li>
+            <li>Gauss, C.F. (1809). <em>Theoria Motus Corporum Coelestium</em> – Early work on least squares.</li>
+        </ul>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+
+        <p style="text-align: left;" class="github-link">
+            <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
+                style="color: #0000FF; text-decoration: none;">
+                <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Git icon">
+                GitHub Repository
+            </a>
+        </p>
+    </div>
+
+    <script>
+        // Message shown on right-click (keeps original behavior)
+        const message = "Right- Click Function Disabled!";
+
+        // Right-click: alert message and prevent default context menu
+        document.addEventListener('contextmenu', function (e) {
+            try { alert(message); } catch (err) { /* fallback: no-op */ }
+            e.preventDefault();
+        });
+
+        // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
+        document.addEventListener('keydown', function (e) {
+            // Normalize key for comparisons
+            const key = (e.key || '').toUpperCase();
+
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+(I/J/C)
+            if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+U (view-source / page source)
+            if (e.ctrlKey && key === 'U') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
+        function disableselect(e) { return false; }
+        function reEnable() { return true; }
+
+        // Legacy handlers retained for compatibility (keeps original intent)
+        document.onselectstart = disableselect; // IE/Old browsers
+        if (window.sidebar) { // Netscape / old browsers
+            document.onmousedown = disableselect;
+            document.onclick = reEnable;
+        }
+
+        // Back-to-top button logic
+        const mybutton = document.getElementById("myBtn");
+        window.onscroll = function () { scrollFunction(); };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+</body>
+
+</html>
