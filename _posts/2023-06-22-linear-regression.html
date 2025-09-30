@@ -22,8 +22,7 @@ background: '/img/posts/LR-01.jpg'
     <style>
         /* Page background (kept from original) */
         body {
-            background: url('/img/trig.gif')
-                        center center / cover no-repeat fixed;
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
             background-size: cover;
             background-attachment: fixed;
             padding: 0;
@@ -199,6 +198,33 @@ background: '/img/posts/LR-01.jpg'
         .toggle-btn:hover {
             background: #555;
         }
+
+        /* Force tables to respect container width */
+        .table-wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+            /* horizontal scroll if needed */
+            -webkit-overflow-scrolling: touch;
+            /* smoother on mobile */
+        }
+
+        /* Make the table itself shrink/scroll, not stretch page */
+        .table-wrapper table {
+            width: max-content;
+            /* only as wide as its content */
+            min-width: 100%;
+            /* but at least fill container width */
+            border-collapse: collapse;
+        }
+
+        .table-wrapper th,
+        .table-wrapper td {
+            white-space: nowrap;
+            /* prevent numbers from breaking awkwardly */
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
     </style>
 
 </head>
@@ -233,6 +259,7 @@ background: '/img/posts/LR-01.jpg'
             on both simple and multiple linear regression models. We will explain how the equations are derived and
             provide simple mathematical examples to illustrate the concepts.
         </p>
+        <hr>
 
         <h3>1. Simple Linear Regression</h3>
 
@@ -252,6 +279,7 @@ background: '/img/posts/LR-01.jpg'
             to optimize
             in order to fit the regression line to our data.
         </p>
+        <hr>
 
         <p><strong>Calculating coefficient of the equation:</strong></p>
         <p>
@@ -320,6 +348,7 @@ background: '/img/posts/LR-01.jpg'
             equation \(y = \beta_0 + \beta_1 x\), we can solve for \(\beta_0\) and \(\beta_1\). The steps are as
             follows:
         </p>
+        <hr>
 
         <p><strong>Step 1: Calculate the Means:</strong></p>
         <p>
@@ -336,6 +365,7 @@ background: '/img/posts/LR-01.jpg'
         <h3>$$ \text{Price }(y): [250, 400, 450, 500, 550] $$</h3>
         <h3>$$ \bar{x} = \frac{1000 + 1500 + 2000 + 2500 + 3000}{5} = 2000 $$</h3>
         <h3>$$ \bar{y} = \frac{250 + 400 + 450 + 500 + 550}{5} = 430 $$</h3>
+        <hr>
 
         <p><strong>Step 2: Calculate the Deviations:</strong></p>
         <p>
@@ -351,6 +381,7 @@ background: '/img/posts/LR-01.jpg'
         <p><em>Calculations:</em></p>
         <h3>$$ x - \bar{x} = [-1000, -500, 0, 500, 1000] $$</h3>
         <h3>$$ y - \bar{y} = [-180, -30, 20, 70, 120] $$</h3>
+        <hr>
 
         <p><strong>Step 3: Calculate the Sum of Products and Squares:</strong></p>
         <p>
@@ -374,6 +405,7 @@ background: '/img/posts/LR-01.jpg'
         <h3>
             $$ \Sigma y^2 = (-180)^2 + (-30)^2 + 20^2 + 70^2 + 120^2 = 53{,}000 $$
         </h3>
+        <hr>
 
         <p><strong>Step 4: Calculate the Slope (\(\beta_1\)):</strong></p>
         <p>The slope (\(\beta_1\)) of the regression line is calculated using the formula:</p>
@@ -382,6 +414,7 @@ background: '/img/posts/LR-01.jpg'
 
         <p><em>Calculations:</em></p>
         <h3>$$ \beta_1 = \frac{350{,}000}{2{,}500{,}000} = 0.14 $$</h3>
+        <hr>
 
         <p><strong>Step 5: Calculate the Intercept (\(\beta_0\)):</strong></p>
         <p>
@@ -392,6 +425,7 @@ background: '/img/posts/LR-01.jpg'
 
         <p><em>Calculations:</em></p>
         <h3>$$ \beta_0 = 430 - 0.14 \times 2000 = 430 - 280 = 150 $$</h3>
+        <hr>
 
         <p><strong>Step 6: Build the Regression Line:</strong></p>
         <p>
@@ -405,6 +439,7 @@ background: '/img/posts/LR-01.jpg'
 
         <p>Substituting the calculated values, we have:</p>
         <h3>$$ y = 150 + 0.14 x $$</h3>
+        <hr>
 
         <p><strong>Conclusion:</strong></p>
         <p>
@@ -419,186 +454,370 @@ background: '/img/posts/LR-01.jpg'
             linear regression, allowing us to appreciate the algorithm's inner workings and make informed decisions when
             working with regression problems.
         </p>
+        <hr>
+        <article>
+            <h3>2. Multiple Linear Regression</h3>
+            <h4>2.1 Deriving the Equation:</h4>
 
-        <h3>2.0 Multi Linear Regression</h3>
-        <h4>2.1 Deriving the Equation: </h4>
+            <p>Multiple linear regression predicts a single outcome \((y)\) using <strong>two or
+                    more predictors</strong> \((x_1, x_2, \dots)\).
+                The goal is to find the equation of a <strong>plane</strong> (a multidimensional “line”) that best fits
+                the
+                data by minimizing the squared prediction errors.</p>
 
-        <p>
-            Multiple linear regression is a statistical technique used to model the relationship between a dependent
-            variable and two or more independent variables. It extends the concepts of simple linear regression by
-            considering multiple factors that can influence the dependent variable. In this article, we will explore the
-            world of multiple linear regression, explaining how the equations are derived and providing examples to
-            illustrate the concepts.
-        </p>
+            <p>For our housing example we want:</p>
 
-        <p>
-            In multiple linear regression, the relationship between the dependent variable (\(y\)) and the independent
-            variables
-            (\(x_1, x_2, \dots, x_n\)) can be expressed as:
-        </p>
+            <p class="formula math-display">$$\hat{y} = b_0 + b_1 x_1 + b_2 x_2$$</p>
 
-        <h2>$$ y = b_0 + b_1 x_1 + b_2 x_2 + \dots + b_n x_n $$</h2>
+            <ul>
+                <li><strong>\(b_0\)</strong> is the intercept – the baseline price when Area \((x_1)\)
+                    and Bedrooms \((x_2)\) are 0.</li>
+                <li><strong>\(b_1\)</strong> measures how much price changes with each extra square foot, <em>holding
+                        bedrooms
+                        constant</em>.</li>
+                <li><strong>\(b_2\)</strong> measures how much price changes with each extra bedroom, <em>holding area
+                        constant</em>.</li>
+            </ul>
 
-        <p>
-            In this equation, \(y\) represents the predicted value, \(x_1, x_2, \dots, x_n\) represent the independent
-            variables, and \(b_0,
-            b_1, b_2, \dots, b_n\) are the coefficients that need to be optimized to fit the regression model to the
-            data.
-        </p>
+            <hr>
 
-        <h4>Example:</h4>
-        <p>
-            Let's consider an example to illustrate the concept of multiple linear regression. Suppose we have a dataset
-            of
-            housing prices (\(y\)) and their corresponding areas (\(x_1\)) and number of bedrooms (\(x_2\)). We want to
-            find the linear
-            relationship between the area, number of bedrooms, and the price. Here's a small dataset:
-        </p>
+            <h2>Step 1 – The Sample Data</h2>
+            <p>Here’s our dataset of house prices:</p>
 
-        <table>
-            <tr>
-                <th>Area (x₁)</th>
-                <th>Number of Bedrooms (x₂)</th>
-                <th>Price (y)</th>
-            </tr>
-            <tr>
-                <td>1000</td>
-                <td>2</td>
-                <td>250</td>
-            </tr>
-            <tr>
-                <td>1500</td>
-                <td>3</td>
-                <td>400</td>
-            </tr>
-            <tr>
-                <td>2000</td>
-                <td>4</td>
-                <td>450</td>
-            </tr>
-            <tr>
-                <td>2500</td>
-                <td>3</td>
-                <td>500</td>
-            </tr>
-            <tr>
-                <td>3000</td>
-                <td>5</td>
-                <td>550</td>
-            </tr>
-        </table>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>House</th>
+                        <th>Area \((x_1)\) (sq.ft.)</th>
+                        <th>Bedrooms \((x_2)\)</th>
+                        <th>Price \((y)\) (k$)</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1000</td>
+                        <td>2</td>
+                        <td>250</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>1500</td>
+                        <td>3</td>
+                        <td>400</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>2000</td>
+                        <td>4</td>
+                        <td>450</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>2500</td>
+                        <td>3</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>3000</td>
+                        <td>5</td>
+                        <td>550</td>
+                    </tr>
+                </table>
+            </div>
 
-        <p>
-            Using the least squares method, we can find the best-fitting line. By substituting the given values into the
-            equation \(y = b_0 + b_1 x_1 + b_2 x_2\), we can solve for \(b_0\), \(b_1\), and \(b_2\). The steps are as
-            follows:
-        </p>
+            <p>We want to predict <strong>Price \((y)\)</strong> using <strong>Area \((x_1)\)</strong> and
+                <strong>Bedrooms
+                    \((x_2)\)</strong>.
+            </p>
 
-        <p><strong>Step 1: Calculate the Means:</strong></p>
-        <p>
-            To begin, we calculate the means of the independent variables (\(x_1\) and \(x_2\)) and the dependent
-            variable (\(y\)). The
-            mean is obtained by summing up all the values and dividing by the total number of data points.
-        </p>
+            <hr>
 
-        <p><em>Formula:</em></p>
-        <h3>$$ \bar{x}_1 = \frac{\sum x_1}{n} $$</h3>
-        <h3>$$ \bar{x}_2 = \frac{\sum x_2}{n} $$</h3>
-        <h3>$$ \bar{y} = \frac{\sum y}{n} $$</h3>
+            <h2>Step 2 – Compute the Means</h2>
 
-        <p><em>Calculations:</em></p>
-        <h3>$$ x_1: [1000, 1500, 2000, 2500, 3000] $$</h3>
-        <h3>$$ x_2: [2, 3, 4, 3, 5] $$</h3>
-        <h3>$$ y: [250, 400, 450, 500, 550] $$</h3>
-        <h3>$$ \bar{x}_1 = \frac{1000 + 1500 + 2000 + 2500 + 3000}{5} = 2000 $$</h3>
-        <h3>$$ \bar{x}_2 = \frac{2 + 3 + 4 + 3 + 5}{5} = 3.4 $$</h3>
-        <h3>$$ \bar{y} = \frac{250 + 400 + 450 + 500 + 550}{5} = 430 $$</h3>
+            <p>Regression works with deviations from the average, so we start by finding the <strong>mean</strong> of
+                each
+                variable:</p>
 
-        <p><strong>Step 2: Calculate the Deviations:</strong></p>
-        <p>
-            Next, we calculate the deviations of each independent variable (\(x_1, x_2\)) and the dependent variable
-            (\(y\)) from
-            their respective means. Deviation is obtained by subtracting the mean from each value.
-        </p>
+            <div class="highlight math-display">
+                \(\bar{x}_1 = \dfrac{1000 + 1500 + 2000 + 2500 + 3000}{5} = \mathbf{2000}\)<br>
+                \(\bar{x}_2 = \dfrac{2 + 3 + 4 + 3 + 5}{5} = \mathbf{3.4}\)<br>
+                \(\bar{y} = \dfrac{250 + 400 + 450 + 500 + 550}{5} = \mathbf{430}\)
+            </div>
 
-        <p><em>Formula:</em></p>
-        <h3>$$ x_1 - \bar{x}_1 = x_1 - \bar{x}_1 $$</h3>
-        <h3>$$ x_2 - \bar{x}_2 = x_2 - \bar{x}_2 $$</h3>
-        <h3>$$ y - \bar{y} = y - \bar{y} $$</h3>
+            <p>These means represent the <strong>center of gravity</strong> of the dataset.</p>
 
-        <p><em>Calculations:</em></p>
-        <h3>$$ x_1 - \bar{x}_1 = [-1000, -500, 0, 500, 1000] $$</h3>
-        <h3>$$ x_2 - \bar{x}_2 = [-1.4, -0.4, 0.6, -0.4, 1.6] $$</h3>
-        <h3>$$ y - \bar{y} = [-180, -30, 20, 70, 120] $$</h3>
+            <hr>
 
-        <p><strong>Step 3: Calculate the Sum of Products and Squares:</strong></p>
-        <p>
-            Now, we calculate the sum of the product of deviations (Σxy), the sum of squared deviations for \(x_1\)
-            (Σx₁²), the
-            sum of squared deviations for \(x_2\) (Σx₂²),and the sum of squared deviations for y (Σy²).
-        </p>
+            <h2>Step 3 – Deviations from the Mean</h2>
 
-        <p><em>Formula:</em></p>
-        <h3>$$ \Sigma xy = \sum ((x_1 - \bar{x}_1) \times (x_2 - \bar{x}_2) \times (y - \bar{y})) $$</h3>
-        <h3>$$ \Sigma x_1^2 = \sum (x_1 - \bar{x}_1)^2 $$</h3>
-        <h3>$$ \Sigma x_2^2 = \sum (x_2 - \bar{x}_2)^2 $$</h3>
-        <h3>$$ \Sigma y^2 = \sum (y - \bar{y})^2 $$</h3>
+            <p>To measure relationships, we calculate how far each value is from its mean.
+                These deviations show how each observation differs from the average.</p>
 
-        <p><em>Calculations:</em></p>
-        <h3>
-            $$ \Sigma xy = (-1000 \times -1.4 \times -180) + (-500 \times -0.4 \times -30) + (0 \times 0.6 \times 20) +
-            (500 \times -0.4 \times 70) + (1000 \times 1.6 \times 120) = 353{,}800 $$
-        </h3>
-        <h3>$$ \Sigma x_1^2 = (-1000)^2 + (-500)^2 + 0^2 + 500^2 + 1000^2 = 3{,}500{,}000 $$</h3>
-        <h3>$$ \Sigma x_2^2 = (-1.4)^2 + (-0.4)^2 + 0.6^2 + (-0.4)^2 + 1.6^2 = 5.2 $$</h3>
-        <h3>$$ \Sigma y^2 = (-180)^2 + (-30)^2 + 20^2 + 70^2 + 120^2 = 56{,}700 $$</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>House</th>
+                        <th>\((x_1 - \bar{x}_1)\)</th>
+                        <th>\((x_2 - \bar{x}_2)\)</th>
+                        <th>\((y - \bar{y})\)</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>-1000</td>
+                        <td>-1.4</td>
+                        <td>-180</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>-500</td>
+                        <td>-0.4</td>
+                        <td>-30</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>0.6</td>
+                        <td>20</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>500</td>
+                        <td>-0.4</td>
+                        <td>70</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>1000</td>
+                        <td>1.6</td>
+                        <td>120</td>
+                    </tr>
+                </table>
+            </div>
 
-        <p><strong>Step 4: Calculate the Coefficients (b₀, b₁, b₂):</strong></p>
+            <p>These differences will be multiplied together to measure <strong>covariances</strong> (how variables move
+                together).</p>
 
-        <p>
-            The coefficients (b₀, b₁, b₂) of the multiple linear regression equation are calculated using the formulas:
-        </p>
-        <p><em>Formula:</em></p>
+            <hr>
 
-        <h3>$$ b_1 = \frac{\Sigma xy}{\Sigma x_1^2} $$</h3>
-        <h3>$$ b_2 = \frac{\Sigma xy}{\Sigma x_2^2} $$</h3>
-        <h3>$$ b_0 = \bar{y} - b_1 \bar{x}_1 - b_2 \bar{x}_2 $$</h3>
+            <h2>Step 4 – Cross-Products and Squares</h2>
 
-        <p><em>Calculations:</em></p>
+            <p>Regression coefficients are ratios of <strong>covariances</strong> (movement together) to
+                <strong>variances</strong> (movement alone).
+                We therefore compute the following:
+            </p>
 
-        <h3>$$ b_1 = \frac{353{,}800}{3{,}500{,}000} = 0.1011 $$</h3>
-        <h3>$$ b_2 = \frac{353{,}800}{5.2} = 68{,}038.46 $$</h3>
-        <h3>$$ b_0 = 430 - 0.1011 \times 2000 - 68{,}038.46 \times 3.4 = -128{,}164.61 $$</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>House</th>
+                        <th>\((x_1-\bar{x}_1)^2\)</th>
+                        <th>\((x_2-\bar{x}_2)^2\)</th>
+                        <th>\((x_1-\bar{x}_1)(y-\bar{y})\)</th>
+                        <th>\((x_2-\bar{x}_2)(y-\bar{y})\)</th>
+                        <th>\((x_1-\bar{x}_1)(x_2-\bar{x}_2)\)</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1,000,000</td>
+                        <td>1.96</td>
+                        <td>180,000</td>
+                        <td>252.0</td>
+                        <td>1,400</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>250,000</td>
+                        <td>0.16</td>
+                        <td>15,000</td>
+                        <td>12.0</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>0.36</td>
+                        <td>0</td>
+                        <td>12.0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>250,000</td>
+                        <td>0.16</td>
+                        <td>35,000</td>
+                        <td>-28.0</td>
+                        <td>-200</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>1,000,000</td>
+                        <td>2.56</td>
+                        <td>120,000</td>
+                        <td>192.0</td>
+                        <td>1,600</td>
+                    </tr>
+                </table>
+            </div>
 
-        <p><strong>Step 5: Build the Regression Equation:</strong></p>
-        <p>
-            Finally, we construct the equation of the multiple linear regression line using the coefficients (b₀, b₁,
-            b₂)
-            obtained in the previous steps:
-        </p>
+            <p><strong>Column Sums</strong> (key statistics):</p>
 
-        <p><em>Formula:</em></p>
-        <h3>$$ y = b_0 + b_1 x_1 + b_2 x_2 $$</h3>
+            <div class="highlight math-display">
+                \(S_{x_1 x_1} = 2,500,000\)<br>
+                \(S_{x_2 x_2} = 5.2\)<br>
+                \(S_{x_1 y} = 350,000\)<br>
+                \(S_{x_2 y} = 440\)<br>
+                \(S_{x_1 x_2} = 3,000\)
+            </div>
 
-        <p>Substituting the calculated values, we have:</p>
-        <h3>$$ y = -128{,}164.61 + 0.1011 x_1 + 68{,}038.46 x_2 $$</h3>
+            <ul>
+                <li>\(S_{x_1 x_1}\) and \(S_{x_2 x_2}\) are <strong>variances</strong>.</li>
+                <li>\(S_{x_1 y}\) and \(S_{x_2 y}\) are <strong>covariances with y</strong>.</li>
+                <li>\(S_{x_1 x_2}\) captures how <strong>Area and Bedrooms overlap</strong>.</li>
+            </ul>
 
-        <p><strong>Conclusion:</strong></p>
-        <p>
-            By manually calculating the coefficients (b₀, b₁, b₂), we obtained the equation of the multiple linear
-            regression line: </p>
+            <hr>
 
-        <h3>$$ y = -128{,}164.61 + 0.1011 x_1 + 68{,}038.46 x_2 $$</h3>
-        
-        <p> This equation represents the
-            best-fit line that predicts house prices based on the area (\(x_1\)) and number of bedrooms (\(x_2\)). You
-            can use this
-            equation to make predictions for new data points by substituting the corresponding \(x_1\) and \(x_2\)
-            values into the
-            equation. Manual calculations provide a deeper understanding of the underlying mathematics behind multiple
-            linear regression, allowing us to interpret the coefficients and make informed decisions when working with
-            regression problems involving multiple independent variables.
-        </p>
+            <h2>Step 5 – The Normal Equations</h2>
+
+            <p>Multiple regression minimizes the squared prediction errors:</p>
+
+            <p class="formula math-display">$$SSE = \sum \big(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}\big)^2$$</p>
+
+            <p>Taking partial derivatives w.r.t \(b_1\) and \(b_2\) and setting to zero gives the <strong>normal
+                    equations</strong>:</p>
+
+            <div class="highlight math-display">
+                \(b_1 S_{x_1 x_1} + b_2 S_{x_1 x_2} = S_{x_1 y}\)<br>
+                \(b_1 S_{x_1 x_2} + b_2 S_{x_2 x_2} = S_{x_2 y}\)
+            </div>
+
+            <p>Plug in the numbers:</p>
+
+            <div class="highlight math-display">
+                \(2{,}500{,}000 b_1 + 3{,}000 b_2 = 350{,}000\)<br>
+                \(3{,}000 b_1 + 5.2 b_2 = 440\)
+            </div>
+
+            <p>This is a 2×2 linear system.</p>
+
+            <h3>Solve for \(b_1\) and \(b_2\)</h3>
+
+            <p>The determinant is:</p>
+            <div class="highlight math-display">
+                \(D = (2{,}500{,}000 \times 5.2) - (3{,}000)^2 = 13{,}000{,}000 - 9{,}000{,}000 =
+                \mathbf{4{,}000{,}000}\)
+            </div>
+
+            <p>Use Cramer’s rule:</p>
+
+            <div class="highlight math-display">
+                \(b_1 = \dfrac{(350{,}000 \times 5.2) - (440 \times 3{,}000)}{4{,}000{,}000}\)<br>
+                \(= \dfrac{1{,}820{,}000 - 1{,}320{,}000}{4{,}000{,}000}\)<br>
+                \(= \mathbf{0.05435}\)<br><br>
+                \(b_2 = \dfrac{(440 \times 2{,}500{,}000) - (350{,}000 \times 3{,}000)}{4{,}000{,}000}\)<br>
+                \(= \dfrac{1{,}100{,}000{,}000 - 1{,}050{,}000{,}000}{4{,}000{,}000}\)<br>
+                \(= \mathbf{53.26}\)
+            </div>
+
+            <p><strong>Interpretation:</strong></p>
+            <ul>
+                <li><strong>\(b_1\)</strong>: For each extra square foot of area, the price increases by about $54
+                    <em>if bedrooms stay constant</em>.
+                </li>
+                <li><strong>\(b_2\)</strong>: Each additional bedroom adds roughly $53,000 <em>if area stays
+                        constant</em>.</li>
+            </ul>
+
+            <hr>
+
+            <h2>Step 6 – Find the Intercept</h2>
+
+            <p>The intercept ensures the regression plane passes through the mean:</p>
+
+            <div class="highlight math-display">
+                \(b_0 = \bar{y} - b_1 \bar{x}_1 - b_2 \bar{x}_2\)<br>
+                \(b_0 = 430 - (0.05435 \times 2000) - (53.26 \times 3.4)\)<br>
+                \(b_0 = 430 - 108.7 - 180.98 \approx \mathbf{140.22}\)
+            </div>
+
+            <hr>
+
+            <h2>Step 7 – Final Regression Equation</h2>
+
+            <div class="highlight math-display">
+                <strong>\(\hat{y} = 140.22 + 0.05435 x_1 + 53.26 x_2\)</strong>
+            </div>
+
+            <p>This is the <strong>best-fit plane</strong> that predicts house price \((y)\) from area \((x_1)\) and
+                number of
+                bedrooms \((x_2)\).</p>
+
+            <hr>
+
+            <h2>Step 8 – Prediction Example</h2>
+
+            <p>For a 2,200 sq.ft. house with 4 bedrooms:</p>
+
+            <div class="highlight math-display">
+                \(\hat{y} = 140.22 + 0.05435(2200) + 53.26(4) \approx \mathbf{472.8}\)
+            </div>
+
+            <p>Predicted price ≈ <strong>$473,000</strong>.</p>
+
+            <hr>
+
+            <h2>Key Insights</h2>
+
+            <ul>
+                <li><strong>Cross-products</strong> like \(S_{x_1 y}\) and \(S_{x_1 x_2}\) show how variables move
+                    together.</li>
+                <li>The <strong>normal equations</strong> come from calculus but simplify to algebra, giving
+                    coefficients
+                    that minimize total squared error.</li>
+                <li>Each coefficient is a <strong>partial effect</strong>:
+                    <ul>
+                        <li>\(b_1\) measures the effect of area while holding bedrooms constant.</li>
+                        <li>\(b_2\) measures the effect of bedrooms while holding area constant.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <hr>
+
+            <h2>Conclusion</h2>
+
+            <p>In this walkthrough, we built a <strong>multiple linear regression model completely by hand</strong>—from
+                finding the means to calculating cross-products, solving the normal equations, and finally writing the
+                prediction formula.</p>
+
+            <p>The final equation,</p>
+
+            <div class="highlight math-display">
+                \(\hat{y} = 140.22 + 0.05435 x_1 + 53.26 x_2\)
+            </div>
+
+            <p>shows that:</p>
+            <ul>
+                <li><strong>Area \((x_1)\)</strong> adds about <strong>$54 per square foot</strong> to a home’s value
+                    when the
+                    number of bedrooms is held constant.</li>
+                <li><strong>Bedrooms \((x_2)\)</strong> add roughly <strong>$53,000 per room</strong>, independent of
+                    house size.
+                </li>
+            </ul>
+
+            <p>By working through each calculation, you can clearly see how every number in a regression model comes
+                from
+                the data not a black box.
+                This approach not only deepens understanding of regression mechanics but also builds trust in the
+                results
+                when you later use tools like Python to handle larger datasets.</p>
+
+            <p class="highlight"><strong>Takeaway:</strong> Understanding the math behind regression is like looking
+                under
+                the hood of a car you’ll drive better (and trust your model more) when you know how the engine works.
+            </p>
+        </article>
         <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
 
         <p style="text-align: left;" class="github-link">
@@ -609,7 +828,6 @@ background: '/img/posts/LR-01.jpg'
             </a>
         </p>
     </div>
-
     <script>
         // Message shown on right-click (keeps original behavior)
         const message = "Right- Click Function Disabled!";
