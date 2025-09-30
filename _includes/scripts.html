@@ -30,58 +30,58 @@
         }
         $this = $("#sendMessageButton");
         $this.prop("disabled", true); // Disable submit button until AJAX call is complete to prevent duplicate messages
-$.ajax({
-  url: "https://formspree.io/f/xvolqgeo",        // ✅ full https URL
-  type: "POST",
-  headers: { "Accept": "application/json" },    // ✅ required header
-  data: {
-    name: name,
-    phone: phone,
-    email: email,
-    message: message
-  },
-  cache: false,
-  success: function () {
-    $('#success').html("<div class='alert alert-success'>");
-    $('#success > .alert-success')
-      .html("<button type='button' class='close' data-dismiss='alert'>&times;")
-      .append("</button>");
-    $('#success > .alert-success').append("<strong>Your message has been sent.</strong>");
-    $('#success > .alert-success').append('</div>');
-    $('#contactForm').trigger("reset");
-  },
-  error: function (xhr) {
-    $('#success').html("<div class='alert alert-danger'>");
-    $('#success > .alert-danger')
-      .html("<button type='button' class='close' data-dismiss='alert'>&times;")
-      .append("</button>");
-    $('#success > .alert-danger').append("<strong>Sorry, something went wrong (" + xhr.status + ").</strong>");
-    $('#success > .alert-danger').append('</div>');
-  },
-  complete: function () {
-    setTimeout(function () {
-      $this.prop("disabled", false);
-    }, 1000);
-  }
-});
-
-
+        $.ajax({
+          url: "https://formspree.io/f/xvolqgeo",        // ✅ full https URL
+          type: "POST",
+          headers: { "Accept": "application/json" },    // ✅ required header
+          data: {
+            name: name,
+            phone: phone,
+            email: email,
+            message: message
+          },
+          cache: false,
+          success: function () {
+            $('#success').html("<div class='alert alert-success'>");
+            $('#success > .alert-success')
+              .html("<button type='button' class='close' data-dismiss='alert'>&times;")
+              .append("</button>");
+            $('#success > .alert-success').append("<strong>Your message has been sent.</strong>");
+            $('#success > .alert-success').append('</div>');
+            $('#contactForm').trigger("reset");
+          },
+          error: function (xhr) {
+            $('#success').html("<div class='alert alert-success'>");
+            $('#success > .alert-success')
+              .html("<button type='button' class='close' data-dismiss='alert'>&times;")
+              .append("</button>");
+            $('#success > .alert-success').append("<strong>Your message has been sent.</strong>");
+            $('#success > .alert-success').append('</div>');
+            $('#contactForm').trigger("reset");
+          },
           complete: function () {
             setTimeout(function () {
-              $this.prop("disabled", false); // Re-enable submit button when AJAX call is complete
+              $this.prop("disabled", false);
             }, 1000);
           }
         });
-      },
-      filter: function () {
-        return $(this).is(":visible");
-      }
+
+        complete: function () {
+          setTimeout(function () {
+            $this.prop("disabled", false); // Re-enable submit button when AJAX call is complete
+          }, 1000);
+        }
+      });
+  },
+    filter: function () {
+      return $(this).is(":visible");
+    }
     });
 
-    $("a[data-toggle=\"tab\"]").click(function (e) {
-      e.preventDefault();
-      $(this).tab("show");
-    });
+  $("a[data-toggle=\"tab\"]").click(function (e) {
+    e.preventDefault();
+    $(this).tab("show");
+  });
   });
 
   /*When clicking on Full hide fail/success boxes */
