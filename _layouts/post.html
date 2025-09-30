@@ -5,9 +5,19 @@ layout: default
   body {
     background: url('/img/trig.gif') center center / cover no-repeat fixed;
     background-size: cover;
-    height: 100vh;
+    background-attachment: fixed;
     padding: 0;
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #111;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   .github-link {
