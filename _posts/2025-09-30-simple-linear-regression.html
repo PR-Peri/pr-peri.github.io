@@ -1,9 +1,8 @@
 ---
 layout: post
 title: "Simple Linear Regression Model"
-description: "Model built from scratch using mathmeatics"
-implementations from scratch."
-date: 2025-09-29 12:05:13 -0400
+description: "Mathematical foundations of algorithms and their practical applications by building code implementations from scratch."
+date: 2025-09-30 10:45:13 -0400
 background: '/img/posts/LR-01.jpg'
 ---
 
@@ -247,8 +246,7 @@ background: '/img/posts/LR-01.jpg'
             <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
         </button>
 
-        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
-
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
         <h1>Simple Linear Regression: A Step-by-Step Explanation</h1>
 
         <p>
@@ -635,45 +633,49 @@ background: '/img/posts/LR-01.jpg'
 
         <hr>
 
-<h3>Step 6: Conclusion and Interpretation</h3>
+        <h3>Step 6: Conclusion and Interpretation</h3>
 
-<p>
-We now have our final regression equation:
-</p>
+        <p>
+            We now have our final regression equation:
+        </p>
 
-<p>
-\[
-\hat{y} = 150 + 0.14x
-\]
-</p>
+        <p>
+            \[
+            \hat{y} = 150 + 0.14x
+            \]
+        </p>
 
-<p>
-Let’s carefully interpret what this equation means:
-</p>
+        <p>
+            Let’s carefully interpret what this equation means:
+        </p>
 
-<ul>
-    <li>
-        <b>Slope (\(\beta_1 = 0.14\))</b>:  
-        For every increase of 1 unit in area (\(x\)), the predicted price (\(y\)) increases by 0.14 units.  
-        If the units are square feet for \(x\) and thousands of dollars for \(y\), then each additional square foot increases the price by \$140.
-    </li><br>
-    <li>
-        <b>Intercept (\(\beta_0 = 150\))</b>:  
-        This is the predicted price when \(x = 0\). Although a house with 0 area makes no practical sense, the intercept is mathematically required so that the regression line passes through the mean point \((\bar{x}, \bar{y})\). It acts as a baseline adjustment for the equation.
-    </li><br>
-    <li>
-        <b>Prediction Example</b>:  
-        If we want to estimate the price of a 2500 sq ft house:
-        \[
-        \hat{y} = 150 + 0.14(2500) = 150 + 350 = 500
-        \]
-        So the predicted price is 500 (in thousands of dollars, if that’s our unit).<br>
-    </li>
-</ul>
+        <ul>
+            <li>
+                <b>Slope (\(\beta_1 = 0.14\))</b>:
+                For every increase of 1 unit in area (\(x\)), the predicted price (\(y\)) increases by 0.14 units.
+                If the units are square feet for \(x\) and thousands of dollars for \(y\), then each additional square
+                foot increases the price by \$140.
+            </li><br>
+            <li>
+                <b>Intercept (\(\beta_0 = 150\))</b>:
+                This is the predicted price when \(x = 0\). Although a house with 0 area makes no practical sense, the
+                intercept is mathematically required so that the regression line passes through the mean point
+                \((\bar{x}, \bar{y})\). It acts as a baseline adjustment for the equation.
+            </li><br>
+            <li>
+                <b>Prediction Example</b>:
+                If we want to estimate the price of a 2500 sq ft house:
+                \[
+                \hat{y} = 150 + 0.14(2500) = 150 + 350 = 500
+                \]
+                So the predicted price is 500 (in thousands of dollars, if that’s our unit).<br>
+            </li>
+        </ul>
 
-<p>
-It’s important to remember that regression gives us an <i>average trend</i>. Not every house with 2500 sq ft will cost exactly 500 — but the model predicts that value as the expected price based on the data we used.
-</p>
+        <p>
+            It’s important to remember that regression gives us an <i>average trend</i>. Not every house with 2500 sq ft
+            will cost exactly 500 — but the model predicts that value as the expected price based on the data we used.
+        </p>
 
         <hr>
 
@@ -786,10 +788,6 @@ It’s important to remember that regression gives us an <i>average trend</i>. N
                     Gujarati, D. N., & Porter, D. C. (2009). <em>Basic Econometrics</em> (5th ed.). McGraw-Hill.</a>
             </li>
         </ul>
-
-
-
-
         <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
 
         <p style="text-align: left;" class="github-link">
