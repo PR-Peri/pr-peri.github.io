@@ -591,14 +591,6 @@ categories: [ML, MLR, LR]
 
         <table>
             <tr>
-                <th>House</th>
-                <th>(x1 - x̄1)^2</th>
-                <th>(x2 - x̄2)^2</th>
-                <th>(x1 - x̄1)(y - ȳ)</th>
-                <th>(x2 - x̄2)(y - ȳ)</th>
-                <th>(x1 - x̄1)(x2 - x̄2)</th>
-            </tr>
-            <tr>
                 <td>1</td>
                 <td>1,000,000</td>
                 <td>1.96</td>
@@ -610,8 +602,8 @@ categories: [ML, MLR, LR]
                 <td>2</td>
                 <td>250,000</td>
                 <td>0.16</td>
-                <td>30,000</td>
-                <td>24</td>
+                <td>15,000</td>
+                <td>12</td>
                 <td>200</td>
             </tr>
             <tr>
@@ -627,25 +619,26 @@ categories: [ML, MLR, LR]
                 <td>250,000</td>
                 <td>0.16</td>
                 <td>35,000</td>
-                <td>42</td>
-                <td>300</td>
+                <td>28</td>
+                <td>-200</td>
             </tr>
             <tr>
                 <td>5</td>
                 <td>1,000,000</td>
                 <td>2.56</td>
-                <td>170,000</td>
-                <td>272</td>
+                <td>120,000</td>
+                <td>192</td>
                 <td>1600</td>
             </tr>
             <tr>
                 <th>Sum</th>
                 <th>2,500,000</th>
                 <th>5.2</th>
-                <th>415,000</th>
-                <th>590</th>
-                <th>3500</th>
+                <th>350,000</th>
+                <th>440</th>
+                <th>3000</th>
             </tr>
+
         </table>
 
         <hr>
@@ -658,10 +651,10 @@ categories: [ML, MLR, LR]
 
         <p style="text-align:center;">
             \[
-            2{,}500{,}000 b_1 + 3500 b_2 = 415{,}000
+            2{,}500{,}000 b_1 + 3000 b_2 = 350{,}000
             \]
             \[
-            3500 b_1 + 5.2 b_2 = 590
+            3000 b_1 + 5.2 b_2 = 440
             \]
         </p>
         <hr>
@@ -673,7 +666,7 @@ categories: [ML, MLR, LR]
 
         <p style="text-align:center;">
             \[
-            b_1 \approx 0.124, \quad b_2 \approx 30.0
+            b_1 \approx 0.125, \quad b_2 \approx 12.5
             \]
         </p>
 
@@ -691,7 +684,7 @@ categories: [ML, MLR, LR]
 
         <p style="text-align:center;">
             \[
-            b_0 = 430 - (0.124)(2000) - (30.0)(3.4) \approx 80
+            b_0 = 430 - (0.125)(2000) - (12.5)(3.4) \approx 137.5
             \]
         </p>
 
@@ -699,7 +692,7 @@ categories: [ML, MLR, LR]
 
         <p style="text-align:center; font-size:1.1em; font-weight:bold;">
             \[
-            \hat{y} = 80 + 0.124 x_1 + 30.0 x_2
+            \hat{y} = 137.5 + 0.125 x_1 + 12.5 x_2
             \]
         </p>
         <hr>
@@ -733,7 +726,7 @@ categories: [ML, MLR, LR]
 
         <p style="text-align:center;">
             \[
-            \hat{y} = 80 + 0.124(2200) + 30.0(4) = 80 + 272.8 + 120 = 472.8 \ \text{(k\$)} \]
+            \hat{y} = 137.5 + 0.125(2200) + 12.5(4) = 137.5 + 275 + 50 = 462.5 \ \text{(k\$)} \]
         </p>
 
         <p>
