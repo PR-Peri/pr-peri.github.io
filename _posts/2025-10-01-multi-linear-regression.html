@@ -356,7 +356,6 @@ categories: [statistics, regression, ml]
     <tr><td>5</td><td>3000</td><td>5</td><td>550</td></tr>
 </table>
 <hr>
-
 <h2>4. Step-by-Step Solution</h2>
 
 <h3>Step 1: Compute Means</h3>
@@ -418,32 +417,81 @@ categories: [statistics, regression, ml]
 
 <h3>Step 3: Cross-Products</h3>
 <p>
-    At this stage, we already have the deviations (how far each value is from its mean). But how do we connect
-    those deviations to our regression equation? The answer comes from the <strong>least squares principle</strong>.
+    At this stage, we already have the deviations (how far each value is from its mean). But before jumping to
+    deviations, let’s first see how the <em>raw equations</em> look. They come directly from minimizing the sum of
+    squared errors.
+</p>
+
+<h4>3.1 Least Squares Setup</h4>
+<p>
+    Regression model:
+</p>
+
+<p style="text-align:center;">
+    \[
+    y_i = b_0 + b_1 x_{1i} + b_2 x_{2i} + e_i
+    \]
 </p>
 
 <p>
-    When we minimize the sum of squared errors (SSE), we take partial derivatives with respect to each coefficient
-    (\(b_0, b_1, b_2\)) and set them equal to zero. These first-order conditions naturally produce terms that look
-    like <em>sums of products of deviations</em>. 
+    We minimize:
+</p>
+
+<p style="text-align:center;">
+    \[
+    SSE = \sum_{i=1}^n (y_i - b_0 - b_1 x_{1i} - b_2 x_{2i})^2
+    \]
+</p>
+
+<h4>3.2 First-Order Conditions</h4>
+<p>
+    Setting derivatives equal to zero gives three equations:
+</p>
+
+<p style="text-align:center;">
+    \[
+    \sum (y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
+    \]
+    \[
+    \sum x_{1i}(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
+    \]
+    \[
+    \sum x_{2i}(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
+    \]
+</p>
+
+<h4>3.3 Expanded Normal Equations</h4>
+<p>
+    Expanding these yields the <strong>normal equations in raw form</strong>:
+</p>
+
+<p style="text-align:center;">
+    \[
+    \sum y_i = nb_0 + b_1 \sum x_{1i} + b_2 \sum x_{2i}
+    \]
+    \[
+    \sum x_{1i}y_i = b_0 \sum x_{1i} + b_1 \sum x_{1i}^2 + b_2 \sum (x_{1i}x_{2i})
+    \]
+    \[
+    \sum x_{2i}y_i = b_0 \sum x_{2i} + b_1 \sum (x_{1i}x_{2i}) + b_2 \sum x_{2i}^2
+    \]
+</p>
+
+<h4>3.4 Switch to Deviation Form</h4>
+<p>
+    To simplify, we subtract out means. For example:
+</p>
+
+<p style="text-align:center;">
+    \[
+    \sum (x_{1i}y_i) - \frac{\sum x_{1i}\sum y_i}{n} = \sum (x_{1i}'y_i')
+    \]
 </p>
 
 <p>
-    For example:
+    This conversion removes \(b_0\) from the middle equations and makes everything centered around averages.
+    That’s why we define the following cross-products:
 </p>
-<ul>
-    <li>\(\sum (x_{1i}' \cdot y_i')\) — measures how \(x_1\) and \(y\) vary together (covariance)</li>
-    <li>\(\sum (x_{2i}' \cdot y_i')\) — measures how \(x_2\) and \(y\) vary together</li>
-    <li>\(\sum (x_{1i}' \cdot x_{2i}')\) — measures how the two predictors vary together</li>
-</ul>
-
-<p>
-    These are called <strong>cross-products</strong>. They are not arbitrary; they come directly from the mathematics of
-    optimization and represent the relationships (covariances) between variables. By calculating them, we build the
-    system of equations (normal equations) that will allow us to solve for the regression coefficients.
-</p>
-
-<p>General formulas:</p>
 
 <p style="text-align:center;">
     \[
@@ -463,14 +511,13 @@ categories: [statistics, regression, ml]
 
 <p style="text-align:center;">
     \[
-    (x_{11}' \cdot y_1') = (-1000)(-180) = 180{,}000
+    (x_1' \text{ for House 1}) \times (y' \text{ for House 1}) 
+    = (-1000)(-180) = 180{,}000
     \]
 </p>
 
 <p>
-    Example (House 1):
-    \((x_{11}' \cdot y_1') = (-1000)(-180) = 180{,}000\).
-    Since both are below average, their product is positive, showing that area and price move together.
+    Since both values are below average, their product is positive, showing that area and price move together.
 </p>
 
 <table>
@@ -491,8 +538,7 @@ categories: [statistics, regression, ml]
 
 <h3>Step 4: Normal Equations</h3>
 <p>
-    These sums let us write the equations that link predictors to the response. Each equation says: "variation
-    in price explained by predictor 1 and predictor 2 together must balance the observed data."
+    Using these sums, we can now write the centered normal equations:
 </p>
 
 <p style="text-align:center;">
@@ -542,7 +588,6 @@ categories: [statistics, regression, ml]
     \]
 </p>
 <hr>
-
 <!-- ✅ NEW ADDITION: Visualization -->
 <h3>Visualizing the Regression Plane</h3>
 <p>
