@@ -1,0 +1,867 @@
+---
+layout: post
+title: "Simple Linear Regression Model"
+description: "Model built from scratch using mathmeatics"
+implementations from scratch."
+date: 2025-09-29 12:05:13 -0400
+background: '/img/posts/LR-01.jpg'
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding Linear Regression: A Step-by-Step Guide</title>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+
+        /* Force tables to respect container width */
+        .table-wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+            /* horizontal scroll if needed */
+            -webkit-overflow-scrolling: touch;
+            /* smoother on mobile */
+        }
+
+        /* Make the table itself shrink/scroll, not stretch page */
+        .table-wrapper table {
+            width: max-content;
+            /* only as wide as its content */
+            min-width: 100%;
+            /* but at least fill container width */
+            border-collapse: collapse;
+        }
+
+        .table-wrapper th,
+        .table-wrapper td {
+            white-space: nowrap;
+            /* prevent numbers from breaking awkwardly */
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+
+        <h1>Simple Linear Regression: A Step-by-Step Explanation</h1>
+
+        <p>
+            Simple Linear Regression is the simplest but also the most important statistical technique in regression
+            analysis.
+            It helps us describe and predict the relationship between two variables: one independent variable (x) and
+            one dependent variable (y).
+        </p>
+
+        <p>
+            The goal is simple: draw a straight line through the data that best represents how y changes when x changes.
+            But to really understand this, we need to carefully walk through the math step by step, not just state the
+            formulas.
+        </p>
+
+        <p>In this post, we will:</p>
+        <ol>
+            <li>Derive the regression line from scratch.</li>
+            <li>Explain what each formula means.</li>
+            <li>Work through a complete example with housing data.</li>
+            <li>Clarify why the “n vs n-1” debate doesn’t matter here.</li>
+        </ol>
+
+        <hr>
+
+        <h2>1. The Regression Line</h2>
+
+        <p>We begin by assuming that the relationship between x and y can be described as:</p>
+
+        <p>$$ y = \beta_0 + \beta_1 x $$</p>
+
+        <p>
+            Here:
+        <ul>
+            <li>\(\beta_0\) (intercept) tells us the expected value of y when x = 0.</li>
+            <li>\(\beta_1\) (slope) tells us how much y changes when x increases by 1 unit.</li>
+        </ul>
+        Our job is to estimate \(\beta_0\) and \(\beta_1\) from data.
+        </p>
+
+        <hr>
+
+        <h2>2. The Least Squares Idea</h2>
+
+        <p>
+            How do we choose the “best” line? The method used is least squares. The idea is:
+        </p>
+        <ul>
+            <li>For each data point, compute the error (residual): \(\varepsilon_i = y_i - (\beta_0 + \beta_1 x_i)\)
+            </li>
+            <li>Square these errors so negatives don’t cancel out.</li>
+            <li>Add them up across all points.</li>
+        </ul>
+
+        <p>
+            This gives the sum of squared errors (SSE):
+        </p>
+
+        <p>$$ SSE = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$</p>
+
+        <p>The best line is the one that makes SSE as small as possible.</p>
+
+        <hr>
+
+        <h2>3. Deriving the Formulas</h2>
+
+        <p>
+            By taking derivatives of SSE with respect to \(\beta_0\) and \(\beta_1\) and setting them to zero, we arrive
+            at the normal equations.
+            Solving them gives:
+        </p>
+
+        <p>
+            $$
+            \hat{\beta}_1 = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}, \quad
+            \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+            $$
+        </p>
+
+        <p>
+            This means:
+        <ul>
+            <li>The slope is the ratio of how x and y move together (covariance) to how much x varies on its own
+                (variance).</li>
+            <li>The intercept simply adjusts the line so it passes through the mean point \((\bar{x}, \bar{y})\).</li>
+        </ul>
+        </p>
+
+        <hr>
+
+        <h2>4. Worked Example: Housing Data</h2>
+
+        <p>
+            Let’s apply this step by step using the following dataset:
+        </p>
+
+        <table>
+            <tr>
+                <th>Area (x)</th>
+                <th>Price (y)</th>
+            </tr>
+            <tr>
+                <td>1000</td>
+                <td>250</td>
+            </tr>
+            <tr>
+                <td>1500</td>
+                <td>400</td>
+            </tr>
+            <tr>
+                <td>2000</td>
+                <td>450</td>
+            </tr>
+            <tr>
+                <td>2500</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>3000</td>
+                <td>550</td>
+            </tr>
+        </table>
+
+        <p>We want to find the regression equation that predicts price (y) from area (x).</p>
+
+        <h3>Step 1: Compute the Means</h3>
+
+        <p>
+            $$ \bar{x} = \frac{1000 + 1500 + 2000 + 2500 + 3000}{5} = 2000 $$
+            $$ \bar{y} = \frac{250 + 400 + 450 + 500 + 550}{5} = 430 $$
+        </p>
+
+        <p>The average area is 2000, and the average price is 430. These mean values will act as anchors for our
+            regression line.</p>
+
+        <h3>Step 2: Compute Deviations from the Mean</h3>
+
+        <p>
+            Next, we subtract the mean from each value to see how far each point is from the center.
+            These are called <b>deviations</b>, and they form the foundation for covariance and variance.
+        </p>
+
+        <p>
+            We already know the means:
+        </p>
+
+        <p>
+            \[
+            \bar{x} = 2000, \quad \bar{y} = 430
+            \]
+        </p>
+
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Observation</th>
+                    <th>x (Area)</th>
+                    <th>x − 2000</th>
+                    <th>y (Price)</th>
+                    <th>y − 430</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>1000</td>
+                    <td>\(-1000\)</td>
+                    <td>250</td>
+                    <td>\(-180\)</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>1500</td>
+                    <td>\(-500\)</td>
+                    <td>400</td>
+                    <td>\(-30\)</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>2000</td>
+                    <td>0</td>
+                    <td>450</td>
+                    <td>20</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>2500</td>
+                    <td>500</td>
+                    <td>500</td>
+                    <td>70</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>3000</td>
+                    <td>1000</td>
+                    <td>550</td>
+                    <td>120</td>
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            So the deviations are:
+        </p>
+
+        <p>
+            For \(x\): \([-1000, -500, 0, 500, 1000]\) <br>
+            For \(y\): \([-180, -30, 20, 70, 120]\)
+        </p>
+
+        <hr>
+
+        <h3>Step 3: Compute Products and Squares</h3>
+
+        <p>
+            Now we calculate two important things:
+        </p>
+        <ul>
+            <li>The product of deviations \((x_i - \bar{x})(y_i - \bar{y})\) — this tells us how \(x\) and \(y\) move
+                together.</li>
+            <li>The square of deviations \((x_i - \bar{x})^2\) — this measures how spread out \(x\) is.</li>
+        </ul>
+
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Observation</th>
+                    <th>x − 2000</th>
+                    <th>y − 430</th>
+                    <th>(x − 2000)(y − 430)</th>
+                    <th>(x − 2000)<sup>2</sup></th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>-1000</td>
+                    <td>-180</td>
+                    <td>\((-1000)(-180) = 180{,}000\)</td>
+                    <td>\((-1000)^2 = 1{,}000{,}000\)</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>-500</td>
+                    <td>-30</td>
+                    <td>\((-500)(-30) = 15{,}000\)</td>
+                    <td>\((-500)^2 = 250{,}000\)</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>0</td>
+                    <td>20</td>
+                    <td>\((0)(20) = 0\)</td>
+                    <td>\((0)^2 = 0\)</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>500</td>
+                    <td>70</td>
+                    <td>\((500)(70) = 35{,}000\)</td>
+                    <td>\((500)^2 = 250{,}000\)</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>1000</td>
+                    <td>120</td>
+                    <td>\((1000)(120) = 120{,}000\)</td>
+                    <td>\((1000)^2 = 1{,}000{,}000\)</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <th></th>
+                    <th></th>
+                    <th>350,000</th>
+                    <th>2,500,000</th>
+                </tr>
+            </table>
+        </div>
+
+        <p>
+            Thus:
+        </p>
+
+        <p>
+            \[
+            \sum (x_i - \bar{x})(y_i - \bar{y}) = 350{,}000, \quad
+            \sum (x_i - \bar{x})^2 = 2{,}500{,}000
+            \]
+        </p>
+
+        <p>
+            These will now go into the slope formula.
+        </p>
+
+
+        <h3>Step 4: Calculate the Slope (\(\beta_1\))</h3>
+
+        <p>
+            The slope formula is:
+        </p>
+
+        <p>
+            \[
+            \beta_1 = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}
+            \]
+        </p>
+
+        <p>
+            We already computed:
+        </p>
+
+        <ul>
+            <li>\(\sum (x_i - \bar{x})(y_i - \bar{y}) = 350{,}000\)</li>
+            <li>\(\sum (x_i - \bar{x})^2 = 2{,}500{,}000\)</li>
+        </ul>
+
+        <p>
+            Substitute:
+        </p>
+
+        <p>
+            \[
+            \beta_1 = \frac{350{,}000}{2{,}500{,}000}
+            \]
+        </p>
+
+        <p>
+            \[
+            \beta_1 = 0.14
+            \]
+        </p>
+
+        <p>
+            So, the slope of the regression line is \(0.14\).
+            This means: for every additional square foot of house area, the price increases by 0.14 units (in this case,
+            thousands of dollars if we measure prices that way).
+        </p>
+
+        <hr>
+
+        <h3>Step 5: Calculate the Intercept (\(\beta_0\))</h3>
+
+        <p>
+            The intercept formula is:
+        </p>
+
+        <p>
+            \[
+            \beta_0 = \bar{y} - \beta_1 \bar{x}
+            \]
+        </p>
+
+        <p>
+            We know:
+        </p>
+
+        <ul>
+            <li>\(\bar{x} = 2000\)</li>
+            <li>\(\bar{y} = 430\)</li>
+            <li>\(\beta_1 = 0.14\)</li>
+        </ul>
+
+        <p>
+            Substitute:
+        </p>
+
+        <p>
+            \[
+            \beta_0 = 430 - (0.14 \times 2000)
+            \]
+        </p>
+
+        <p>
+            \[
+            \beta_0 = 430 - 280
+            \]
+        </p>
+
+        <p>
+            \[
+            \beta_0 = 150
+            \]
+        </p>
+
+        <p>
+            So, the intercept of the regression line is \(150\).
+        </p>
+
+        <hr>
+
+<h3>Step 6: Conclusion and Interpretation</h3>
+
+<p>
+We now have our final regression equation:
+</p>
+
+<p>
+\[
+\hat{y} = 150 + 0.14x
+\]
+</p>
+
+<p>
+Let’s carefully interpret what this equation means:
+</p>
+
+<ul>
+    <li>
+        <b>Slope (\(\beta_1 = 0.14\))</b>:  
+        For every increase of 1 unit in area (\(x\)), the predicted price (\(y\)) increases by 0.14 units.  
+        If the units are square feet for \(x\) and thousands of dollars for \(y\), then each additional square foot increases the price by \$140.
+    </li><br>
+    <li>
+        <b>Intercept (\(\beta_0 = 150\))</b>:  
+        This is the predicted price when \(x = 0\). Although a house with 0 area makes no practical sense, the intercept is mathematically required so that the regression line passes through the mean point \((\bar{x}, \bar{y})\). It acts as a baseline adjustment for the equation.
+    </li><br>
+    <li>
+        <b>Prediction Example</b>:  
+        If we want to estimate the price of a 2500 sq ft house:
+        \[
+        \hat{y} = 150 + 0.14(2500) = 150 + 350 = 500
+        \]
+        So the predicted price is 500 (in thousands of dollars, if that’s our unit).<br>
+    </li>
+</ul>
+
+<p>
+It’s important to remember that regression gives us an <i>average trend</i>. Not every house with 2500 sq ft will cost exactly 500 — but the model predicts that value as the expected price based on the data we used.
+</p>
+
+        <hr>
+
+        <h2>5. Visualizing the Regression</h2>
+
+        <p>
+            Numbers and equations are important, but sometimes it’s easiest to understand regression by looking at a
+            picture.
+            The chart below shows our data points (blue dots) and the fitted regression line (red line).
+        </p>
+
+
+        <img class="img-fluid" src="/img/posts/lgr1-post/regression_line.png" alt="Regression Line Chart">
+
+        <p>
+            Notice how the line passes through the “middle” of the data points: some points are above, some are below,
+            but overall the line balances them. This is exactly what least squares does — it finds the line that
+            minimizes
+            the total squared vertical distance from all points to the line.
+        </p>
+
+        <p>
+            Next, let’s look at the residuals — the differences between the actual prices and the predicted prices.
+            If our regression line is a good fit, the residuals should be scattered around zero without any clear
+            pattern.
+        </p>
+        <img class="img-fluid" src="/img/posts/lgr1-post/residual_plot.png" alt="Residual Plot">
+
+        <p>
+            As you can see, the residuals are fairly balanced above and below zero.
+            That means our model does not systematically overpredict or underpredict for small or large houses.
+            This is what we want to see in a simple linear regression.
+        </p>
+
+        <hr>
+
+        <h2>6. Why Don’t We Use n-1 Here?</h2>
+
+        <p>
+            In statistics, you may have seen formulas for variance and covariance that divide by n-1 instead of n.
+            This is called Bessel’s correction and is used to make variance an unbiased estimator of the population
+            variance.
+        </p>
+
+        <p>
+            But in regression slope:
+        </p>
+
+        <p>
+            $$ \hat{\beta}_1 = \frac{\text{Cov}(x,y)}{\text{Var}(x)} $$
+        </p>
+
+        <p>
+            Both covariance and variance would use the same denominator (n or n-1), so they cancel out.
+            That’s why it makes no difference here.
+        </p>
+
+        <p>
+            However, degrees of freedom do matter later when estimating the error variance:
+        </p>
+
+        <p>
+            $$ \hat{\sigma}^2 = \frac{RSS}{n-2} $$
+        </p>
+
+        <p>
+            Here, we divide by n-2 because we estimated two parameters (\(\beta_0, \beta_1\)).
+        </p>
+
+        <hr>
+
+        <h2>7. Conclusion</h2>
+
+        <p>
+            We have derived and calculated the regression line step by step. Our final fitted equation was:
+        </p>
+
+        <p>
+            $$ \hat{y} = 150 + 0.14x $$
+        </p>
+
+        <p>
+            This tells us how house prices grow with area. Going through the math carefully shows how regression is not
+            magic —
+            it’s simply the ratio of covariance to variance, adjusted to pass through the mean point.
+        </p>
+
+        <p>
+            And importantly, we clarified that the slope formula doesn’t depend on whether you divide by n or n-1,
+            because the factor cancels.
+        </p>
+
+        <hr>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://www.wiley.com/en-us/Introduction+to+Linear+Regression+Analysis%2C+6th+Edition-p-9781119578730"
+                    target="_blank">
+                    Montgomery, D. C., Peck, E. A., & Vining, G. G. (2021). <em>Introduction to Linear Regression
+                        Analysis</em> (6th ed.). Wiley.</a></li>
+            <li><a href="https://www.cengage.com/c/introductory-econometrics-a-modern-approach-7e-wooldridge/"
+                    target="_blank">
+                    Wooldridge, J. M. (2019). <em>Introductory Econometrics: A Modern Approach</em> (7th ed.).
+                    Cengage.</a></li>
+            <li><a href="https://wwnorton.com/books/9780393929720" target="_blank">
+                    Freedman, D., Pisani, R., & Purves, R. (2007). <em>Statistics</em> (4th ed.). W. W. Norton &
+                    Company.</a></li>
+            <li><a href="https://www.mheducation.com/highered/product/basic-econometrics-gujarati-porter/M9780073375779.html"
+                    target="_blank">
+                    Gujarati, D. N., & Porter, D. C. (2009). <em>Basic Econometrics</em> (5th ed.). McGraw-Hill.</a>
+            </li>
+        </ul>
+
+
+
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+
+        <p style="text-align: left;" class="github-link">
+            <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
+                style="color: #0000FF; text-decoration: none;">
+                <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Git icon">
+                GitHub Repository
+            </a>
+        </p>
+    </div>
+    <script>
+        // Message shown on right-click (keeps original behavior)
+        const message = "Right- Click Function Disabled!";
+
+        // Right-click: alert message and prevent default context menu
+        document.addEventListener('contextmenu', function (e) {
+            try { alert(message); } catch (err) { /* fallback: no-op */ }
+            e.preventDefault();
+        });
+
+        // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
+        document.addEventListener('keydown', function (e) {
+            // Normalize key for comparisons
+            const key = (e.key || '').toUpperCase();
+
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+(I/J/C)
+            if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+U (view-source / page source)
+            if (e.ctrlKey && key === 'U') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
+        function disableselect(e) { return false; }
+        function reEnable() { return true; }
+
+        // Legacy handlers retained for compatibility (keeps original intent)
+        document.onselectstart = disableselect; // IE/Old browsers
+        if (window.sidebar) { // Netscape / old browsers
+            document.onmousedown = disableselect;
+            document.onclick = reEnable;
+        }
+
+        // Back-to-top button logic
+        const mybutton = document.getElementById("myBtn");
+        window.onscroll = function () { scrollFunction(); };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+</body>
+
+</html>

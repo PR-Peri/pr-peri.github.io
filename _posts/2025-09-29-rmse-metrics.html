@@ -231,6 +231,7 @@ background: '/img/posts/NB_01.jpeg'
             for <strong>Root Mean Squared Error</strong>. The name may look intimidating, but it’s actually a very
             logical idea with a rich mathematical history. Let’s break it down step by step, look at where it comes
             from, and explore why it matters, using a real example and clear visuals.</p>
+        <hr>
 
         <h2>1. What Is RMSE ?</h2>
 
@@ -246,6 +247,7 @@ background: '/img/posts/NB_01.jpeg'
         <p>Imagine you are throwing darts at a target. Each dart is a prediction, and the bullseye is the actual value.
             RMSE is like measuring the average distance of all your darts from the center, but with a twist: it gives
             extra weight to darts that miss badly.</p>
+        <hr>
 
         <h2>2. Where RMSE Comes From</h2>
         <p>RMSE has its origins in <strong>statistics</strong> and the method of <strong>least squares
@@ -273,6 +275,7 @@ background: '/img/posts/NB_01.jpeg'
         <p>For example, a 20-unit mistake hurts four times more than a 10-unit mistake because \(20^2 = 400\) while
             \(10^2 = 100\). This is why RMSE is especially useful when big errors are costly and you want a model that
             avoids them.</p>
+        <hr>
 
         <h2>3. The Formula</h2>
         <p>The formula for RMSE is:</p>
@@ -286,6 +289,7 @@ background: '/img/posts/NB_01.jpeg'
             <li>Average all the squared errors.</li>
             <li>Take the square root.</li>
         </ol>
+        <hr>
 
         <h2>4. Example</h2>
         <p>Consider this small dataset of house sizes (X) and actual selling prices (Y):</p>
@@ -440,6 +444,7 @@ background: '/img/posts/NB_01.jpeg'
             \mathrm{RMSE} = \sqrt{220} \approx 14.83
             $$</p>
         <p>This means that on average, our model’s predictions are about 15 price units away from the real prices.</p>
+        <hr>
 
         <h2>5. Seeing RMSE Visually</h2>
         <p>Numbers are helpful, but visuals make RMSE easier to understand. Below are three charts
@@ -470,6 +475,7 @@ background: '/img/posts/NB_01.jpeg'
             both a direct comparison and an error analysis in one glance.</p>
         <img class="img-fluid" src="/img/posts/rmse-post/rmse_combined_charts.png" alt="Combined RMSE Charts">
 
+        <hr>
 
         <h2>6. Quick Python Code</h2>
         <pre><code class="language-python">
@@ -484,6 +490,7 @@ rmse = math.sqrt(mse)
 
 print("RMSE:", rmse)   # Output: 14.83
 </code></pre>
+        <hr>
 
         <h2>7. Why RMSE Is So Popular</h2>
         <p>RMSE remains one of the standard metrics in data science and statistics because:</p>
@@ -495,6 +502,7 @@ print("RMSE:", rmse)   # Output: 14.83
         </ul>
         <p>However, RMSE is sensitive to outliers. If your data contains extreme values, it is often wise to also check
             other metrics such as <strong>Mean Absolute Error (MAE)</strong> for a more balanced view.</p>
+        <hr>
 
         <h2>8. Key Takeaways</h2>
         <ul>
@@ -504,6 +512,7 @@ print("RMSE:", rmse)   # Output: 14.83
             <li>Use RMSE when large errors matter and you want a measure that is easy to interpret in the same units as
                 your target variable.</li>
         </ul>
+        <hr>
 
         <h2>References</h2>
         <ul>
@@ -518,7 +527,6 @@ print("RMSE:", rmse)   # Output: 14.83
         </ul>
         <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
     </div>
-
     <script>
         // Message shown on right-click (keeps original behavior)
         const message = "Right- Click Function Disabled!";
