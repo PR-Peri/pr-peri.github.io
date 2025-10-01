@@ -223,6 +223,54 @@ categories: [ML, SLR, LR]
             border: 1px solid #ddd;
             text-align: center;
         }
+
+        .related-article-box {
+            border: 1px solid #ddd;
+            border-left: 4px solid #2d6cdf;
+            padding: 15px;
+            margin: 20px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            max-width: 500px;
+        }
+
+        .related-article-box h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .related-article-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .related-article-preview {
+            padding: 10px 0;
+        }
+
+        .related-article-preview h4 {
+            margin: 0 0 5px;
+            font-size: 1.1rem;
+            color: #2d6cdf;
+        }
+
+        .related-article-preview p {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .read-more {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #2d6cdf;
+        }
+
+        .related-article-link:hover .read-more {
+            text-decoration: underline;
+        }
     </style>
 
 </head>
@@ -798,7 +846,21 @@ categories: [ML, SLR, LR]
                 GitHub Repository
             </a>
         </p>
+        <div class="related-article-box">
+            <h3>📖 Related Article</h3>
+            <a href="https://pr-peri.github.io/ml/mlr/lr/2025/09/30/multi-linear-regression.html" target="_blank"
+                class="related-article-link">
+                <div class="related-article-preview">
+                    <h4>Multiple Linear Regression</h4>
+                    <p>A step-by-step breakdown of how multiple regression works, including formulas,
+                        derivations, and examples.</p>
+                    <span class="read-more">Read More →</span>
+                </div>
+            </a>
+        </div>
+
     </div>
+
     <script>
         // Message shown on right-click (keeps original behavior)
         const message = "Right- Click Function Disabled!";
