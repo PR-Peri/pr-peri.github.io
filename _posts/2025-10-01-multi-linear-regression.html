@@ -246,424 +246,541 @@ categories: [ML, MLR, LR]
         <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
             <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
         </button>
-<!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
 
-<h1>Multiple Linear Regression: A Step-by-Step Explanation</h1>
+        <h1>Multiple Linear Regression: A Step-by-Step Explanation</h1>
 
-<p>
-    In the previous post on <a href="https://pr-peri.github.io/ml/slr/lr/2025/09/30/simple-linear-regression.html"><strong>Simple Linear
-            Regression</strong></a>,
-    we saw how a single predictor explains a response variable.
-    But in most real problems, one factor is never enough. For house prices, salary prediction, or stock
-    returns, multiple
-    factors interact simultaneously.
-</p>
-<p>
-    This post introduces <strong>Multiple Linear Regression (MLR)</strong>. By the end of this article, you
-    will understand:
-</p>
-<ul>
-    <li>What MLR is and why it matters</li>
-    <li>How the regression equation is derived step by step</li>
-    <li>A complete worked example with a dataset</li>
-    <li>How to interpret the coefficients in plain language</li>
-    <li>Key assumptions, pitfalls, and references for deeper study</li>
-</ul>
-<hr>
+        <p>
+            In the previous post on <a
+                href="https://pr-peri.github.io/ml/slr/lr/2025/09/30/simple-linear-regression.html"><strong>Simple
+                    Linear
+                    Regression</strong></a>,
+            we saw how a single predictor explains a response variable.
+            But in most real problems, one factor is never enough. For house prices, salary prediction, or stock
+            returns, multiple
+            factors interact simultaneously.
+        </p>
+        <p>
+            This post introduces <strong>Multiple Linear Regression (MLR)</strong>. By the end of this article, you
+            will understand:
+        </p>
+        <ul>
+            <li>What MLR is and why it matters</li>
+            <li>How the regression equation is derived step by step</li>
+            <li>A complete worked example with a dataset</li>
+            <li>How to interpret the coefficients in plain language</li>
+            <li>Key assumptions, pitfalls, and references for deeper study</li>
+        </ul>
+        <hr>
 
-<h2>1. The Idea Behind Multiple Linear Regression</h2>
-<p>
-    Multiple Linear Regression extends simple regression by allowing more predictors. Instead of drawing a
-    straight line through points on a 2D chart, here we fit a “plane” (or hyperplane in higher dimensions)
-    through multi-dimensional data.
-</p>
+        <h2>1. The Idea Behind Multiple Linear Regression</h2>
+        <p>
+            Multiple Linear Regression extends simple regression by allowing more predictors. Instead of drawing a
+            straight line through points on a 2D chart, here we fit a “plane” (or hyperplane in higher dimensions)
+            through multi-dimensional data.
+        </p>
 
-<p style="text-align:center;">
-    \[ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p + \varepsilon \]
-</p>
+        <p style="text-align:center;">
+            \[ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_p x_p + \varepsilon \]
+        </p>
 
-<ul>
-    <li>\(y\): outcome (dependent variable)</li>
-    <li>\(x_1, x_2, \dots, x_p\): predictors (independent variables)</li>
-    <li>\(\beta_0\): intercept (baseline when predictors are zero)</li>
-    <li>\(\beta_j\): slope/partial effect of predictor \(j\)</li>
-    <li>\(\varepsilon\): error term (unexplained part)</li>
-</ul>
+        <ul>
+            <li>\(y\): outcome (dependent variable)</li>
+            <li>\(x_1, x_2, \dots, x_p\): predictors (independent variables)</li>
+            <li>\(\beta_0\): intercept (baseline when predictors are zero)</li>
+            <li>\(\beta_j\): slope/partial effect of predictor \(j\)</li>
+            <li>\(\varepsilon\): error term (unexplained part)</li>
+        </ul>
 
-<p>
-    <strong>Interpretation:</strong> Each coefficient \(\beta_j\) measures the effect of predictor \(x_j\)
-    on \(y\), <em>while holding all other predictors constant</em>. This “all else being equal” view is what
-    makes MLR powerful. Think of cooking: the final taste depends on many ingredients. To know the effect of
-    salt, you must hold oil and spices fixed — otherwise you confuse the effects.
-</p>
-<hr>
+        <p>
+            <strong>Interpretation:</strong> Each coefficient \(\beta_j\) measures the effect of predictor \(x_j\)
+            on \(y\), <em>while holding all other predictors constant</em>. This “all else being equal” view is what
+            makes MLR powerful. Think of cooking: the final taste depends on many ingredients. To know the effect of
+            salt, you must hold oil and spices fixed — otherwise you confuse the effects.
+        </p>
+        <hr>
 
-<h2>2. Deriving the Equations</h2>
+        <h2>2. Deriving the Equations</h2>
 
-<h3>2.1 Least Squares Principle</h3>
-<p>
-    The main idea is simple: find coefficients so that the predicted values are as close as possible to the
-    actual values. We measure closeness using the <strong>sum of squared errors (SSE)</strong>:
-</p>
+        <h3>2.1 Least Squares Principle</h3>
+        <p>
+            The main idea is simple: find coefficients so that the predicted values are as close as possible to the
+            actual values. We measure closeness using the <strong>sum of squared errors (SSE)</strong>:
+        </p>
 
-<p style="text-align:center;">
-    \[ SSE = \sum_{i=1}^n \bigl(y_i - \hat{y}_i\bigr)^2 \]
-</p>
+        <p style="text-align:center;">
+            \[ SSE = \sum_{i=1}^n \bigl(y_i - \hat{y}_i\bigr)^2 \]
+        </p>
 
-<p>where the fitted values are:</p>
+        <p>where the fitted values are:</p>
 
-<p style="text-align:center;">
-    \[ \hat{y}_i = b_0 + b_1 x_{1i} + b_2 x_{2i} \]
-</p>
+        <p style="text-align:center;">
+            \[ \hat{y}_i = b_0 + b_1 x_{1i} + b_2 x_{2i} \]
+        </p>
 
-<p>
-    Minimizing SSE means finding the “best compromise line/plane.” To do this, we take partial derivatives
-    with respect to each coefficient, set them to zero, and solve. This produces the
-    <strong>normal equations</strong>.
-</p>
+        <p>
+            Minimizing SSE means finding the “best compromise line/plane.” To do this, we take partial derivatives
+            with respect to each coefficient, set them to zero, and solve. This produces the
+            <strong>normal equations</strong>.
+        </p>
 
-<p style="text-align:center;">
-    \[ \mathbf{b} = (X^\top X)^{-1} X^\top y \]
-</p>
+        <p style="text-align:center;">
+            \[ \mathbf{b} = (X^\top X)^{-1} X^\top y \]
+        </p>
 
-<p>
-    While the matrix formula looks abstract, it’s just a compact way of solving the system of equations that
-    balance predictor–response relationships. For teaching, we usually compute using <em>deviations from the
-        mean</em> and cross-products — this makes the math more intuitive.
-</p>
-<hr>
+        <p>
+            While the matrix formula looks abstract, it’s just a compact way of solving the system of equations that
+            balance predictor–response relationships. For teaching, we usually compute using <em>deviations from the
+                mean</em> and cross-products — this makes the math more intuitive.
+        </p>
+        <hr>
 
-<h2>3. Example Dataset</h2>
+        <h2>3. Example Dataset</h2>
 
-<p>
-    To see this in action, consider a small dataset of house prices with two predictors: area and number of
-    bedrooms. We expect both to increase price, but how much does each matter when we consider them
-    together?
-</p>
+        <p>
+            To see this in action, consider a small dataset of house prices with two predictors: area and number of
+            bedrooms. We expect both to increase price, but how much does each matter when we consider them
+            together?
+        </p>
 
-<table>
-    <tr>
-        <th>House</th>
-        <th>Area (sq.ft)</th>
-        <th>Bedrooms</th>
-        <th>Price (k$)</th>
-    </tr>
-    <tr><td>1</td><td>1000</td><td>2</td><td>250</td></tr>
-    <tr><td>2</td><td>1500</td><td>3</td><td>400</td></tr>
-    <tr><td>3</td><td>2000</td><td>4</td><td>450</td></tr>
-    <tr><td>4</td><td>2500</td><td>3</td><td>500</td></tr>
-    <tr><td>5</td><td>3000</td><td>5</td><td>550</td></tr>
-</table>
-<hr>
-<h2>4. Step-by-Step Solution</h2>
+        <table>
+            <tr>
+                <th>House</th>
+                <th>Area (sq.ft)</th>
+                <th>Bedrooms</th>
+                <th>Price (k$)</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1000</td>
+                <td>2</td>
+                <td>250</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>1500</td>
+                <td>3</td>
+                <td>400</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>2000</td>
+                <td>4</td>
+                <td>450</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>2500</td>
+                <td>3</td>
+                <td>500</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>3000</td>
+                <td>5</td>
+                <td>550</td>
+            </tr>
+        </table>
+        <hr>
+        <h2>4. Step-by-Step Solution</h2>
 
-<h3>Step 1: Compute Means</h3>
-<p>
-    First, we find averages of each variable — this gives us the “center” of the data:
-</p>
+        <h3>Step 1: Compute Means</h3>
+        <p>
+            First, we find averages of each variable — this gives us the “center” of the data:
+        </p>
 
-<p style="text-align:center;">
-    \[
-    \bar{x}_1 = 2000, \quad \bar{x}_2 = 3.4, \quad \bar{y} = 430
-    \]
-</p>
+        <p style="text-align:center;">
+            \[
+            \bar{x}_1 = 2000, \quad \bar{x}_2 = 3.4, \quad \bar{y} = 430
+            \]
+        </p>
 
-<p>
-    These means act as reference points. Every other calculation measures how much each observation deviates
-    from these averages.
-</p>
-<hr>
+        <p>
+            These means act as reference points. Every other calculation measures how much each observation deviates
+            from these averages.
+        </p>
+        <hr>
 
-<h3>Step 2: Deviations</h3>
-<p>
-    Subtract the mean from each observation. Deviations tell us whether each house is above or below average.
-</p>
+        <h3>Step 2: Deviations</h3>
+        <p>
+            Subtract the mean from each observation. Deviations tell us whether each house is above or below average.
+        </p>
 
-<p style="text-align:center;">
-    \[
-    x_{1i}' = x_{1i} - \bar{x}_1, \quad
-    x_{2i}' = x_{2i} - \bar{x}_2, \quad
-    y_i' = y_i - \bar{y}
-    \]
-</p>
+        <p style="text-align:center;">
+            \[
+            x_{1i}' = x_{1i} - \bar{x}_1, \quad
+            x_{2i}' = x_{2i} - \bar{x}_2, \quad
+            y_i' = y_i - \bar{y}
+            \]
+        </p>
 
-<p>Example (House 1):</p>
+        <p>Example (House 1):</p>
 
-<p style="text-align:center;">
-    \[
-    x_{11}' = -1000, \quad x_{21}' = -1.4, \quad y_1' = -180
-    \]
-</p>
+        <p style="text-align:center;">
+            \[
+            x_{11}' = -1000, \quad x_{21}' = -1.4, \quad y_1' = -180
+            \]
+        </p>
 
-<p>
-    This means House 1 is much smaller and cheaper than the average house, with fewer bedrooms too.
-</p>
+        <p>
+            This means House 1 is much smaller and cheaper than the average house, with fewer bedrooms too.
+        </p>
 
-<table>
-    <tr>
-        <th>House</th>
-        <th>x1</th><th>x1 - x̄1</th>
-        <th>x2</th><th>x2 - x̄2</th>
-        <th>y</th><th>y - ȳ</th>
-    </tr>
-    <tr><td>1</td><td>1000</td><td>-1000</td><td>2</td><td>-1.4</td><td>250</td><td>-180</td></tr>
-    <tr><td>2</td><td>1500</td><td>-500</td><td>3</td><td>-0.4</td><td>400</td><td>-30</td></tr>
-    <tr><td>3</td><td>2000</td><td>0</td><td>4</td><td>+0.6</td><td>450</td><td>+20</td></tr>
-    <tr><td>4</td><td>2500</td><td>+500</td><td>3</td><td>-0.4</td><td>500</td><td>+70</td></tr>
-    <tr><td>5</td><td>3000</td><td>+1000</td><td>5</td><td>+1.6</td><td>550</td><td>+120</td></tr>
-</table>
-<hr>
+        <table>
+            <tr>
+                <th>House</th>
+                <th>x1</th>
+                <th>x1 - x̄1</th>
+                <th>x2</th>
+                <th>x2 - x̄2</th>
+                <th>y</th>
+                <th>y - ȳ</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1000</td>
+                <td>-1000</td>
+                <td>2</td>
+                <td>-1.4</td>
+                <td>250</td>
+                <td>-180</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>1500</td>
+                <td>-500</td>
+                <td>3</td>
+                <td>-0.4</td>
+                <td>400</td>
+                <td>-30</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>2000</td>
+                <td>0</td>
+                <td>4</td>
+                <td>+0.6</td>
+                <td>450</td>
+                <td>+20</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>2500</td>
+                <td>+500</td>
+                <td>3</td>
+                <td>-0.4</td>
+                <td>500</td>
+                <td>+70</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>3000</td>
+                <td>+1000</td>
+                <td>5</td>
+                <td>+1.6</td>
+                <td>550</td>
+                <td>+120</td>
+            </tr>
+        </table>
+        <hr>
+        <h3>Step 3: Cross-Products</h3>
+        <p>
+            At this stage, we already have the deviations (how far each value is from its mean). But before jumping to
+            deviations, let’s first see how the <em>raw equations</em> look. They come directly from minimizing the sum
+            of
+            squared errors.
+        </p>
 
-<h3>Step 3: Cross-Products</h3>
-<p>
-    At this stage, we already have the deviations (how far each value is from its mean). But before jumping to
-    deviations, let’s first see how the <em>raw equations</em> look. They come directly from minimizing the sum of
-    squared errors.
-</p>
+        <h4>3.1 Least Squares Setup</h4>
+        <p>
+            Regression model:
+        </p>
 
-<h4>3.1 Least Squares Setup</h4>
-<p>
-    Regression model:
-</p>
+        <p style="text-align:center;">
+            \[
+            y_i = b_0 + b_1 x_{1i} + b_2 x_{2i} + e_i
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    y_i = b_0 + b_1 x_{1i} + b_2 x_{2i} + e_i
-    \]
-</p>
+        <p>
+            We minimize:
+        </p>
 
-<p>
-    We minimize:
-</p>
+        <p style="text-align:center;">
+            \[
+            SSE = \sum_{i=1}^n (y_i - b_0 - b_1 x_{1i} - b_2 x_{2i})^2
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    SSE = \sum_{i=1}^n (y_i - b_0 - b_1 x_{1i} - b_2 x_{2i})^2
-    \]
-</p>
+        <h4>3.2 First-Order Conditions</h4>
+        <p>
+            Setting derivatives equal to zero gives three equations:
+        </p>
 
-<h4>3.2 First-Order Conditions</h4>
-<p>
-    Setting derivatives equal to zero gives three equations:
-</p>
+        <p style="text-align:center;">
+            \[
+            \sum (y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
+            \]
+            \[
+            \sum x_{1i}(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
+            \]
+            \[
+            \sum x_{2i}(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    \sum (y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
-    \]
-    \[
-    \sum x_{1i}(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
-    \]
-    \[
-    \sum x_{2i}(y_i - b_0 - b_1 x_{1i} - b_2 x_{2i}) = 0
-    \]
-</p>
+        <h4>3.3 Expanded Normal Equations</h4>
+        <p>
+            Expanding these yields the <strong>normal equations in raw form</strong>:
+        </p>
 
-<h4>3.3 Expanded Normal Equations</h4>
-<p>
-    Expanding these yields the <strong>normal equations in raw form</strong>:
-</p>
+        <p style="text-align:center;">
+            \[
+            \sum y_i = nb_0 + b_1 \sum x_{1i} + b_2 \sum x_{2i}
+            \]
+            \[
+            \sum x_{1i}y_i = b_0 \sum x_{1i} + b_1 \sum x_{1i}^2 + b_2 \sum (x_{1i}x_{2i})
+            \]
+            \[
+            \sum x_{2i}y_i = b_0 \sum x_{2i} + b_1 \sum (x_{1i}x_{2i}) + b_2 \sum x_{2i}^2
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    \sum y_i = nb_0 + b_1 \sum x_{1i} + b_2 \sum x_{2i}
-    \]
-    \[
-    \sum x_{1i}y_i = b_0 \sum x_{1i} + b_1 \sum x_{1i}^2 + b_2 \sum (x_{1i}x_{2i})
-    \]
-    \[
-    \sum x_{2i}y_i = b_0 \sum x_{2i} + b_1 \sum (x_{1i}x_{2i}) + b_2 \sum x_{2i}^2
-    \]
-</p>
+        <h4>3.4 Switch to Deviation Form</h4>
+        <p>
+            To simplify, we subtract out means. For example:
+        </p>
 
-<h4>3.4 Switch to Deviation Form</h4>
-<p>
-    To simplify, we subtract out means. For example:
-</p>
+        <p style="text-align:center;">
+            \[
+            \sum (x_{1i}y_i) - \frac{\sum x_{1i}\sum y_i}{n} = \sum (x_{1i}'y_i')
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    \sum (x_{1i}y_i) - \frac{\sum x_{1i}\sum y_i}{n} = \sum (x_{1i}'y_i')
-    \]
-</p>
+        <p>
+            This conversion removes \(b_0\) from the middle equations and makes everything centered around averages.
+            That’s why we define the following cross-products:
+        </p>
 
-<p>
-    This conversion removes \(b_0\) from the middle equations and makes everything centered around averages.
-    That’s why we define the following cross-products:
-</p>
+        <p style="text-align:center;">
+            \[
+            S_{x_1x_1} = \sum (x_{1i}')^2, \quad
+            S_{x_2x_2} = \sum (x_{2i}')^2, \quad
+            S_{x_1y} = \sum (x_{1i}'y_i')
+            \]
+            \[
+            S_{x_2y} = \sum (x_{2i}'y_i'), \quad
+            S_{x_1x_2} = \sum (x_{1i}'x_{2i}')
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    S_{x_1x_1} = \sum (x_{1i}')^2, \quad
-    S_{x_2x_2} = \sum (x_{2i}')^2, \quad
-    S_{x_1y} = \sum (x_{1i}'y_i')
-    \]
-    \[
-    S_{x_2y} = \sum (x_{2i}'y_i'), \quad
-    S_{x_1x_2} = \sum (x_{1i}'x_{2i}')
-    \]
-</p>
+        <p>
+            Each entry is just multiplying deviations row by row. Example (House 1):
+        </p>
 
-<p>
-    Each entry is just multiplying deviations row by row. Example (House 1):
-</p>
+        <p style="text-align:center;">
+            \[
+            (x_1' \text{ for House 1}) \times (y' \text{ for House 1})
+            = (-1000)(-180) = 180{,}000
+            \]
+        </p>
 
-<p style="text-align:center;">
-    \[
-    (x_1' \text{ for House 1}) \times (y' \text{ for House 1}) 
-    = (-1000)(-180) = 180{,}000
-    \]
-</p>
+        <p>
+            Since both values are below average, their product is positive, showing that area and price move together.
+        </p>
 
-<p>
-    Since both values are below average, their product is positive, showing that area and price move together.
-</p>
+        <table>
+            <tr>
+                <th>House</th>
+                <th>(x1 - x̄1)^2</th>
+                <th>(x2 - x̄2)^2</th>
+                <th>(x1 - x̄1)(y - ȳ)</th>
+                <th>(x2 - x̄2)(y - ȳ)</th>
+                <th>(x1 - x̄1)(x2 - x̄2)</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1,000,000</td>
+                <td>1.96</td>
+                <td>180,000</td>
+                <td>252</td>
+                <td>1400</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>250,000</td>
+                <td>0.16</td>
+                <td>30,000</td>
+                <td>24</td>
+                <td>200</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>0</td>
+                <td>0.36</td>
+                <td>0</td>
+                <td>12</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>250,000</td>
+                <td>0.16</td>
+                <td>35,000</td>
+                <td>42</td>
+                <td>300</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>1,000,000</td>
+                <td>2.56</td>
+                <td>170,000</td>
+                <td>272</td>
+                <td>1600</td>
+            </tr>
+            <tr>
+                <th>Sum</th>
+                <th>2,500,000</th>
+                <th>5.2</th>
+                <th>415,000</th>
+                <th>590</th>
+                <th>3500</th>
+            </tr>
+        </table>
 
-<table>
-    <tr>
-        <th>House</th>
-        <th>(x1 - x̄1)^2</th><th>(x2 - x̄2)^2</th>
-        <th>(x1 - x̄1)(y - ȳ)</th><th>(x2 - x̄2)(y - ȳ)</th>
-        <th>(x1 - x̄1)(x2 - x̄2)</th>
-    </tr>
-    <tr><td>1</td><td>1,000,000</td><td>1.96</td><td>180,000</td><td>252</td><td>1400</td></tr>
-    <tr><td>2</td><td>250,000</td><td>0.16</td><td>15,000</td><td>12</td><td>200</td></tr>
-    <tr><td>3</td><td>0</td><td>0.36</td><td>0</td><td>12</td><td>0</td></tr>
-    <tr><td>4</td><td>250,000</td><td>0.16</td><td>35,000</td><td>-28</td><td>-200</td></tr>
-    <tr><td>5</td><td>1,000,000</td><td>2.56</td><td>120,000</td><td>192</td><td>1600</td></tr>
-    <tr><th>Sum</th><th>2,500,000</th><th>5.2</th><th>350,000</th><th>440</th><th>3000</th></tr>
-</table>
-<hr>
+        <hr>
+        <hr>
 
-<h3>Step 4: Normal Equations</h3>
-<p>
-    Using these sums, we can now write the centered normal equations:
-</p>
+        <h3>Step 4: Normal Equations</h3>
+        <p>
+            Using the corrected cross-product sums, the centered normal equations become:
+        </p>
 
-<p style="text-align:center;">
-    \[
-    2{,}500{,}000 b_1 + 3000 b_2 = 350{,}000
-    \]
-    \[
-    3000 b_1 + 5.2 b_2 = 440
-    \]
-</p>
-<hr>
+        <p style="text-align:center;">
+            \[
+            2{,}500{,}000 b_1 + 3500 b_2 = 415{,}000
+            \]
+            \[
+            3500 b_1 + 5.2 b_2 = 590
+            \]
+        </p>
+        <hr>
 
-<h3>Step 5: Solve</h3>
-<p>
-    Solving this system step by step, we get:
-</p>
+        <h3>Step 5: Solve</h3>
+        <p>
+            Solving this system step by step, we get:
+        </p>
 
-<p style="text-align:center;">
-    \[
-    b_1 \approx 0.05435, \quad b_2 \approx 53.26
-    \]
-</p>
+        <p style="text-align:center;">
+            \[
+            b_1 \approx 0.124, \quad b_2 \approx 30.0
+            \]
+        </p>
 
-<p>
-    Interpretation: each extra square foot adds about 50 dollars to price, and each additional bedroom adds
-    about 53,000 dollars, holding area constant.
-</p>
-<hr>
+        <p>
+            Interpretation: each sq.ft adds about <strong>$124</strong> to price,
+            and each additional bedroom adds about <strong>$30,000</strong>, holding area constant.
+        </p>
+        <hr>
 
-<h3>Step 6: Intercept</h3>
-<p>
-    Finally, we calculate the intercept — the baseline price when predictors are zero (not realistic but
-    mathematically required):
-</p>
+        <h3>Step 6: Intercept</h3>
+        <p>
+            Finally, we calculate the intercept — the baseline price when predictors are zero
+            (not realistic but mathematically required):
+        </p>
 
-<p style="text-align:center;">
-    \[
-    b_0 = 430 - (0.05435)(2000) - (53.26)(3.4) \approx 140.3
-    \]
-</p>
+        <p style="text-align:center;">
+            \[
+            b_0 = 430 - (0.124)(2000) - (30.0)(3.4) \approx 80
+            \]
+        </p>
 
-<p><strong>Final regression equation:</strong></p>
+        <p><strong>Final regression equation:</strong></p>
 
-<p style="text-align:center; font-size:1.1em; font-weight:bold;">
-    \[
-    \hat{y} = 140.3 + 0.05435 x_1 + 53.26 x_2
-    \]
-</p>
-<hr>
-<!-- ✅ NEW ADDITION: Visualization -->
-<h3>Visualizing the Regression Plane</h3>
-<p>
-    To better understand what this model represents, let’s plot the observed data points (houses) along with the
-    estimated regression plane. Since we have two predictors (area and bedrooms), the fitted model forms a
-    <strong>plane</strong> in 3D space. Each house sits as a blue dot, and the red plane shows how the regression
-    line balances through the cloud of points.
-</p>
+        <p style="text-align:center; font-size:1.1em; font-weight:bold;">
+            \[
+            \hat{y} = 80 + 0.124 x_1 + 30.0 x_2
+            \]
+        </p>
+        <hr>
+        <!-- ✅ NEW ADDITION: Visualization -->
+        <h3>Visualizing the Regression Plane</h3>
+        <p>
+            To better understand what this model represents, let’s plot the observed data points (houses) along with the
+            estimated regression plane. Since we have two predictors (area and bedrooms), the fitted model forms a
+            <strong>plane</strong> in 3D space. Each house sits as a blue dot, and the red plane shows how the
+            regression
+            line balances through the cloud of points.
+        </p>
 
-<p style="text-align:center;">
-    <img src="/img/posts/lgr1-post/multiple_linear_regression_plane.png" alt="3D regression plane for house price prediction"
-        style="max-width:90%; height:auto; border:1px solid #ccc; border-radius:8px; box-shadow:2px 2px 8px rgba(0,0,0,0.1);" />
-</p>
+        <p style="text-align:center;">
+            <img src="/img/posts/lgr1-post/multiple_linear_regression_plane.png"
+                alt="3D regression plane for house price prediction"
+                style="max-width:90%; height:auto; border:1px solid #ccc; border-radius:8px; box-shadow:2px 2px 8px rgba(0,0,0,0.1);" />
+        </p>
 
-<p>
-    This visualization helps us see the combined effect: as <em>area</em> and <em>bedrooms</em> increase,
-    the regression plane rises, predicting a higher house price. Unlike a simple regression line, the surface
-    shows how multiple predictors work together simultaneously.
-</p>
-<hr>
+        <p>
+            This visualization helps us see the combined effect: as <em>area</em> and <em>bedrooms</em> increase,
+            the regression plane rises, predicting a higher house price. Unlike a simple regression line, the surface
+            shows how multiple predictors work together simultaneously.
+        </p>
+        <hr>
 
-<h2>5. Prediction Example</h2>
-<p>
-    Suppose we want to predict the price of a 2200 sq.ft house with 4 bedrooms:
-</p>
+        <h2>5. Prediction Example</h2>
+        <p>
+            Suppose we want to predict the price of a 2200 sq.ft house with 4 bedrooms:
+        </p>
 
-<p style="text-align:center;">
-    \[
-    \hat{y} = 140.3 + 0.05435(2200) + 53.26(4) \approx 472.8 \ \text{(k\$)}
-    \]
-</p>
+        <p style="text-align:center;">
+            \[
+            \hat{y} = 80 + 0.124(2200) + 30.0(4) = 80 + 272.8 + 120 = 472.8 \ \text{(k\$)} \]
+        </p>
 
-<p>
-    So, our model estimates this house would cost around 473k. This result combines both area and bedroom
-    contributions rather than looking at one factor in isolation.
-</p>
-<hr>
+        <p>
+            So, our model estimates this house would cost around 473k. This result combines both area and bedroom
+            contributions rather than looking at one factor in isolation.
+        </p>
+        <hr>
 
-<h2>6. Assumptions & Pitfalls</h2>
-<ul>
-    <li><strong>Linearity:</strong> Predictors are assumed to have straight-line effects on the outcome. If the
-        true relationship is curved, predictions will be off.</li>
-    <li><strong>No multicollinearity:</strong> Predictors should not be highly correlated. Otherwise, it’s hard
-        to separate their individual effects.</li>
-    <li><strong>Homoscedasticity:</strong> The spread of errors should be constant. If large houses show more
-        unpredictable prices, this assumption breaks.</li>
-    <li><strong>Independence:</strong> Each observation (house) should be independent. Prices influenced by
-        neighborhood clustering may violate this.</li>
-    <li><strong>Normality (for inference):</strong> Residuals should roughly follow a normal distribution if we
-        want valid confidence intervals and hypothesis tests.</li>
-</ul>
-<hr>
+        <h2>6. Assumptions & Pitfalls</h2>
+        <ul>
+            <li><strong>Linearity:</strong> Predictors are assumed to have straight-line effects on the outcome. If the
+                true relationship is curved, predictions will be off.</li>
+            <li><strong>No multicollinearity:</strong> Predictors should not be highly correlated. Otherwise, it’s hard
+                to separate their individual effects.</li>
+            <li><strong>Homoscedasticity:</strong> The spread of errors should be constant. If large houses show more
+                unpredictable prices, this assumption breaks.</li>
+            <li><strong>Independence:</strong> Each observation (house) should be independent. Prices influenced by
+                neighborhood clustering may violate this.</li>
+            <li><strong>Normality (for inference):</strong> Residuals should roughly follow a normal distribution if we
+                want valid confidence intervals and hypothesis tests.</li>
+        </ul>
+        <hr>
 
-<h2>Conclusion</h2>
-<p>
-    Multiple Linear Regression extends the one-predictor case by balancing contributions from multiple
-    variables. We walked through the derivation, solved an example by hand, and saw how to interpret the
-    coefficients.
-</p>
-<p>
-    Despite its simplicity, MLR remains one of the most used tools in statistics and machine learning because
-    it is interpretable, flexible, and applicable across fields — from economics to healthcare.
-</p>
-<hr>
+        <h2>Conclusion</h2>
+        <p>
+            Multiple Linear Regression extends the one-predictor case by balancing contributions from multiple
+            variables. We walked through the derivation, solved an example by hand, and saw how to interpret the
+            coefficients.
+        </p>
+        <p>
+            Despite its simplicity, MLR remains one of the most used tools in statistics and machine learning because
+            it is interpretable, flexible, and applicable across fields — from economics to healthcare.
+        </p>
+        <hr>
 
-<h2>References</h2>
-<ul>
-    <li><a href="https://www.wiley.com/en-us/Introduction+to+Linear+Regression+Analysis%2C+6th+Edition-p-9781119714704"
-            target="_blank">Montgomery, D.C., Peck, E.A., & Vining, G.G. (2021). <em>Introduction to Linear
-                Regression Analysis</em> (6th ed.). Wiley.</a></li>
-    <li><a href="https://www.statlearning.com/" target="_blank">James, G., Witten, D., Hastie, T., & Tibshirani,
-            R. (2021). <em>An Introduction to Statistical Learning</em> (2nd ed.). Springer (free online).</a>
-    </li>
-    <li><a href="https://www.wiley.com/en-us/Applied+Linear+Regression%2C+3rd+Edition-p-9780471704085"
-            target="_blank">Weisberg, S. (2005). <em>Applied Linear Regression</em> (3rd ed.). Wiley.</a></li>
-</ul>
-<!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://www.wiley.com/en-us/Introduction+to+Linear+Regression+Analysis%2C+6th+Edition-p-9781119714704"
+                    target="_blank">Montgomery, D.C., Peck, E.A., & Vining, G.G. (2021). <em>Introduction to Linear
+                        Regression Analysis</em> (6th ed.). Wiley.</a></li>
+            <li><a href="https://www.statlearning.com/" target="_blank">James, G., Witten, D., Hastie, T., & Tibshirani,
+                    R. (2021). <em>An Introduction to Statistical Learning</em> (2nd ed.). Springer (free online).</a>
+            </li>
+            <li><a href="https://www.wiley.com/en-us/Applied+Linear+Regression%2C+3rd+Edition-p-9780471704085"
+                    target="_blank">Weisberg, S. (2005). <em>Applied Linear Regression</em> (3rd ed.). Wiley.</a></li>
+        </ul>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
         <p style="text-align: left;" class="github-link">
             <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
                 style="color: #0000FF; text-decoration: none;">
