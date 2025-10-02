@@ -1,0 +1,685 @@
+---
+layout: post
+title: "A Beginner’s Guide to Residual Sum of Squares (RSS)"
+subtitle: "Evaluation Metrics"
+date: 2025-10-02 01:05:13 -0400
+background: '/img/posts/06.jpg'
+categories: [performance, RSS]
+tags: [blogpost, error-metrics]
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding RSS: A Step-by-Step Guide</title>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+
+        /* Force tables to respect container width */
+        .table-wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+            /* horizontal scroll if needed */
+            -webkit-overflow-scrolling: touch;
+            /* smoother on mobile */
+        }
+
+        /* Make the table itself shrink/scroll, not stretch page */
+        .table-wrapper table {
+            width: max-content;
+            /* only as wide as its content */
+            min-width: 100%;
+            /* but at least fill container width */
+            border-collapse: collapse;
+        }
+
+        .table-wrapper th,
+        .table-wrapper td {
+            white-space: nowrap;
+            /* prevent numbers from breaking awkwardly */
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .related-article-box {
+            border: 1px solid #ddd;
+            border-left: 4px solid #2d6cdf;
+            padding: 15px;
+            margin: 20px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            max-width: 500px;
+        }
+
+        .related-article-box h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .related-article-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .related-article-preview {
+            padding: 10px 0;
+        }
+
+        .related-article-preview h4 {
+            margin: 0 0 5px;
+            font-size: 1.1rem;
+            color: #2d6cdf;
+        }
+
+        .related-article-preview p {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .read-more {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #2d6cdf;
+        }
+
+        .related-article-link:hover .read-more {
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>RSS Explained: The Complete Beginner’s Guide</h1>
+
+        <h2>Introduction</h2>
+
+        <p>
+            When building predictive models, we always ask: <em>How close are the predictions to the actual values?</em>
+            One of the earliest and most fundamental error measures in regression is the <strong>Residual Sum of Squares
+                (RSS)</strong>.
+        </p>
+
+        <p>
+            RSS plays a central role in <strong>least squares regression</strong>, diagnostic analysis, and model
+            comparison. While newer metrics like RMSE and MAE are often used for interpretability, RSS is the
+            <strong>foundation</strong> they build upon.
+        </p>
+
+        <p>In this post, we’ll cover:</p>
+        <ul>
+            <li>What RSS is and why it matters</li>
+            <li>Its mathematical definition and intuition</li>
+            <li>A worked example</li>
+            <li>Visuals that explain RSS step-by-step</li>
+            <li>Python code you can use directly</li>
+            <li>Strengths and weaknesses of using RSS</li>
+        </ul>
+
+        <hr>
+
+        <h2>1. What is RSS?</h2>
+
+        <p>
+            <strong>Residual Sum of Squares (RSS)</strong> is the <strong>sum of squared differences</strong> between
+            observed values and the predictions made by your model:
+        </p>
+
+        <p style="text-align:center;">
+            \( \mathrm{RSS} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \)
+        </p>
+
+        <ul>
+            <li>\( y_i \) = actual observed value</li>
+            <li>\( \hat{y}_i \) = predicted value from the model</li>
+            <li>\( n \) = number of data points</li>
+        </ul>
+
+        <p>The closer your predictions are to the actual values, the <strong>smaller RSS becomes</strong>.</p>
+
+        <p>Unlike normalized metrics, RSS is <strong>scale-dependent</strong>: if your dataset doubles, the RSS roughly
+            doubles too.</p>
+
+        <hr>
+
+        <h2>2. Why Squared Residuals?</h2>
+
+        <ul>
+            <li><strong>Avoid cancellation</strong> → Without squaring, positive and negative errors cancel out.</li>
+            <li><strong>Penalize big mistakes</strong> → Squaring means large errors contribute disproportionately more
+                to RSS.</li>
+        </ul>
+
+        <hr>
+
+        <h2>3. Worked Example</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>X (feature)</th>
+                    <th>Actual y</th>
+                    <th>Predicted ŷ</th>
+                    <th>Residual (y - ŷ)</th>
+                    <th>Squared Residual</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1000</td>
+                    <td>250</td>
+                    <td>260</td>
+                    <td>–10</td>
+                    <td>100</td>
+                </tr>
+                <tr>
+                    <td>1500</td>
+                    <td>400</td>
+                    <td>390</td>
+                    <td>+10</td>
+                    <td>100</td>
+                </tr>
+                <tr>
+                    <td>2000</td>
+                    <td>450</td>
+                    <td>470</td>
+                    <td>–20</td>
+                    <td>400</td>
+                </tr>
+                <tr>
+                    <td>2500</td>
+                    <td>500</td>
+                    <td>480</td>
+                    <td>+20</td>
+                    <td>400</td>
+                </tr>
+                <tr>
+                    <td>3000</td>
+                    <td>550</td>
+                    <td>560</td>
+                    <td>–10</td>
+                    <td>100</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="text-align:center;">
+            \( \mathrm{RSS} = 100 + 100 + 400 + 400 + 100 = 1100 \)
+        </p>
+
+        <p>A model with <strong>RSS = 0</strong> would mean perfect predictions. Here, our model makes moderate errors,
+            leading to <strong>RSS = 1100</strong>.</p>
+
+        <hr>
+
+        <h2>4. Visual Intuition</h2>
+
+        <h3>(a) Actual vs Predicted with Residual Lines</h3>
+        <p>
+            In this plot, each blue dot represents a prediction versus its true value. The red dashed line is the
+            "perfect prediction" line (where actual = predicted).
+            The gray dashed vertical lines show the <strong>residuals</strong>: the gaps between predicted and actual.
+            The RSS is simply the sum of the squares of all these residuals.
+        </p>
+        <img src="/img/posts/rss-post/rss-actual-vs-pred.png" class="img-fluid"
+            alt="Actual vs Predicted with Residuals">
+
+        <hr>
+
+        <h3>(b) Residuals vs Predicted</h3>
+        <p>
+            Here we plot the residuals (errors) against the predicted values.
+            - The black dashed horizontal line at 0 means "no error."
+            - Points above the line = underestimation (prediction too low).
+            - Points below the line = overestimation (prediction too high).
+        </p>
+        <p>
+            A good model should show residuals scattered randomly around 0. If you see patterns (like curves, increasing
+            spread, or clustering), it suggests the model has <strong>systematic bias</strong>.
+            These same residuals are squared and summed to calculate RSS. Large deviations from zero make RSS grow
+            quickly.
+        </p>
+        <img src="/img/posts/rss-post/rss-residuals-vs-pred.png" class="img-fluid" alt="Residuals vs Predicted">
+
+        <hr>
+
+        <h3>(c) Contribution of Each Data Point to RSS</h3>
+        <p>
+            This bar chart shows how much each observation contributes to the total RSS.
+            - Each bar is the squared residual for a single data point.
+            - Taller bars = larger errors.
+            - Notice how just one or two large errors can dominate the total RSS.
+        </p>
+        <p>
+            This explains why RSS is <strong>sensitive to outliers</strong>: a single big mistake can inflate the metric
+            even if most predictions are accurate.
+        </p>
+        <img src="/img/posts/rss-post/rss-contribution.png" class="img-fluid" alt="Contribution to RSS">
+
+        <hr>
+
+        <h2>5. Python Example</h2>
+
+        <pre><code class="language-python">
+actual = [250, 400, 450, 500, 550]
+pred   = [260, 390, 470, 480, 560]
+
+# Compute residuals and RSS
+squared_residuals = [(y - y_hat)**2 for y, y_hat in zip(actual, pred)]
+RSS = sum(squared_residuals)
+
+# MSE and RMSE
+n = len(actual)
+MSE = RSS / n
+import math
+RMSE = math.sqrt(MSE)
+
+print("RSS:", RSS)     # 1100
+print("MSE:", MSE)     # 220
+print("RMSE:", RMSE)   # ~14.83
+</code></pre>
+
+        <p>
+            This shows how <strong>RSS is the building block</strong> for other metrics:
+        </p>
+        <ul>
+            <li><strong>MSE</strong> = RSS ÷ number of observations</li>
+            <li><strong>RMSE</strong> = √MSE (interpretable in the same units as the data)</li>
+        </ul>
+
+        <hr>
+
+        <h2>6. Strengths and Weaknesses of RSS</h2>
+
+        <p><strong>Strengths:</strong></p>
+        <ul>
+            <li>Forms the basis of least squares regression</li>
+            <li>Direct measure of model fit quality</li>
+            <li>Useful for comparing nested models</li>
+        </ul>
+
+        <p><strong>Weaknesses:</strong></p>
+        <ul>
+            <li>Scale-dependent (grows with dataset size)</li>
+            <li>Not interpretable in real-world units</li>
+            <li>Sensitive to outliers (a single large error can dominate RSS)</li>
+        </ul>
+
+        <hr>
+
+        <h2>7. When to Use RSS</h2>
+
+        <ul>
+            <li>During <strong>model training</strong> (objective in OLS regression)</li>
+            <li>For <strong>diagnostic analysis</strong> when adding/removing predictors</li>
+            <li>In <strong>statistical model comparison</strong></li>
+        </ul>
+
+        <p>For interpretability in applied ML, RSS is usually paired with RMSE, MAE, or R².</p>
+
+        <hr>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+            <li><strong>RSS = sum of squared residuals.</strong></li>
+            <li>Smaller RSS = better fit, but interpretability is limited.</li>
+            <li>RSS underpins metrics like MSE, RMSE, and R².</li>
+            <li>Always check multiple metrics for a fuller picture of performance.</li>
+        </ul>
+
+        <hr>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://en.wikipedia.org/wiki/Residual_sum_of_squares">Wikipedia: Residual Sum of Squares</a>
+            </li>
+            <li><em>An Introduction to Statistical Learning (ISLR)</em></li>
+            <li>Regression diagnostics tutorials</li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+         
+        <p style="text-align: left;" class="github-link">
+            <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
+                style="color: #0000FF; text-decoration: none;">
+                <img src="https://git-scm.com/images/logos/downloads/Git-Icon-Black.png" alt="Git icon">
+                GitHub Repository
+            </a>
+        </p>
+<div class="container mt-5">
+  <h3 class="mb-4" 
+      style="display: inline-block; background: rgba(200,200,200,0.2); color: #007bff; padding: 8px 16px; border-radius: 6px;">
+    Related Articles:
+  </h3>  <div class="row">
+    
+    <!-- Related Article 1 -->
+    <div class="col-md-6 mb-4">
+      <div class="related-article-box p-3 border rounded shadow-sm h-100">
+        <a href="https://pr-peri.github.io/ml/mlr/lr/2024/08/26/multi-linear-regression.html" 
+           target="_blank" 
+           class="related-article-link text-decoration-none text-dark">
+
+          <h4>R²: R-Squared</h4>
+          
+          <!-- Thumbnail + Description side by side -->
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <!-- Thumbnail -->
+            <img src="/img/posts/FD-01.jpg" 
+                 alt="R-Squared" 
+                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+            
+            <!-- Description -->
+            <p style="font-size: 0.9rem; color: #555; margin: 0;">
+              Learn how R² evaluates model accuracy, when to use it.
+            </p>
+          </div>
+
+          <span class="read-more text-primary d-block mt-2">Read More →</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Related Article 2 -->
+    <div class="col-md-6 mb-4">
+      <div class="related-article-box p-3 border rounded shadow-sm h-100">
+        <a href="https://pr-peri.github.io/performance/rmse/2025/09/29/rmse-metrics.html" 
+           target="_blank" 
+           class="related-article-link text-decoration-none text-dark">
+
+          <h4>RMSE: Root Mean Squared Error</h4>
+          
+          <!-- Thumbnail + Description side by side -->
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <!-- Thumbnail -->
+            <img src="/img/posts/NB_01.jpeg" 
+                 alt="RMSE Metrics" 
+                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+            
+            <!-- Description -->
+            <p style="font-size: 0.9rem; color: #555; margin: 0;">
+              Learn how RMSE evaluates model accuracy, when to use it.
+            </p>
+          </div>
+
+          <span class="read-more text-primary d-block mt-2">Read More →</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    </div>
+
+    <script>
+        // Message shown on right-click (keeps original behavior)
+        const message = "Right- Click Function Disabled!";
+
+        // Right-click: alert message and prevent default context menu
+        document.addEventListener('contextmenu', function (e) {
+            try { alert(message); } catch (err) { /* fallback: no-op */ }
+            e.preventDefault();
+        });
+
+        // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
+        document.addEventListener('keydown', function (e) {
+            // Normalize key for comparisons
+            const key = (e.key || '').toUpperCase();
+
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+(I/J/C)
+            if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+U (view-source / page source)
+            if (e.ctrlKey && key === 'U') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
+        function disableselect(e) { return false; }
+        function reEnable() { return true; }
+
+        // Legacy handlers retained for compatibility (keeps original intent)
+        document.onselectstart = disableselect; // IE/Old browsers
+        if (window.sidebar) { // Netscape / old browsers
+            document.onmousedown = disableselect;
+            document.onclick = reEnable;
+        }
+
+        // Back-to-top button logic
+        const mybutton = document.getElementById("myBtn");
+        window.onscroll = function () { scrollFunction(); };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+</body>
+
+</html>
