@@ -445,78 +445,86 @@ categories: [evaluation, metrics, R²]
 
         <h2>References</h2>
         <ul>
-            <li>James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). <em>An Introduction to Statistical
-                    Learning</em>. Springer.</li>
-            <li>Chicco, D., Warrens, M. J., & Jurman, G. (2021). The coefficient of determination R².
-                <em>Biometrics</em>, 77(2), 781–791.
+            <li>
+                James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013).
+                <em>An Introduction to Statistical Learning</em>. Springer.
+                <a href="https://www.statlearning.com/" target="_blank" rel="noopener">[Book link]</a>
             </li>
-            <li><a href="https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score" target="_blank"
-                    rel="noopener">Scikit-learn: r2_score</a></li>
+            <li>
+                Chicco, D., Warrens, M. J., & Jurman, G. (2021).
+                The coefficient of determination R².
+                <em>Biometrics</em>, 77(2), 781–791.
+                <a href="https://doi.org/10.1111/biom.13333" target="_blank" rel="noopener">[DOI]</a>
+            </li>
+            <li>
+                <a href="https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score" target="_blank"
+                    rel="noopener">Scikit-learn: r2_score</a>
+            </li>
         </ul>
-<!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
-</div>
-<script>
-    // Message shown on right-click (keeps original behavior)
-    const message = "Right- Click Function Disabled!";
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+    </div>
+    <script>
+        // Message shown on right-click (keeps original behavior)
+        const message = "Right- Click Function Disabled!";
 
-    // Right-click: alert message and prevent default context menu
-    document.addEventListener('contextmenu', function (e) {
-        try { alert(message); } catch (err) { /* fallback: no-op */ }
-        e.preventDefault();
-    });
-
-    // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
-    document.addEventListener('keydown', function (e) {
-        // Normalize key for comparisons
-        const key = (e.key || '').toUpperCase();
-
-        // F12
-        if (e.key === 'F12' || e.keyCode === 123) {
+        // Right-click: alert message and prevent default context menu
+        document.addEventListener('contextmenu', function (e) {
+            try { alert(message); } catch (err) { /* fallback: no-op */ }
             e.preventDefault();
-            return false;
+        });
+
+        // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
+        document.addEventListener('keydown', function (e) {
+            // Normalize key for comparisons
+            const key = (e.key || '').toUpperCase();
+
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+Shift+(I/J/C)
+            if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Ctrl+U (view-source / page source)
+            if (e.ctrlKey && key === 'U') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
+        function disableselect(e) { return false; }
+        function reEnable() { return true; }
+
+        // Legacy handlers retained for compatibility (keeps original intent)
+        document.onselectstart = disableselect; // IE/Old browsers
+        if (window.sidebar) { // Netscape / old browsers
+            document.onmousedown = disableselect;
+            document.onclick = reEnable;
         }
 
-        // Ctrl+Shift+(I/J/C)
-        if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
-            e.preventDefault();
-            return false;
+        // Back-to-top button logic
+        const mybutton = document.getElementById("myBtn");
+        window.onscroll = function () { scrollFunction(); };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
         }
 
-        // Ctrl+U (view-source / page source)
-        if (e.ctrlKey && key === 'U') {
-            e.preventDefault();
-            return false;
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
         }
-    });
-
-    // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
-    function disableselect(e) { return false; }
-    function reEnable() { return true; }
-
-    // Legacy handlers retained for compatibility (keeps original intent)
-    document.onselectstart = disableselect; // IE/Old browsers
-    if (window.sidebar) { // Netscape / old browsers
-        document.onmousedown = disableselect;
-        document.onclick = reEnable;
-    }
-
-    // Back-to-top button logic
-    const mybutton = document.getElementById("myBtn");
-    window.onscroll = function () { scrollFunction(); };
-
-    function scrollFunction() {
-        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-            mybutton.style.display = "block";
-        } else {
-            mybutton.style.display = "none";
-        }
-    }
-
-    function topFunction() {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-    }
-</script>
+    </script>
 </body>
 
 </html>
