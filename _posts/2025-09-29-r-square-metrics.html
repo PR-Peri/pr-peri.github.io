@@ -1,0 +1,522 @@
+---
+layout: post
+title: "[Blogpost] A Beginner’s Guide to R²"
+subtitle: "Evaluation Metrics"
+date: 2025-10-01 19:05:13 -0400
+background: '/img/posts/NB_01.jpeg'
+categories: [evaluation, metrics, R²]
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding R²: A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>R² Explained: The Complete Beginner’s Guide</h1>
+        <h2>Introduction</h2>
+        <p>
+            When we evaluate regression models, error metrics like
+            <a href="https://pr-peri.github.io/evaluation/metrics/rmse/2025/09/28/rmse-metrics.html">RMSE (and MSE)</a>
+            tell us <em>how far off</em> predictions are on average. These measures are essential because they quantify
+            the typical
+            size of errors in the same units as the target variable.
+        </p>
+
+        <p>
+            But error magnitude alone does not capture the bigger picture.
+            We also want to know <em>how well the model explains the variability</em> in the data compared to a simple
+            baseline (like always predicting the mean).
+            This is where the coefficient of determination, <strong>R²</strong>, comes in.
+            It provides a scale-free measure of goodness of fit, answering the question:
+            <em>“What fraction of the total variation in the outcome does my model explain?”</em>
+        </p>
+
+        <hr />
+
+        <h2>What is R²?</h2>
+        <p>Informally, R² answers the question: <em>“What fraction of the total wiggle in the data does my model
+                explain?”</em></p>
+        <ul>
+            <li><strong>R² = 1</strong> — model explains all variability (perfect fit).</li>
+            <li><strong>R² = 0</strong> — model explains none of the variability (same as predicting the mean).</li>
+            <li><strong>R² &lt; 0</strong> — model performs worse than the mean predictor (a red flag).</li>
+        </ul>
+
+        <hr />
+
+        <h2>Where R² comes from (variance decomposition)</h2>
+        <p>R² is grounded in a decomposition of variance. Let the actual outcomes be \(y_i\), model predictions
+            \(\hat{y}_i\), and the sample mean \(\bar{y} = \frac{1}{n}\sum_{i=1}^n y_i\).</p>
+
+        <p>Define the totals:</p>
+        <ul>
+            <li><strong>Total Sum of Squares (SST)</strong> measures total variation in the target around its mean:
+                $$\mathrm{SST} = \sum_{i=1}^n (y_i - \bar{y})^2.$$</li>
+            <li><strong>Residual Sum of Squares (SSR)</strong> (also SSE) measures variation the model fails to explain:
+                $$\mathrm{SSR} = \sum_{i=1}^n (y_i - \hat{y}_i)^2.$$</li>
+        </ul>
+
+        <p>Then R² is:</p>
+        $$
+        R^2 = 1 - \frac{\mathrm{SSR}}{\mathrm{SST}}.
+        $$
+
+        <p>Equivalently, R² can be viewed as the fraction of SST captured by the model:</p>
+        $$
+        R^2 = \frac{\mathrm{SST} - \mathrm{SSR}}{\mathrm{SST}} = \frac{\mathrm{ESS}}{\mathrm{SST}},
+        $$
+        <p>where \(\mathrm{ESS}=\mathrm{SST}-\mathrm{SSR}\) is the explained sum of squares.</p>
+
+        <hr />
+
+        <h2>Detailed example (step-by-step)</h2>
+
+        <p>We’ll reuse a small toy dataset (house size vs price) to compute R² by hand and explain every step.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Size (sq ft)</th>
+                    <th>Actual price (y)</th>
+                    <th>Predicted price (ŷ)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1,000</td>
+                    <td>250</td>
+                    <td>260</td>
+                </tr>
+                <tr>
+                    <td>1,500</td>
+                    <td>400</td>
+                    <td>390</td>
+                </tr>
+                <tr>
+                    <td>2,000</td>
+                    <td>450</td>
+                    <td>470</td>
+                </tr>
+                <tr>
+                    <td>2,500</td>
+                    <td>500</td>
+                    <td>480</td>
+                </tr>
+                <tr>
+                    <td>3,000</td>
+                    <td>550</td>
+                    <td>560</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Step 1 — compute the sample mean</strong></p>
+        $$
+        \bar{y} = \frac{250 + 400 + 450 + 500 + 550}{5} = 430.
+        $$
+
+        <p><strong>Step 2 — total sum of squares (SST)</strong></p>
+        $$
+        \mathrm{SST} = (250-430)^2 + (400-430)^2 + (450-430)^2 + (500-430)^2 + (550-430)^2 = 53{,}000.
+        $$
+        <p>This number is the total “wiggle” in the target variable — how far observations deviate from the mean.</p>
+
+        <p><strong>Step 3 — residuals and SSR</strong></p>
+        <p>Residuals: \(e_i = y_i - \hat{y}_i\) = [−10, +10, −20, +20, −10]. Squared residuals: [100, 100, 400, 400,
+            100].</p>
+        $$
+        \mathrm{SSR} = 100 + 100 + 400 + 400 + 100 = 1{,}100.
+        $$
+
+        <p><strong>Step 4 — compute R²</strong></p>
+        $$
+        R^2 = 1 - \frac{1{,}100}{53{,}000} = 0.97925.
+        $$
+
+        <p><strong>Interpretation:</strong> the model explains about 97.9% of the variance in this toy dataset.</p>
+
+        <hr />
+
+        <h2>Visual intuition (plots)</h2>
+        <p>Below are three plots that together capture the same information R² summarises. I have generated PNG files
+            and included them in the assets folder.</p>
+
+        <h3>Actual vs Predicted</h3>
+        <p class="caption">Predicted values on the vertical axis and actual values on the horizontal axis. The dashed
+            diagonal is the perfect-fit line.</p>
+        <p><img class="img-fluid" src="/img/posts/r-square/r2_combined.png" alt="Actual vs Predicted scatter"></p>
+
+        <h3>Residuals vs Predicted</h3>
+        <p class="caption">Residuals plotted against predicted values. Good models have residuals randomly scattered
+            around zero.</p>
+        <p><img class="img-fluid" src="/img/posts/r-square/r2_residuals.png" alt="Residuals vs predicted"></p>
+
+        <h3>Combined view</h3>
+        <p class="caption">Left: actual vs predicted. Right: residuals vs predicted — a compact diagnostic panel.</p>
+        <p><img class="img-fluid" src="/img/posts/r-square/r2_scatter.png" alt="Combined visualization"></p>
+
+        <hr />
+
+        <h2>Common questions:</h2>
+
+        <h3>Why can R² be negative?</h3>
+        <p>R² becomes negative when SSR &gt; SST — i.e. the model’s predictions are worse (in squared error sense) than
+            simply predicting the sample mean for every observation. Negative R² is a clear indicator of a poorly
+            specified model or that the model is extrapolating badly for the dataset used.</p>
+
+        <h3>Adjusted R² — accounting for number of predictors</h3>
+        <p>When you add more predictors to a regression model, R² never decreases even if the new predictor is useless.
+            Adjusted R² corrects for this by penalising model complexity:</p>
+        $$
+        R^2_{adj} = 1 - (1 - R^2) \frac{n - 1}{n - p - 1},
+        $$
+        <p>where \(n\) is the number of samples and \(p\) the number of predictors (excluding the intercept). Use
+            adjusted R² to compare models with different numbers of features.</p>
+
+        <h3>R² vs RMSE (and other error metrics)</h3>
+        <p>R² is unitless and interprets variance explained, whereas RMSE/MAE provide absolute error magnitudes in the
+            same units as the target. A model can have a high R² but still produce large RMSE if the target variance is
+            huge. Always consider both.</p>
+
+        <h3>When is R² misleading?</h3>
+        <ul>
+            <li>Small sample sizes — training variance can make R² unstable.</li>
+            <li>Heteroskedasticity — variance of errors changes across x, undermining interpretation.</li>
+            <li>Nonlinear relationships not captured by the model — a linear model may have low R² even when a nonlinear
+                pattern exists.</li>
+            <li>Time-series forecasts — R² may be less informative without accounting for autocorrelation and fit on
+                holdout sets.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Practical recommendations</h2>
+        <ul>
+            <li>Report R² alongside RMSE/MAE and residual diagnostics.</li>
+            <li>Use adjusted R² when comparing models with different numbers of predictors.</li>
+            <li>Always validate R² on a held-out test set (or use cross-validation).</li>
+            <li>For interpretability, convert R² to percentage: e.g. R² = 0.65 → “65% of variance explained”.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Python code sample</h2>
+        <pre><code class="language-python">
+        import numpy as np
+        from sklearn.metrics import r2_score
+        import matplotlib.pyplot as plt
+
+        # Data
+        actual = np.array([250, 400, 450, 500, 550])
+        pred   = np.array([260, 390, 470, 480, 560])
+
+        # Manual computation
+        y_mean = actual.mean()
+        sst = np.sum((actual - y_mean)**2)
+        ssr = np.sum((actual - pred)**2)
+        r2 = 1 - ssr / sst
+        print('Manual R²:', r2)
+
+        # sklearn
+        print('sklearn R²:', r2_score(actual, pred))
+            </code></pre>
+
+        <hr />
+
+        <h2>Key takeaways</h2>
+        <ul>
+            <li>R² measures proportion of variance explained by the model — intuitive and widely used.</li>
+            <li>Use adjusted R² to account for number of predictors.</li>
+            <li>Pair R² with RMSE/MAE and residual plots for a full diagnostic.</li>
+            <li>Validate on holdout data — don’t trust training R² alone.</li>
+        </ul>
+
+        <hr />
+
+        <h2>References</h2>
+        <ul>
+            <li>James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). <em>An Introduction to Statistical
+                    Learning</em>. Springer.</li>
+            <li>Chicco, D., Warrens, M. J., & Jurman, G. (2021). The coefficient of determination R².
+                <em>Biometrics</em>, 77(2), 781–791.
+            </li>
+            <li><a href="https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score" target="_blank"
+                    rel="noopener">Scikit-learn: r2_score</a></li>
+        </ul>
+<!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+</div>
+<script>
+    // Message shown on right-click (keeps original behavior)
+    const message = "Right- Click Function Disabled!";
+
+    // Right-click: alert message and prevent default context menu
+    document.addEventListener('contextmenu', function (e) {
+        try { alert(message); } catch (err) { /* fallback: no-op */ }
+        e.preventDefault();
+    });
+
+    // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
+    document.addEventListener('keydown', function (e) {
+        // Normalize key for comparisons
+        const key = (e.key || '').toUpperCase();
+
+        // F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Ctrl+Shift+(I/J/C)
+        if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Ctrl+U (view-source / page source)
+        if (e.ctrlKey && key === 'U') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
+    function disableselect(e) { return false; }
+    function reEnable() { return true; }
+
+    // Legacy handlers retained for compatibility (keeps original intent)
+    document.onselectstart = disableselect; // IE/Old browsers
+    if (window.sidebar) { // Netscape / old browsers
+        document.onmousedown = disableselect;
+        document.onclick = reEnable;
+    }
+
+    // Back-to-top button logic
+    const mybutton = document.getElementById("myBtn");
+    window.onscroll = function () { scrollFunction(); };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    }
+
+    function topFunction() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
+</script>
+</body>
+
+</html>
