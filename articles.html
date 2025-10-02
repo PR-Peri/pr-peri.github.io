@@ -1,0 +1,170 @@
+---
+layout: page
+title: Articles
+---
+
+<style>
+    /* Full width override */
+    .page-content .wrapper,
+    .wrapper,
+    .container,
+    .site-main {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 10px !important;
+    }
+
+    /* Remove default page header */
+    .page-content header,
+    .page-heading {
+        display: none !important;
+    }
+
+    /* Make headers white */
+    h1, h2, h3 {
+        color: #fff;
+    }
+
+    /* Grid layout */
+    .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    /* Article card style */
+    .article-card {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+    }
+
+    .article-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Thumbnail on the left */
+    .article-thumb {
+        width: 120px;
+        height: 130px;
+        flex-shrink: 0;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .article-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Content on the right */
+    .article-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .article-content h3 {
+        margin: 0 0 6px 0;
+        font-size: 1rem;
+        line-height: 1.2em;
+        color: #222;
+    }
+
+    .article-content h3:hover {
+        text-decoration: underline;
+    }
+
+    .article-content p {
+        font-size: 0.85rem;
+        color: #555;
+        margin: 0.3em 0 0;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .article-content .date {
+        font-size: 0.75rem;
+        color: #999;
+    }
+
+    /* Keyword heading style */
+    .keyword-heading {
+        margin: 40px 0 20px 0; /* spacing around keyword titles */
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #fff;
+    }
+</style>
+
+<!-- Recent Posts -->
+<h2>Recent Posts</h2>
+<div class="articles-grid">
+    {% for post in site.posts limit:6 %}
+    <a href="{{ post.url | relative_url }}" class="article-card">
+        <div class="article-thumb">
+            {% if post.background %}
+                <img src="{{ post.background }}" alt="{{ post.title }}">
+            {% else %}
+                <img src="/assets/images/placeholder.png" alt="No Image">
+            {% endif %}
+        </div>
+        <div class="article-content">
+            <h3>{{ post.title }}</h3>
+            <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
+            <p>
+                {% assign after_dark = post.content | strip_html | split: "Dark Mode" | last %}
+                {{ after_dark | strip | truncatewords: 12 }}
+            </p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+<hr>
+
+<!-- Posts by Tag -->
+{% for tag in site.tags %}
+<h3 class="keyword-heading">Keyword: [{{ tag[0] }}]</h3>
+<div class="articles-grid">
+    {% for post in tag[1] limit:4 %}
+    <a href="{{ post.url | relative_url }}" class="article-card">
+        <div class="article-thumb">
+            {% if post.background %}
+                <img src="{{ post.background }}" alt="{{ post.title }}">
+            {% else %}
+                <img src="/assets/images/placeholder.png" alt="No Image">
+            {% endif %}
+        </div>
+        <div class="article-content">
+            <h3>{{ post.title }}</h3>
+            <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
+            <p>
+                {% assign after_dark = post.content | strip_html | split: "Dark Mode" | last %}
+                {{ after_dark | strip | truncatewords: 12 }}
+            </p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endfor %}

@@ -162,7 +162,6 @@ tags: [blogpost, error-metrics]
         }
 
 
-        /* 🌙 Dark mode styles */
         body.dark-mode {
             background-color: #121212 !important;
             color: #f0f0f0 !important;
@@ -277,12 +276,10 @@ tags: [blogpost, error-metrics]
 </head>
 
 <body>
-    <!-- 🌙 Dark Mode Toggle Button -->
     <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
 
     <div class="content">
         <script>
-            // 🌙 Dark mode toggle logic
             const toggleBtn = document.getElementById("darkModeToggle");
             toggleBtn.addEventListener("click", () => {
                 document.body.classList.toggle("dark-mode");
@@ -545,7 +542,7 @@ print("RMSE:", RMSE)   # ~14.83
         </ul>
 
         <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
-         
+
         <p style="text-align: left;" class="github-link">
             <a href="https://github.com/PR-Peri/Linear-Regression-Model-From-Scratch/" title="Link to GitHub Repository"
                 style="color: #0000FF; text-decoration: none;">
@@ -553,71 +550,85 @@ print("RMSE:", RMSE)   # ~14.83
                 GitHub Repository
             </a>
         </p>
-<div class="container mt-5">
-  <h3 class="mb-4" 
-      style="display: inline-block; background: rgba(200,200,200,0.2); color: #007bff; padding: 8px 16px; border-radius: 6px;">
-    Related Articles:
-  </h3>  <div class="row">
-    
-    <!-- Related Article 1 -->
-    <div class="col-md-6 mb-4">
-      <div class="related-article-box p-3 border rounded shadow-sm h-100">
-        <a href="https://pr-peri.github.io/ml/mlr/lr/2024/08/26/multi-linear-regression.html" 
-           target="_blank" 
-           class="related-article-link text-decoration-none text-dark">
 
-          <h4>R²: R-Squared</h4>
-          
-          <!-- Thumbnail + Description side by side -->
-          <div style="display: flex; align-items: flex-start; gap: 10px;">
-            <!-- Thumbnail -->
-            <img src="/img/posts/FD-01.jpg" 
-                 alt="R-Squared" 
-                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
-            
-            <!-- Description -->
-            <p style="font-size: 0.9rem; color: #555; margin: 0;">
-              Learn how R² evaluates model accuracy, when to use it.
-            </p>
-          </div>
 
-          <span class="read-more text-primary d-block mt-2">Read More →</span>
-        </a>
-      </div>
+        {% assign current_tags = page.tags %}
+        {% assign related_posts = "" | split: "" %}
+
+        {%- comment -%}
+        Step 1: Collect posts that share at least one exact tag
+        {%- endcomment -%}
+        {% for post in site.posts %}
+        {% if post.url != page.url %}
+        {% assign overlap = "" | split: "" %}
+        {% for tag in post.tags %}
+        {% if current_tags contains tag %}
+        {% assign overlap = overlap | push: tag %}
+        {% endif %}
+        {% endfor %}
+        {% if overlap.size > 0 %}
+        {% assign related_posts = related_posts | push: post %}
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {%- comment -%}
+        Step 2: Limit to top 2 related posts
+        {%- endcomment -%}
+        {% assign related_posts = related_posts | slice: 0, 2 %}
+
+        {%- comment -%}
+        Step 3: Fallback to 2 most recent posts if no related found
+        {%- endcomment -%}
+        {% if related_posts.size == 0 %}
+        {% assign related_posts = site.posts | where_exp: "p", "p.url != page.url" | slice: 0, 2 %}
+        {% endif %}
+
+        {%- comment -%}
+        Step 4: Render related/fallback posts
+        {%- endcomment -%}
+        {% if related_posts.size > 0 %}
+        <hr>
+        <h3 class="keyword-heading"
+            style="color:#007bff; background:rgba(181, 176, 176, 0.7); padding:8px 12px; border-radius:6px; display:inline-block;">
+            Related Articles
+        </h3>
+
+        <div class="row">
+            {% for post in related_posts %}
+            <div class="col-md-6 mb-4 d-flex">
+                <div class="related-article-box p-3 border rounded shadow-sm d-flex flex-column justify-content-between w-100"
+                    style="min-height: 230px;">
+                    <a href="{{ post.url | relative_url }}"
+                        class="related-article-link text-decoration-none text-dark d-flex flex-column flex-grow-1">
+                        <h4 class="mb-2">{{ post.title }}</h4>
+
+                        <div class="d-flex align-items-start flex-grow-1" style="gap: 16px;">
+                            {% if post.background %}
+                            <img src="{{ post.background }}" alt="{{ post.title }}"
+                                style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+                            {% else %}
+                            <img src="/assets/images/placeholder.png" alt="No Image"
+                                style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+                            {% endif %}
+                            <p style="font-size: 0.9rem; color: #555; margin: 0; line-height: 1.5;">
+                                {% if post.content contains "Dark Mode" %}
+                                {% assign after_dark = post.content | strip_html | split: "Dark Mode" | last %}
+                                {{ after_dark | strip | truncatewords: 12 }}
+                                {% else %}
+                                {{ post.content | strip_html | truncatewords: 12 }}
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <span class="read-more text-primary d-block mt-2">Read More →</span>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
-
-    <!-- Related Article 2 -->
-    <div class="col-md-6 mb-4">
-      <div class="related-article-box p-3 border rounded shadow-sm h-100">
-        <a href="https://pr-peri.github.io/performance/rmse/2025/09/29/rmse-metrics.html" 
-           target="_blank" 
-           class="related-article-link text-decoration-none text-dark">
-
-          <h4>RMSE: Root Mean Squared Error</h4>
-          
-          <!-- Thumbnail + Description side by side -->
-          <div style="display: flex; align-items: flex-start; gap: 10px;">
-            <!-- Thumbnail -->
-            <img src="/img/posts/NB_01.jpeg" 
-                 alt="RMSE Metrics" 
-                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
-            
-            <!-- Description -->
-            <p style="font-size: 0.9rem; color: #555; margin: 0;">
-              Learn how RMSE evaluates model accuracy, when to use it.
-            </p>
-          </div>
-
-          <span class="read-more text-primary d-block mt-2">Read More →</span>
-        </a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-    </div>
-
     <script>
         // Message shown on right-click (keeps original behavior)
         const message = "Right- Click Function Disabled!";
