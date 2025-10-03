@@ -133,8 +133,7 @@ title: Articles
             <h3>{{ post.title }}</h3>
             <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
             <p>
-                {% assign after_dark = post.content | strip_html | split: "Dark Mode" | last %}
-                {{ after_dark | strip | truncatewords: 12 }}
+                                        {{ post.description | strip_html | truncatewords: 12 }}
             </p>
         </div>
     </a>
@@ -160,8 +159,7 @@ title: Articles
             <h3>{{ post.title }}</h3>
             <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
             <p>
-                {% assign after_dark = post.content | strip_html | split: "Dark Mode" | last %}
-                {{ after_dark | strip | truncatewords: 12 }}
+                        {{ post.description | strip_html | truncatewords: 12 }}
             </p>
         </div>
     </a>

@@ -6,6 +6,7 @@ date: 2024-08-25 08:00:10 -0400
 background: '/img/posts/LR-01.jpg'
 categories: [ML, SLR, LR]
 tags: [machine-learning, linear-regression, mathematics, tutorial]
+description: "An introduction to simple linear regression that explains how the model works, its assumptions, and how to apply it in practice."
 ---
 
 <!DOCTYPE html>
@@ -223,54 +224,6 @@ tags: [machine-learning, linear-regression, mathematics, tutorial]
             padding: 8px;
             border: 1px solid #ddd;
             text-align: center;
-        }
-
-        .related-article-box {
-            border: 1px solid #ddd;
-            border-left: 4px solid #2d6cdf;
-            padding: 15px;
-            margin: 20px 0;
-            background: #f9f9f9;
-            border-radius: 8px;
-            max-width: 500px;
-        }
-
-        .related-article-box h3 {
-            margin-top: 0;
-            font-size: 1rem;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .related-article-link {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .related-article-preview {
-            padding: 10px 0;
-        }
-
-        .related-article-preview h4 {
-            margin: 0 0 5px;
-            font-size: 1.1rem;
-            color: #2d6cdf;
-        }
-
-        .related-article-preview p {
-            margin: 0 0 8px;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .read-more {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #2d6cdf;
-        }
-
-        .related-article-link:hover .read-more {
-            text-decoration: underline;
         }
     </style>
 
@@ -847,83 +800,7 @@ tags: [machine-learning, linear-regression, mathematics, tutorial]
                 GitHub Repository
             </a>
         </p>
-
-        {% assign current_tags = page.tags %}
-        {% assign related_posts = "" | split: "" %}
-
-        {%- comment -%}
-        Step 1: Collect posts that share at least one exact tag
-        {%- endcomment -%}
-        {% for post in site.posts %}
-        {% if post.url != page.url %}
-        {% assign overlap = "" | split: "" %}
-        {% for tag in post.tags %}
-        {% if current_tags contains tag %}
-        {% assign overlap = overlap | push: tag %}
-        {% endif %}
-        {% endfor %}
-        {% if overlap.size > 0 %}
-        {% assign related_posts = related_posts | push: post %}
-        {% endif %}
-        {% endif %}
-        {% endfor %}
-
-        {%- comment -%}
-        Step 2: Limit to top 2 related posts
-        {%- endcomment -%}
-        {% assign related_posts = related_posts | slice: 0, 2 %}
-
-        {%- comment -%}
-        Step 3: Fallback to 2 most recent posts if no related found
-        {%- endcomment -%}
-        {% if related_posts.size == 0 %}
-        {% assign related_posts = site.posts | where_exp: "p", "p.url != page.url" | slice: 0, 2 %}
-        {% endif %}
-
-        {%- comment -%}
-        Step 4: Render related/fallback posts
-        {%- endcomment -%}
-        {% if related_posts.size > 0 %}
-        <hr>
-        <h3 class="keyword-heading"
-            style="color:#007bff; background:rgba(181, 176, 176, 0.7); padding:8px 12px; border-radius:6px; display:inline-block;">
-            Related Articles
-        </h3>
-
-        <div class="row">
-            {% for post in related_posts %}
-            <div class="col-md-6 mb-4 d-flex">
-                <div class="related-article-box p-3 border rounded shadow-sm d-flex flex-column justify-content-between w-100"
-                    style="min-height: 230px;">
-                    <a href="{{ post.url | relative_url }}"
-                        class="related-article-link text-decoration-none text-dark d-flex flex-column flex-grow-1">
-                        <h4 class="mb-2">{{ post.title }}</h4>
-
-                        <div class="d-flex align-items-start flex-grow-1" style="gap: 16px;">
-                            {% if post.background %}
-                            <img src="{{ post.background }}" alt="{{ post.title }}"
-                                style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
-                            {% else %}
-                            <img src="/assets/images/placeholder.png" alt="No Image"
-                                style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
-                            {% endif %}
-                            <p style="font-size: 0.9rem; color: #555; margin: 0; line-height: 1.5;">
-                                {% if post.content contains "Dark Mode" %}
-                                {% assign after_dark = post.content | strip_html | split: "Dark Mode" | last %}
-                                {{ after_dark | strip | truncatewords: 12 }}
-                                {% else %}
-                                {{ post.content | strip_html | truncatewords: 12 }}
-                                {% endif %}
-                            </p>
-                        </div>
-
-                        <span class="read-more text-primary d-block mt-2">Read More →</span>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        {% include related-article.html %}
     </div>
     <script>
         // Message shown on right-click (keeps original behavior)
