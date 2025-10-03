@@ -6,7 +6,8 @@ date: 2025-10-02 01:05:13 -0400
 background: '/img/posts/06.jpg'
 categories: [performance, RSS]
 tags: [blogpost, error-metrics]
-description: "Learn what Residual Sum of Squares is, how it measures the difference between predicted and actual values, and why it is important in regression analysis."
+description: "Learn what Residual Sum of Squares is, how it measures the difference between predicted and actual values,
+and why it is important in regression analysis."
 ---
 
 <!DOCTYPE html>
@@ -505,68 +506,7 @@ print("RMSE:", RMSE)   # ~14.83
         </p>
         {% include related-article.html %}
     </div>
-    <script>
-        // Message shown on right-click (keeps original behavior)
-        const message = "Right- Click Function Disabled!";
-
-        // Right-click: alert message and prevent default context menu
-        document.addEventListener('contextmenu', function (e) {
-            try { alert(message); } catch (err) { /* fallback: no-op */ }
-            e.preventDefault();
-        });
-
-        // Prevent certain dev-key combos (F12, Ctrl+Shift+I/C/J, Ctrl+U)
-        document.addEventListener('keydown', function (e) {
-            // Normalize key for comparisons
-            const key = (e.key || '').toUpperCase();
-
-            // F12
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-
-            // Ctrl+Shift+(I/J/C)
-            if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) {
-                e.preventDefault();
-                return false;
-            }
-
-            // Ctrl+U (view-source / page source)
-            if (e.ctrlKey && key === 'U') {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // Disable text selection and most mouse-driven selection actions (older-browsers compatibility)
-        function disableselect(e) { return false; }
-        function reEnable() { return true; }
-
-        // Legacy handlers retained for compatibility (keeps original intent)
-        document.onselectstart = disableselect; // IE/Old browsers
-        if (window.sidebar) { // Netscape / old browsers
-            document.onmousedown = disableselect;
-            document.onclick = reEnable;
-        }
-
-        // Back-to-top button logic
-        const mybutton = document.getElementById("myBtn");
-        window.onscroll = function () { scrollFunction(); };
-
-        function scrollFunction() {
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                mybutton.style.display = "block";
-            } else {
-                mybutton.style.display = "none";
-            }
-        }
-
-        function topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
-    </script>
+    <script src="/includes/blog-style.js"></script>
 </body>
 
 </html>
