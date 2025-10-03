@@ -160,184 +160,205 @@ calculations, derivations, Python code, and visualizations."
 </head>
 
 <body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
     <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
 
-        <!-- ✅ BLOGPOST CONTENT STARTS -->
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+        <div class="content">
 
-        <h1>A Beginner’s Guide to Ridge Regression (L2 Regularization)</h1>
+            <!-- ✅ BLOGPOST CONTENT STARTS -->
 
-        <p>
-            Linear regression is one of the simplest and most powerful tools in machine learning, but it comes with
-            weaknesses.
-            When predictors are <strong>highly correlated</strong> (a situation called <em>multicollinearity</em>), or
-            when the dataset is small and noisy,
-            the estimated coefficients can become <strong>unstable and extremely large</strong>.
-            This instability leads to poor generalization on new data.
-            To overcome this, we use <strong>regularization</strong> techniques.
-            One of the most popular is <strong>Ridge Regression</strong>, also known as <strong>L2
-                regularization</strong>.
-        </p>
+            <h1>A Beginner’s Guide to Ridge Regression (L2 Regularization)</h1>
 
-        <hr>
+            <p>
+                Linear regression is one of the simplest and most powerful tools in machine learning, but it comes with
+                weaknesses.
+                When predictors are <strong>highly correlated</strong> (a situation called <em>multicollinearity</em>),
+                or
+                when the dataset is small and noisy,
+                the estimated coefficients can become <strong>unstable and extremely large</strong>.
+                This instability leads to poor generalization on new data.
+                To overcome this, we use <strong>regularization</strong> techniques.
+                One of the most popular is <strong>Ridge Regression</strong>, also known as <strong>L2
+                    regularization</strong>.
+            </p>
 
-        <h2>1. Why Do We Need Ridge Regression?</h2>
-        <p>
-            Ordinary Least Squares (OLS) regression estimates coefficients by minimizing the sum of squared errors:
-        </p>
+            <hr>
 
-        <p class="math-display">\[
-            J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
-            \]</p>
+            <h2>1. Why Do We Need Ridge Regression?</h2>
+            <p>
+                Ordinary Least Squares (OLS) regression estimates coefficients by minimizing the sum of squared errors:
+            </p>
 
-        <p>
-            This works well when predictors are independent and the dataset is large.
-            But when predictors are correlated, \(X^T X\) (the covariance matrix of features) becomes nearly singular.
-            <strong>Singular means the matrix cannot be inverted</strong>, which makes solving the regression unstable.
-            Small changes in data can then cause large swings in coefficients.
-        </p>
+            <p class="math-display">\[
+                J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+                \]</p>
 
-        <p>
-            Ridge Regression fixes this by adding a <strong>penalty term</strong> on the size of the coefficients:
-        </p>
+            <p>
+                This works well when predictors are independent and the dataset is large.
+                But when predictors are correlated, \(X^T X\) (the covariance matrix of features) becomes nearly
+                singular.
+                <strong>Singular means the matrix cannot be inverted</strong>, which makes solving the regression
+                unstable.
+                Small changes in data can then cause large swings in coefficients.
+            </p>
 
-        <p class="math-display">\[
-            J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
-            \]</p>
+            <p>
+                Ridge Regression fixes this by adding a <strong>penalty term</strong> on the size of the coefficients:
+            </p>
 
-        <p>
-            Here, \( \lambda \) is a tuning parameter:
-        </p>
-        <ul>
-            <li>\(\lambda = 0\): Ridge = OLS (no regularization).</li>
-            <li>\(\lambda > 0\): coefficients are shrunk toward zero.</li>
-            <li>\(\lambda \to \infty\): all coefficients go toward zero, leading to underfitting.</li>
-        </ul>
+            <p class="math-display">\[
+                J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
+                \]</p>
 
-        <hr>
+            <p>
+                Here, \( \lambda \) is a tuning parameter:
+            </p>
+            <ul>
+                <li>\(\lambda = 0\): Ridge = OLS (no regularization).</li>
+                <li>\(\lambda > 0\): coefficients are shrunk toward zero.</li>
+                <li>\(\lambda \to \infty\): all coefficients go toward zero, leading to underfitting.</li>
+            </ul>
 
-        <h2>2. How Do We Derive the Ridge Equation?</h2>
-        <p>
-            The OLS closed-form solution is:
-        </p>
+            <hr>
 
-        <p class="math-display">\[
-            \hat{\beta}_{OLS} = (X^T X)^{-1} X^T y
-            \]</p>
+            <h2>2. How Do We Derive the Ridge Equation?</h2>
+            <p>
+                The OLS closed-form solution is:
+            </p>
 
-        <p>
-            For Ridge, the cost function includes the penalty:
-        </p>
+            <p class="math-display">\[
+                \hat{\beta}_{OLS} = (X^T X)^{-1} X^T y
+                \]</p>
 
-        <p class="math-display">\[
-            J(\beta) = (y - X\beta)^T (y - X\beta) + \lambda \beta^T \beta
-            \]</p>
+            <p>
+                For Ridge, the cost function includes the penalty:
+            </p>
 
-        <p>
-            Taking the derivative and setting it to zero gives:
-        </p>
+            <p class="math-display">\[
+                J(\beta) = (y - X\beta)^T (y - X\beta) + \lambda \beta^T \beta
+                \]</p>
 
-        <p class="math-display">\[
-            (X^T X + \lambda I)\beta = X^T y
-            \]</p>
+            <p>
+                Taking the derivative and setting it to zero gives:
+            </p>
 
-        <p>
-            And solving:
-        </p>
+            <p class="math-display">\[
+                (X^T X + \lambda I)\beta = X^T y
+                \]</p>
 
-        <p class="math-display">\[
-            \hat{\beta}_{ridge} = (X^T X + \lambda I)^{-1} X^T y
-            \]</p>
+            <p>
+                And solving:
+            </p>
 
-        <p>
-            This ensures the matrix is invertible and stabilizes the solution.
-        </p>
+            <p class="math-display">\[
+                \hat{\beta}_{ridge} = (X^T X + \lambda I)^{-1} X^T y
+                \]</p>
 
-        <hr>
+            <p>
+                This ensures the matrix is invertible and stabilizes the solution.
+            </p>
 
-        <h2>3. Manual Example with a Tiny Dataset (Step-by-Step)</h2>
-        <p>Dataset:</p>
+            <hr>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>x</th>
-                    <th>y</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>2</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>3</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>7</td>
-                </tr>
-            </tbody>
-        </table>
+            <h2>3. Manual Example with a Tiny Dataset (Step-by-Step)</h2>
+            <p>Dataset:</p>
 
-        <p><strong>Step 1: Design matrix \(X\) and response \(y\):</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>x</th>
+                        <th>y</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>7</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <p class="math-display">\[
-            X = \begin{bmatrix}1 & 1 \\ 1 & 2 \\ 1 & 3 \\ 1 & 4 \end{bmatrix}, \quad
-            y = \begin{bmatrix}2 \\ 3 \\ 5 \\ 7\end{bmatrix}
-            \]</p>
+            <p><strong>Step 1: Design matrix \(X\) and response \(y\):</strong></p>
 
-        <p><strong>Step 2: Compute \(X^T X\) and \(X^T y\):</strong></p>
+            <p class="math-display">\[
+                X = \begin{bmatrix}1 & 1 \\ 1 & 2 \\ 1 & 3 \\ 1 & 4 \end{bmatrix}, \quad
+                y = \begin{bmatrix}2 \\ 3 \\ 5 \\ 7\end{bmatrix}
+                \]</p>
 
-        <p class="math-display">\[
-            X^T X = \begin{bmatrix}4 & 10 \\ 10 & 30\end{bmatrix}, \quad
-            X^T y = \begin{bmatrix}17 \\ 51\end{bmatrix}
-            \]</p>
+            <p><strong>Step 2: Compute \(X^T X\) and \(X^T y\):</strong></p>
 
-        <p><strong>Step 3: Add penalty (\(\lambda = 1\)):</strong></p>
+            <p class="math-display">\[
+                X^T X = \begin{bmatrix}4 & 10 \\ 10 & 30\end{bmatrix}, \quad
+                X^T y = \begin{bmatrix}17 \\ 51\end{bmatrix}
+                \]</p>
 
-        <p class="math-display">\[
-            X^T X + \lambda I = \begin{bmatrix}5 & 10 \\ 10 & 31\end{bmatrix}
-            \]</p>
+            <p><strong>Step 3: Add penalty (\(\lambda = 1\)):</strong></p>
 
-        <p><strong>Step 4: Inverse:</strong></p>
+            <p class="math-display">\[
+                X^T X + \lambda I = \begin{bmatrix}5 & 10 \\ 10 & 31\end{bmatrix}
+                \]</p>
 
-        <p class="math-display">\[
-            (X^T X + \lambda I)^{-1} = \frac{1}{55}\begin{bmatrix}31 & -10 \\ -10 & 5\end{bmatrix}
-            \]</p>
+            <p><strong>Step 4: Inverse:</strong></p>
 
-        <p><strong>Step 5: Multiply (showing the intermediate step):</strong></p>
+            <p class="math-display">\[
+                (X^T X + \lambda I)^{-1} = \frac{1}{55}\begin{bmatrix}31 & -10 \\ -10 & 5\end{bmatrix}
+                \]</p>
 
-        <p class="math-display">\[
-            \begin{bmatrix}31 & -10 \\ -10 & 5\end{bmatrix}
-            \begin{bmatrix}17 \\ 51\end{bmatrix}
-            =
-            \begin{bmatrix}935 - 510 \\ -170 + 255\end{bmatrix}
-            =
-            \begin{bmatrix}425 \\ 85\end{bmatrix}
-            \]</p>
+            <p><strong>Step 5: Multiply (showing the intermediate step):</strong></p>
 
-        <p class="math-display">\[
-            \hat{\beta}_{ridge} = \frac{1}{55}\begin{bmatrix}425 \\ 85\end{bmatrix}
-            = \begin{bmatrix}0.309 \\ 1.545\end{bmatrix}
-            \]</p>
+            <p class="math-display">\[
+                \begin{bmatrix}31 & -10 \\ -10 & 5\end{bmatrix}
+                \begin{bmatrix}17 \\ 51\end{bmatrix}
+                =
+                \begin{bmatrix}935 - 510 \\ -170 + 255\end{bmatrix}
+                =
+                \begin{bmatrix}425 \\ 85\end{bmatrix}
+                \]</p>
 
-        <p>
-            Final model:
-        </p>
+            <p class="math-display">\[
+                \hat{\beta}_{ridge} = \frac{1}{55}\begin{bmatrix}425 \\ 85\end{bmatrix}
+                = \begin{bmatrix}0.309 \\ 1.545\end{bmatrix}
+                \]</p>
 
-        <p class="math-display">\[
-            \hat{y} = 0.309 + 1.545x
-            \]</p>
+            <p>
+                Final model:
+            </p>
 
-        <hr>
+            <p class="math-display">\[
+                \hat{y} = 0.309 + 1.545x
+                \]</p>
 
-        <h2>4. Manual Calculation in Python (NumPy)</h2>
-        <pre><code class="language-python">
+            <hr>
+
+            <h2>4. Manual Calculation in Python (NumPy)</h2>
+            <pre><code class="language-python">
 import numpy as np
 
 # Design matrix with intercept
@@ -354,10 +375,10 @@ beta_ridge = ridge_inv @ Xty
 print("Ridge coefficients:", beta_ridge)
 </code></pre>
 
-        <hr>
+            <hr>
 
-        <h2>5. Ridge in Scikit-learn</h2>
-        <pre><code class="language-python">
+            <h2>5. Ridge in Scikit-learn</h2>
+            <pre><code class="language-python">
 from sklearn.linear_model import Ridge
 import numpy as np
 
@@ -371,81 +392,83 @@ print("Intercept:", ridge.intercept_)
 print("Coefficient:", ridge.coef_)
 </code></pre>
 
-        <hr>
+            <hr>
 
-        <h2>6. Visualizing Ridge Effect</h2>
+            <h2>6. Visualizing Ridge Effect</h2>
 
-        <h3>(a) Coefficients vs λ</h3>
-        <img class="img-fluid" src="/img/posts/ridge-post/ridge_coeffs.png" alt="Ridge coefficients vs lambda">
-        <p>As λ increases, coefficients shrink toward zero. This prevents unstable, extreme values.</p>
+            <h3>(a) Coefficients vs λ</h3>
+            <img class="img-fluid" src="/img/posts/ridge-post/ridge_coeffs.png" alt="Ridge coefficients vs lambda">
+            <p>As λ increases, coefficients shrink toward zero. This prevents unstable, extreme values.</p>
 
-        <h3>(b) Error vs λ</h3>
-        <img class="img-fluid" src="/img/posts/ridge-post/ridge_error.png" alt="Ridge error vs lambda">
-        <p>
-            For very small λ, the model can overfit (low bias, high variance).
-            For very large λ, it underfits (high bias, low variance).
-            <strong>The sweet spot is at an intermediate λ, which is why we usually pick it using
-                cross-validation.</strong>
-        </p>
+            <h3>(b) Error vs λ</h3>
+            <img class="img-fluid" src="/img/posts/ridge-post/ridge_error.png" alt="Ridge error vs lambda">
+            <p>
+                For very small λ, the model can overfit (low bias, high variance).
+                For very large λ, it underfits (high bias, low variance).
+                <strong>The sweet spot is at an intermediate λ, which is why we usually pick it using
+                    cross-validation.</strong>
+            </p>
 
-        <hr>
+            <hr>
 
-        <h2>7. When Should You Use Ridge?</h2>
-        <ul>
-            <li>When features are correlated (multicollinearity).</li>
-            <li>When you care more about prediction than coefficient interpretation.</li>
-            <li>When you want to reduce variance at the cost of some bias.</li>
-        </ul>
+            <h2>7. When Should You Use Ridge?</h2>
+            <ul>
+                <li>When features are correlated (multicollinearity).</li>
+                <li>When you care more about prediction than coefficient interpretation.</li>
+                <li>When you want to reduce variance at the cost of some bias.</li>
+            </ul>
 
-        <hr>
+            <hr>
 
-        <h2>8. Pros and Cons</h2>
-        <h3>Pros</h3>
-        <ul>
-            <li>Stabilizes regression with correlated predictors.</li>
-            <li>Improves prediction accuracy on unseen data.</li>
-            <li>Always solvable (matrix invertibility guaranteed).</li>
-        </ul>
-        <h3>Cons</h3>
-        <ul>
-            <li>Does not perform feature selection (coefficients never become exactly zero).</li>
-            <li>Choice of λ is critical and must be tuned (cross-validation).</li>
-            <li>Coefficients are harder to interpret after shrinkage.</li>
-        </ul>
+            <h2>8. Pros and Cons</h2>
+            <h3>Pros</h3>
+            <ul>
+                <li>Stabilizes regression with correlated predictors.</li>
+                <li>Improves prediction accuracy on unseen data.</li>
+                <li>Always solvable (matrix invertibility guaranteed).</li>
+            </ul>
+            <h3>Cons</h3>
+            <ul>
+                <li>Does not perform feature selection (coefficients never become exactly zero).</li>
+                <li>Choice of λ is critical and must be tuned (cross-validation).</li>
+                <li>Coefficients are harder to interpret after shrinkage.</li>
+            </ul>
 
-        <hr>
+            <hr>
 
-        <h2>9. Key Takeaways</h2>
-        <ul>
-            <li>Ridge adds an L2 penalty that shrinks coefficients.</li>
-            <li>It’s useful for noisy, correlated datasets.</li>
-            <li>λ controls the bias-variance tradeoff.</li>
-            <li>Great entry point for learning regularization.</li>
-        </ul>
+            <h2>9. Key Takeaways</h2>
+            <ul>
+                <li>Ridge adds an L2 penalty that shrinks coefficients.</li>
+                <li>It’s useful for noisy, correlated datasets.</li>
+                <li>λ controls the bias-variance tradeoff.</li>
+                <li>Great entry point for learning regularization.</li>
+            </ul>
 
-        <hr>
+            <hr>
 
-        <h2>10. Conclusion</h2>
-        <p>
-            Ridge Regression shows that <strong>a slightly biased model can generalize better</strong>
-            than an unbiased but unstable model.
-            By controlling coefficient size, Ridge helps create robust and reliable predictive models.
-        </p>
+            <h2>10. Conclusion</h2>
+            <p>
+                Ridge Regression shows that <strong>a slightly biased model can generalize better</strong>
+                than an unbiased but unstable model.
+                By controlling coefficient size, Ridge helps create robust and reliable predictive models.
+            </p>
 
-        <hr>
+            <hr>
 
-        <h2>References</h2>
-        <ul>
-            <li><a href="https://en.wikipedia.org/wiki/Ridge_regression">Wikipedia: Ridge Regression</a></li>
-            <li><a href="https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression">Scikit-learn
-                    Documentation</a></li>
-            <li><a href="https://statweb.stanford.edu/~tibs/ElemStatLearn/">Hastie, Tibshirani, Friedman – Elements of
-                    Statistical Learning</a></li>
-        </ul>
+            <h2>References</h2>
+            <ul>
+                <li><a href="https://en.wikipedia.org/wiki/Ridge_regression">Wikipedia: Ridge Regression</a></li>
+                <li><a href="https://scikit-learn.org/stable/modules/linear_model.html#ridge-regression">Scikit-learn
+                        Documentation</a></li>
+                <li><a href="https://statweb.stanford.edu/~tibs/ElemStatLearn/">Hastie, Tibshirani, Friedman – Elements
+                        of
+                        Statistical Learning</a></li>
+            </ul>
 
-        <!-- ✅ BLOGPOST CONTENT ENDS -->
+            <!-- ✅ BLOGPOST CONTENT ENDS -->
         {% include related-article.html %}
     </div>
+    <script src="/includes/blog-style.js"></script>
 </body>
 
 </html>
