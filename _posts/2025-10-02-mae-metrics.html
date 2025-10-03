@@ -1,0 +1,324 @@
+---
+layout: post
+title: "A Beginner’s Guide to Mean Absolute Error (MAE)"
+subtitle: "Evaluation Metrics"
+date: 2025-10-01 19:05:13 -0400
+background: '/img/posts/FD-01.jpg'
+categories: [performance, mae]
+tags: [blogpost, error-metrics]
+description: "Learn Mean Absolute Error (MAE) with formula, examples, Python code, and visualizations. A
+beginner-friendly guide to understanding error metrics in machine learning and model evaluation."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding MAE: A Step-by-Step Guide</title>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .math-display {
+            overflow-x: auto !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+
+        <h1>A Beginner’s Guide to Mean Absolute Error (MAE)</h1>
+
+        <p>Mean Absolute Error (MAE) is one of the simplest and most intuitive metrics for evaluating regression models.
+            It measures the average absolute difference between actual and predicted values, providing a clear
+            interpretation of model accuracy in the same units as the target variable.</p>
+
+        <h2>Formula</h2>
+        <p>The formula for MAE is:</p>
+
+        <p class="math-display">\[
+            MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+            \]</p>
+
+        <h2>Worked Example</h2>
+        <p>Consider the following dataset of actual vs predicted values:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Actual</th>
+                    <th>Predicted</th>
+                    <th>Absolute Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>250</td>
+                    <td>260</td>
+                    <td>|250 - 260| = 10</td>
+                </tr>
+                <tr>
+                    <td>400</td>
+                    <td>390</td>
+                    <td>|400 - 390| = 10</td>
+                </tr>
+                <tr>
+                    <td>450</td>
+                    <td>470</td>
+                    <td>|450 - 470| = 20</td>
+                </tr>
+                <tr>
+                    <td>500</td>
+                    <td>480</td>
+                    <td>|500 - 480| = 20</td>
+                </tr>
+                <tr>
+                    <td>550</td>
+                    <td>560</td>
+                    <td>|550 - 560| = 10</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Now, we add up all the absolute errors:</p>
+        <p class="math-display">\[ 10 + 10 + 20 + 20 + 10 = 70 \]</p>
+
+        <p>Then, divide by the total number of observations (n = 5):</p>
+        <p class="math-display">\[ MAE = \frac{70}{5} = 14 \]</p>
+
+        <p>So the Mean Absolute Error for this dataset is <strong>14</strong>.</p>
+
+        <h2>Visualizing MAE</h2>
+
+        <h3>1. Actual vs Predicted</h3>
+        <img class="img-fluid" src="/img/posts/mae-post/actual_vs_predicted.png"
+            alt="Scatter plot of actual vs predicted values for MAE">
+        <p><strong>Explanation:</strong> This chart compares the model’s predictions to the actual values. The red
+            dashed line represents a perfect prediction line (where predicted = actual). Points closer to the line
+            indicate better accuracy, while larger deviations show prediction errors.</p>
+
+        <h3>2. Residuals (Absolute) vs Predicted</h3>
+        <img class="img-fluid" src="/img/posts/mae-post/residuals_vs_predicted.png"
+            alt="Residuals vs predicted plot for MAE metric">
+        <p><strong>Explanation:</strong> This plot shows the size of the errors (absolute residuals) relative to the
+            predicted values. Ideally, residuals should be small and evenly scattered. Large residuals indicate where
+            the model struggles to make accurate predictions.</p>
+
+        <h2>Python Example</h2>
+        <pre><code class="language-python">import numpy as np
+from sklearn.metrics import mean_absolute_error
+
+actual = [250, 400, 450, 500, 550]
+pred   = [260, 390, 470, 480, 560]
+
+mae = mean_absolute_error(actual, pred)
+print("MAE:", mae)
+</code></pre>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+            <li>MAE is simple and intuitive, measuring the average error in the same units as the target variable.</li>
+            <li>Unlike RMSE, it does not penalize large errors more heavily than small errors.</li>
+            <li>Great for interpretability but may not always highlight rare, large errors.</li>
+        </ul>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://scikit-learn.org/stable/modules/model_evaluation.html#mean-absolute-error">Scikit-learn
+                    Documentation on MAE</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Mean_absolute_error">Wikipedia: Mean Absolute Error</a></li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
