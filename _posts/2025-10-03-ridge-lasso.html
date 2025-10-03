@@ -1,0 +1,324 @@
+---
+layout: post
+title: "A Beginner’s Guide to Lasso Regression"
+subtitle: "Regularization Techniques"
+date: 2025-10-03 03:05:13 -0400
+background: 'img/posts/ridge-lasso/ridge-02.jpg'
+categories: [ML,LR]
+tags: [machine-learning, regression]
+description: "Learn what Lasso Regression is, why it matters, and how it works step by step with simple examples and
+explanations."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>A Beginner’s Guide to Lasso Regression</title>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            user-select: none;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .math-display {
+            overflow-x: auto !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+
+        <!-- ✅ BLOGPOST CONTENT STARTS -->
+        <h1>A Beginner’s Guide to Lasso Regression</h1>
+
+        <h2>1. Introduction</h2>
+        <p>
+            In previous posts, we explored <strong>Linear Regression</strong>, <strong>Ridge Regression</strong>, and
+            evaluation metrics like RMSE and R².
+            In this post, we’ll dive into <strong>Lasso Regression</strong>, short for <em>Least Absolute Shrinkage and
+                Selection Operator</em>.
+        </p>
+        <p>
+            While Ridge Regression (L2 penalty) shrinks coefficients but keeps them nonzero, <strong>Lasso Regression
+                (L1 penalty) can shrink some coefficients to exactly zero</strong>.
+            This makes Lasso particularly powerful for <strong>feature selection</strong>, since it automatically drops
+            irrelevant predictors.
+        </p>
+
+        <h2>2. The Lasso Cost Function</h2>
+        <p>Ordinary Least Squares (OLS) minimizes squared errors:</p>
+        <p class="math-display">$$ J(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$</p>
+        <p>Ridge adds an L2 penalty:</p>
+        <p class="math-display">$$ J_{ridge}(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^p
+            \beta_j^2 $$</p>
+        <p>Lasso instead uses an L1 penalty:</p>
+        <p class="math-display">$$ J_{lasso}(\beta) = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^p
+            |\beta_j| $$</p>
+
+        <h2>3. Why Does Lasso Set Coefficients to Zero?</h2>
+        <p>
+            Geometrically, Ridge uses a circular (L2 ball) constraint, while Lasso uses a diamond-shaped (L1 ball)
+            constraint.
+            The corners of the diamond tend to align with axes, meaning solutions often hit an axis, forcing
+            coefficients to zero.
+        </p>
+        <img src="/img/posts/ridge-lasso/lasso-geometry.png" alt="Lasso vs Ridge geometry" class="img-fluid">
+        <p><em>Explanation:</em> Notice how the sharp corners of the diamond (L1) are more likely to “touch” the optimal
+            solution on an axis, forcing coefficients to exactly zero. Ridge’s circle (L2) only shrinks them but rarely
+            sets them to zero.</p>
+
+        <h3>Soft-thresholding</h3>
+        <p>
+            The Lasso solution is based on a process called <strong>soft-thresholding</strong>:
+        </p>
+        <p class="math-display">$$ S(z, \gamma) = \text{sign}(z) \cdot \max(|z| - \gamma, 0) $$</p>
+        <p>
+            This pushes small coefficient values to exactly zero. Imagine a V-shaped function: flat at the bottom
+            (coefficients vanish), slanted outside (coefficients shrink).
+        </p>
+        <img src="/img/posts/ridge-lasso/lasso_soft_threshold.png" alt="Soft-thresholding function" class="img-fluid">
+        <p><em>Explanation:</em> Any coefficient smaller than γ in magnitude becomes exactly zero. This is how Lasso
+            performs automatic feature selection.</p>
+
+        <h2>4. Example with a Tiny Dataset</h2>
+        <p>Let’s use a small dataset so we can follow the math step by step:</p>
+        <table>
+            <tr>
+                <th>X</th>
+                <th>y</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>7</td>
+            </tr>
+        </table>
+
+        <img src="/img/posts/ridge-lasso/lasso_scatter_ols.png" alt="OLS regression line on dataset" class="img-fluid">
+
+        <p>The OLS solution gives approximately:</p>
+        <p class="math-display">$$ y = 0.5 + 1.5x $$</p>
+
+        <h3>Step 1: Compute z</h3>
+        <p>We compute correlation between X and y:</p>
+        <p class="math-display">$$ z = \frac{1}{n} \sum x_i y_i = \frac{1}{4}(1*2 + 2*3 + 3*5 + 4*7) = 12.75 $$</p>
+
+        <h3>Step 2: Apply Penalty</h3>
+        <p>With λ = 1:</p>
+        <p class="math-display">$$ \gamma = \frac{\lambda}{2n} = \frac{1}{8} = 0.125 $$</p>
+
+        <h3>Step 3: Soft-thresholding</h3>
+        <p class="math-display">$$ \beta_1 = S(12.75, 0.125) = 12.625 $$</p>
+        <p>The coefficient shrinks slightly. Larger λ shrinks more, eventually reaching zero.</p>
+
+        <h3>Step 4: Manual Python Demo</h3>
+        <pre><code class="language-python">
+import numpy as np
+
+X = np.array([1,2,3,4])
+y = np.array([2,3,5,7])
+n = len(y)
+
+z = (1/n) * np.sum(X * y)
+lam = 1
+gamma = lam / (2*n)
+
+def soft_threshold(z, gamma):
+    if z > gamma:
+        return z - gamma
+    elif z < -gamma:
+        return z + gamma
+    else:
+        return 0
+
+beta1 = soft_threshold(z, gamma)
+print("z =", z)
+print("gamma =", gamma)
+print("Updated coefficient β1 =", beta1)
+print("Predictions:", beta1 * X)
+        </code></pre>
+
+        <h2>5. Using Scikit-learn</h2>
+        <pre><code class="language-python">
+from sklearn.linear_model import Lasso
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+
+X = np.array([[1],[2],[3],[4]])
+y = np.array([2,3,5,7])
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+model = Lasso(alpha=1)
+model.fit(X_scaled,y)
+
+print("Intercept:", model.intercept_)
+print("Coefficient:", model.coef_)
+        </code></pre>
+        <p><em>Explanation:</em> Unlike the manual demo, scikit-learn handles iterative updates and bias term. Notice
+            that coefficients may shrink to zero depending on λ.</p>
+
+        <h2>6. Visualizations</h2>
+        <img src="/img/posts/ridge-lasso/lasso_lines.png" alt="Lasso coefficient path" class="img-fluid">
+        <p><em>Explanation:</em> Each colored line is a coefficient path. As λ increases (moving right), more
+            coefficients are pulled to zero. This demonstrates Lasso’s ability to perform feature selection.</p>
+
+        <img src="/img/posts/ridge-lasso/lasso_lines.png" alt="Error vs lambda in Lasso" class="img-fluid">
+        <p><em>Explanation:</em> Training error always rises as λ increases (model becomes simpler). Validation error
+            often decreases first (reducing overfitting), then rises again (underfitting). The “U-shape” shows why
+            cross-validation is needed to find the optimal λ.</p>
+
+        <h2>7. Ridge vs Lasso</h2>
+        <table>
+            <tr>
+                <th>Aspect</th>
+                <th>Ridge</th>
+                <th>Lasso</th>
+            </tr>
+            <tr>
+                <td>Penalty</td>
+                <td>L2 (squared)</td>
+                <td>L1 (absolute)</td>
+            </tr>
+            <tr>
+                <td>Effect on Coefficients</td>
+                <td>Shrinks but never zero</td>
+                <td>Can shrink to exactly zero</td>
+            </tr>
+            <tr>
+                <td>Use Case</td>
+                <td>Handles multicollinearity</td>
+                <td>Feature selection</td>
+            </tr>
+        </table>
+
+        <h2>8. Key Takeaways</h2>
+        <ul>
+            <li>Lasso adds an L1 penalty, unlike Ridge which uses L2.</li>
+            <li>Lasso can shrink coefficients to zero, performing automatic feature selection.</li>
+            <li>Always standardize features before applying Lasso.</li>
+            <li>The choice of λ (alpha) is crucial: too small → overfitting, too large → underfitting.</li>
+        </ul>
+
+        <h2>9. Conclusion</h2>
+        <p>
+            Lasso Regression is a powerful extension of linear regression.
+            It combats overfitting through regularization, and simplifies models by removing irrelevant features.
+            <strong>Ridge shrinks, Lasso selects.</strong>
+        </p>
+
+        <h2>10. References</h2>
+        <ul>
+            <li>Tibshirani, R. (1996). Regression Shrinkage and Selection via the Lasso.</li>
+            <li><a href="https://scikit-learn.org/stable/modules/linear_model.html#lasso">Scikit-learn Lasso Docs</a>
+            </li>
+            <li>Elements of Statistical Learning (Hastie, Tibshirani, Friedman)</li>
+        </ul>
+
+        <!-- ✅ BLOGPOST CONTENT ENDS -->
+    </div>
+</body>
+
+</html>
