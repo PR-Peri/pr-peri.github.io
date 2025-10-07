@@ -1,0 +1,514 @@
+---
+layout: post
+title: "K-Nearest Neighbors (KNN) — Part 1: Classification"
+subtitle: "A beginner-friendly, step-by-step guide using the Iris dataset"
+date: 2025-10-05 17:00:00 +0800
+background: '/img/posts/knn-classify/knn-01.jpg'
+categories: [ML, KNN]
+tags: [KNN, classification, tutorial]
+description: "Introductory guide to K-Nearest Neighbors for classification with code and intuition."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding KNN : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+
+        <h1>K-Nearest Neighbors (KNN) — Part 1: Classification</h1>
+
+        <h2>1) What is KNN?</h2>
+        <p><strong>K-Nearest Neighbors (KNN)</strong> is a simple, intuitive algorithm that classifies data
+            points by looking at the labels of the closest points in the training set. It's <em>instance-based</em>:
+            nothing is “learned” as coefficients — the algorithm simply stores the examples and uses them at prediction
+            time.</p>
+
+        <h2>2) Where the equations come from — geometry + voting</h2>
+        <p>KNN uses two simple ideas: <strong>distance</strong> to measure how close points are, and
+            <strong>voting</strong>
+            to combine labels from neighbors into a single prediction. Both come from elementary geometry and counting.
+        </p>
+
+        <h3>Distance: Euclidean (Pythagoras)</h3>
+        <p>In two dimensions the straight-line distance between points \(\mathbf{x}=(x_1,x_2)\) and
+            \(\mathbf{y}=(y_1,y_2)\) follows from the Pythagorean theorem:</p>
+        <div class="math-display">\[ d(\mathbf{x},\mathbf{y}) = \sqrt{(x_1-y_1)^2 + (x_2-y_2)^2}. \]</div>
+        <p>Generalising to \(n\) dimensions gives the Euclidean (\(L_2\)) distance:</p>
+        <div class="math-display">\[ d(\mathbf{x},\mathbf{y}) = \left(\sum_{j=1}^n (x_j - y_j)^2\right)^{\frac{1}{2}}.
+            \]</div>
+        <p>Intuitively: square differences along each axis, add them (this gives squared straight-line distance), then
+            take
+            the square root to return to the original scale.</p>
+
+        <h3>Voting: Turning neighbors into a label</h3>
+        <p>Once we have distances, pick the \(k\) nearest neighbors of the query point \(q\) (call this set \(N_k(q)\)).
+            The simplest prediction rule is majority vote (uniform weights):</p>
+        <div class="math-display">\[ \hat{y}(q) = \mathrm{mode}\big( \{y_i : i \in N_k(q)\} \big). \]</div>
+
+        <p>A more flexible rule is <em>distance-weighted voting</em>, where each neighbor contributes a weight \(w_i\):
+        </p>
+        <div class="math-display">\[ \hat{y}(q) = \arg\max_{c \in \mathcal{C}} \sum_{i \in N_k(q)} w_i\;\mathbb{1}(y_i =
+            c). \]</div>
+        <p>Here \(\mathbb{1}(\cdot)\) is the indicator function (1 if the neighbor has class \(c\), else 0), and common
+            choices of weight are:</p>
+        <ul>
+            <li><strong>Inverse distance:</strong> \(w_i = \dfrac{1}{d(q,x_i) + \varepsilon}\) (small \(\varepsilon\)
+                avoids dividing by zero).</li>
+            <li><strong>Gaussian:</strong> \(w_i = \exp\big(-d(q,x_i)^2/(2\sigma^2)\big)\), which smoothly decays with
+                distance.</li>
+            <li><strong>Uniform:</strong> \(w_i = 1\) (reduces to majority vote).</li>
+        </ul>
+
+        <h2>3)Step-by-Step Calculation </h2>
+        <p>We'll use a tiny 2D dataset (easy arithmetic) so you can follow every step on paper.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>x</th>
+                    <th>y</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>P1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>A</td>
+                </tr>
+                <tr>
+                    <td>P2</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>A</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>4</td>
+                    <td>3</td>
+                    <td>B</td>
+                </tr>
+                <tr>
+                    <td>P4</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td>B</td>
+                </tr>
+                <tr>
+                    <td>P5</td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>A</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Query point: \(Q=(3,2)\). We'll compute Euclidean distances to each training point.</p>
+
+        <h3>Detailed arithmetic (show every step)</h3>
+        <ol>
+            <li>
+                \(d(Q,P1)=\sqrt{(3-1)^2+(2-1)^2}=\sqrt{4+1}=\sqrt{5}\approx 2.236\)
+            </li>
+            <li>
+                \(d(Q,P2)=\sqrt{(3-2)^2+(2-1)^2}=\sqrt{1+1}=\sqrt{2}\approx 1.414\)
+            </li>
+            <li>
+                \(d(Q,P3)=\sqrt{(3-4)^2+(2-3)^2}=\sqrt{1+1}=\sqrt{2}\approx 1.414\)
+            </li>
+            <li>
+                \(d(Q,P4)=\sqrt{(3-5)^2+(2-4)^2}=\sqrt{4+4}=\sqrt{8}\approx 2.828\)
+            </li>
+            <li>
+                \(d(Q,P5)=\sqrt{(3-1)^2+(2-3)^2}=\sqrt{4+1}=\sqrt{5}\approx 2.236\)
+            </li>
+        </ol>
+
+        <h3>Sorted distances (closest first)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Point</th>
+                    <th>Class</th>
+                    <th>Distance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>P2</td>
+                    <td>A</td>
+                    <td>\(\sqrt{2}\approx 1.414\)</td>
+                </tr>
+                <tr>
+                    <td>P3</td>
+                    <td>B</td>
+                    <td>\(\sqrt{2}\approx 1.414\)</td>
+                </tr>
+                <tr>
+                    <td>P1</td>
+                    <td>A</td>
+                    <td>\(\sqrt{5}\approx 2.236\)</td>
+                </tr>
+                <tr>
+                    <td>P5</td>
+                    <td>A</td>
+                    <td>\(\sqrt{5}\approx 2.236\)</td>
+                </tr>
+                <tr>
+                    <td>P4</td>
+                    <td>B</td>
+                    <td>\(\sqrt{8}\approx 2.828\)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>4) Choose k and predict (manual voting)</h2>
+        <p>Pick \(k=3\). The three nearest neighbours are P2 (A), P3 (B) and P1 (A). Counting votes gives A:2, B:1, so
+            KNN
+            predicts <strong>A</strong> for \(Q\).</p>
+
+        <h3>Tie handling and why odd k helps</h3>
+        <p>If \(k\) had been 2, we'd have P2 (A) and P3 (B) → a tie. Common tie-breakers are:</p>
+        <ul>
+            <li>Choose the label of the closest neighbor (1-NN rule).</li>
+            <li>Use distance-weighted voting so nearer neighbors influence more.</li>
+            <li>Use domain knowledge or random tie-break (not ideal).</li>
+        </ul>
+
+        <h3>Weighted voting (numbers again)</h3>
+        <p>Using inverse-distance weights \(w_i=1/(d_i+\varepsilon)\) with \(\varepsilon=10^{-6}\):</p>
+        <ul>
+            <li>\(w_{P2}=1/\sqrt{2}\approx 0.707\)</li>
+            <li>\(w_{P3}=1/\sqrt{2}\approx 0.707\)</li>
+            <li>\(w_{P1}=1/\sqrt{5}\approx 0.447\)</li>
+        </ul>
+        <p>Weighted totals: A = 0.707 + 0.447 = 1.154; B = 0.707. Again A wins.</p>
+
+        <h2>5) Visual illustration</h2>
+
+        <p>The figure below shows our five training points and the query point <code>Q(3,2)</code>.
+            Points from class <strong>A</strong> are shown in <span style="color:red;">red</span> and class
+            <strong>B</strong> in <span style="color:blue;">blue</span>.
+            The dashed circle marks the boundary that contains the three nearest neighbors (<code>k = 3</code>).</p>
+
+        <img class="img-fluid" src="/img/posts/knn-classify/knn_toy_dataset.png"
+            alt="KNN toy dataset: training points, query Q(3,2), and k=3 circle">
+
+        <p><strong>How to read this visual</strong> — look for three things:</p>
+        <ul>
+            <li><strong>Which points are nearest to Q</strong>: P2 and P3 are equally close (√2), P1 is next (√5).</li>
+            <li><strong>The k=3 circle (dashed)</strong>: any point inside the circle is among the 3 nearest neighbours
+                of Q.</li>
+            <li><strong>Majority vote</strong>: two of the 3 neighbours are class <strong>A</strong>, so the predicted
+                label for Q is <strong>A</strong>.</li>
+        </ul>
+
+        <h2>6) Practical notes</h2>
+        <ul>
+            <li><strong>Scale your features:</strong> KNN uses distances — unscaled features with different units will
+                bias the
+                algorithm.</li>
+            <li><strong>Pick k carefully:</strong> small k (e.g. 1) → flexible but noisy; large k → smooth but biased.
+                Use
+                cross-validation to choose k.</li>
+            <li><strong>Consider weighting:</strong> inverse-distance or Gaussian weights often help with noisy training
+                data.
+            </li>
+            <li><strong>Distance metric matters:</strong> Euclidean is default but L1, Mahalanobis, or cosine may be
+                better in
+                some domains.</li>
+            <li><strong>Watch dimensionality:</strong> in high dimensions distances concentrate — consider PCA or
+                feature
+                selection first.</li>
+        </ul>
+
+        <h2>7) Complexity & scaling up</h2>
+        <p>Naïve KNN: \(O(n)\) distance computations per query point. For medium/large datasets use spatial indexes:
+            <strong>KDTree</strong> or <strong>BallTree</strong> (scikit-learn options) for faster queries in modest
+            dimensions, or approximate nearest neighbour libraries (Annoy, FAISS) for massive/high-dimensional data.
+        </p>
+
+        <h2>8) Manual Python Calculations</h2>
+        <pre><code class="language-python">
+import math
+points = {'P1':((1,1),'A'),'P2':((2,1),'A'),'P3':((4,3),'B'),'P4':((5,4),'B'),'P5':((1,3),'A')}
+Q = (3,2)
+
+results = []
+for name,(coords,label) in points.items():
+    dx = Q[0] - coords[0]
+    dy = Q[1] - coords[1]
+    d = math.sqrt(dx*dx + dy*dy)
+    results.append((name, coords, label, d))
+
+results_sorted = sorted(results, key=lambda x: x[3])
+print('Sorted neighbours:')
+for r in results_sorted:
+    print(r)
+
+k = 3
+neighbors = results_sorted[:k]
+votes = {}
+for name,coords,label,d in neighbors:
+    votes[label] = votes.get(label,0) + 1
+print('\nVotes (majority):', votes)
+
+# weighted votes
+w_votes = {}
+for name,coords,label,d in neighbors:
+    w = 1.0 / (d + 1e-9)
+    w_votes[label] = w_votes.get(label, 0) + w
+print('Weighted votes:', {k: round(v,3) for k,v in w_votes.items()})
+
+print('\nFinal prediction (majority):', max(votes.items(), key=lambda x: x[1])[0])
+</code></pre>
+
+        <h2>9) Optional: Sklearn Library</h2>
+        <pre><code class="language-python">
+from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
+X = np.array([[1,1],[2,1],[4,3],[5,4],[1,3]])
+y = np.array(['A','A','B','B','A'])
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X,y)
+print('Prediction for Q:', knn.predict([[3,2]])[0])
+</code></pre>
+
+        <h2>10) Key Takeaways</h2>
+        <p>By doing the arithmetic by hand you can see precisely how KNN decides. The three important knobs are:
+            <strong>distance metric</strong>, <strong>k</strong>, and <strong>weighting</strong>. Change any of them and
+            the
+            decision regions change in predictable ways. For real data, always visualise (when possible), scale
+            features,
+            and use cross-validation to tune \(k\).
+        </p>
+
+        <h2>References & Further Reading</h2>
+        <ul>
+            <li>Cover, T., & Hart, P. (1967). <em>Nearest neighbor pattern classification.</em></li>
+            <li><a href="https://scikit-learn.org/stable/modules/neighbors.html" target="_blank">Scikit-learn: Nearest
+                    Neighbors</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/Voronoi_diagram" target="_blank">Voronoi diagram (visual
+                    intuition)</a></li>
+            <li><a href="https://www.youtube.com/watch?v=HVXime0nQeI" target="_blank">StatQuest: KNN Explained
+                    Visually</a></li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
