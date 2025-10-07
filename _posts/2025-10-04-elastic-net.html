@@ -7,7 +7,7 @@ background: '/img/posts/ridge-elastic/ridge-03.jpg'
 categories: [ML,LR]
 tags: [machine-learning, regression]
 description: "Elastic Net combines L1 and L2 penalties. Learn what Elastic Net is, why it helps, and see step-by-step
-manual calculations, a Python manual demo, and a scikit-learn example."
+manual calculations, a Python demo, and a scikit-learn example."
 ---
 
 <!DOCTYPE html>
@@ -17,23 +17,17 @@ manual calculations, a Python manual demo, and a scikit-learn example."
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Elastic Net — A Beginner’s Guide</title>
-
-    <!-- MathJax for LaTeX rendering -->
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+
     <style>
-        /* Page background (kept from original) */
         body {
             background: url('/img/trig.gif') center center / cover no-repeat fixed;
             background-size: cover;
-            background-attachment: fixed;
-            padding: 0;
-            margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
             color: #111;
+            margin: 0;
+            padding: 0;
             line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            user-select: none;
         }
 
         .content {
@@ -47,7 +41,6 @@ manual calculations, a Python manual demo, and a scikit-learn example."
 
         h1 {
             font-size: 30px;
-            margin-top: 0;
         }
 
         h2 {
@@ -64,11 +57,17 @@ manual calculations, a Python manual demo, and a scikit-learn example."
             text-align: justify;
         }
 
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
         code {
             background: #f5f5f5;
             padding: 3px 6px;
             border-radius: 4px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
         }
 
         table {
@@ -95,32 +94,23 @@ manual calculations, a Python manual demo, and a scikit-learn example."
             margin: 14px 0;
         }
 
-        pre {
-            overflow-x: auto;
-            background: #f7f7f7;
-            padding: 12px;
-            border-radius: 6px;
-        }
-
-        .math-display {
-            overflow-x: auto !important;
-            white-space: normal !important;
-            word-break: break-word !important;
-        }
-
-        mjx-container[jax="CHTML"][display="true"] {
-            overflow-x: auto;
-            display: block;
-            max-width: 100%;
-        }
-
-        /* note box styling */
         .note {
             background: #f1f9ff;
             border-left: 6px solid #2196F3;
-            padding: 12px 16px;
-            margin: 14px 0;
+            padding: 14px 18px;
+            margin: 18px 0;
             border-radius: 6px;
+        }
+
+        .chart-caption {
+            font-size: 14px;
+            color: #333;
+            margin-top: 6px;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #555;
         }
     </style>
 </head>
@@ -128,86 +118,64 @@ manual calculations, a Python manual demo, and a scikit-learn example."
 <body>
     <div class="content">
 
-        <!-- BLOGPOST CONTENT STARTS -->
         <h1>A Beginner’s Guide to Elastic Net Regression (L1 + L2 Regularization)</h1>
 
-        <h2>1. What is Elastic Net?</h2>
-        <p>
-            Elastic Net blends <strong>Ridge (L2)</strong> and <strong>Lasso (L1)</strong> penalties. It is useful when
-            you want both coefficient shrinkage (to reduce variance)
-            and variable selection (to encourage sparsity), especially when predictors are correlated.
+        <h2>1. Quick Intro</h2>
+        <p><strong>Elastic Net</strong> combines Ridge (L2) and Lasso (L1) penalties. It’s useful when predictors are
+            correlated — the L2 part stabilizes coefficients while the L1 part encourages sparsity (some coefficients
+            shrink exactly to zero).</p>
+
+        <p class="math-display">
+            \[
+            \text{Penalty} = \alpha\left[(1-\rho)\tfrac{1}{2}\|\beta\|_2^2 + \rho\|\beta\|_1\right]
+            \]
         </p>
+        <p>Here, \(\alpha\) controls the overall strength of regularization, while \(\rho\in[0,1]\) (scikit-learn’s
+            <code>l1_ratio</code>) balances between Ridge (\(\rho=0\)) and Lasso (\(\rho=1\)).</p>
+
+        <h2>2. Objective Function</h2>
+        <p>The Elastic Net objective minimizes the squared-error loss plus a combination of L1 and L2 penalties:</p>
+        <p class="math-display">
+            \[
+            J_{EN}(\beta) = \sum_{i=1}^n (y_i - \hat y_i)^2 + \alpha\left[(1-\rho)\tfrac{1}{2}\sum_{j=1}^p \beta_j^2 +
+            \rho\sum_{j=1}^p |\beta_j|\right]
+            \]
+        </p>
+        <p>This approach captures both shrinkage (L2) and variable selection (L1) effects, achieving a balance between
+            interpretability and model stability.</p>
+
+        <h2>3. Geometric Intuition</h2>
+        <p>Geometrically, Ridge’s penalty region is circular, Lasso’s is diamond-shaped, and Elastic Net lies between
+            them — forming a “rounded diamond.” This shape allows groups of correlated predictors to enter the model
+            together rather than picking just one arbitrarily.</p>
+
+        <img src="/img/posts/ridge-elastic/A_2D_digital_diagram_illustrates_Elastic_Net_regre.png"
+            alt="Elastic Net geometry" class="img-fluid">
+        <p class="small"><em>Figure:</em> Ridge (circle), Lasso (diamond), Elastic Net (rounded diamond). The rounded
+            corners encourage grouped feature inclusion.</p>
 
         <div class="note">
-            <strong>Quick reference:</strong>
-            Elastic Net in scikit-learn is controlled by <code>alpha</code> and <code>l1_ratio</code>.
-            Mathematically we often write the penalty as:
-            <p class="math-display">
-                \(\alpha \Big[(1-\rho)\tfrac{1}{2}\|\beta\|_2^2 + \rho\|\beta\|_1\Big]\)
-            </p>
-            where \(\alpha\) scales penalty strength and \(\rho\) (a.k.a. <code>l1_ratio</code>) mixes L1/L2 (0 = Ridge,
-            1 = Lasso).
-            <p>Official scikit-learn docs: <a
-                    href="https://scikit-learn.org/stable/modules/linear_model.html#elastic-net"
-                    target="_blank">scikit-learn ElasticNet</a></p>
+            <strong>Soft-Thresholding Reminder</strong>
+            <p class="small">The L1 proximal operator is defined as:</p>
+            <p class="math-display small">\(S(z,\gamma) = \operatorname{sign}(z)\max(|z|-\gamma,0)\)</p>
+            <p class="small">It shrinks coefficients toward zero, setting small ones exactly to zero — the foundation of
+                sparsity.</p>
         </div>
 
-        <h2>2. Cost function (objective)</h2>
+        <h2>4. Coordinate Descent & Proximal Step (Concept)</h2>
+        <p>Elastic Net is typically optimized using <strong>coordinate descent</strong>, which updates one coefficient
+            at a time using a soft-thresholded formula:</p>
         <p class="math-display">
-            $$ J_{EN}(\beta) = \sum_{i=1}^n (y_i - \hat{y}_i)^2 \;+\;
-            \alpha\left[(1-\rho)\frac{1}{2}\sum_{j=1}^p\beta_j^2 \;+\; \rho\sum_{j=1}^p|\beta_j|\right]. $$
+            \[
+            \beta_j \leftarrow \frac{1}{1+\alpha(1-\rho)} \; S\!\left( \frac{1}{n}\sum_{i=1}^n x_{ij}(y_i - \hat
+            y_{-j}),\; \frac{\alpha\rho}{n} \right)
+            \]
         </p>
-        <p>
-            The L2 part stabilizes solutions and helps with multicollinearity; the L1 part encourages sparsity. The
-            factor 1/2 is conventional to match Ridge's derivative form.
-        </p>
+        <p>The L2 term in the denominator stabilizes updates (reducing variance), while the L1 term in the threshold
+            encourages sparsity.</p>
 
-        <h2>3. Geometry & proximal intuition</h2>
-        <p>
-            Elastic Net’s feasible region is a rounded diamond — between the circle (Ridge) and diamond (Lasso). The
-            rounding from L2 reduces extreme axis-hitting,
-            so Elastic Net tends to select groups of correlated predictors rather than pick one arbitrarily.
-        </p>
-        <img src="/img/posts/ridge-elastic/elasticnet-geometry.png" alt="Elastic Net geometry vs Lasso and Ridge"
-            class="img-fluid">
-        <p><em>Explanation:</em> the rounded corners come from adding some L2 to L1. You still get sparsity from L1 but
-            less erratic selection among correlated features.</p>
-
-        <h2>4. How it's solved — coordinate descent + proximal step</h2>
-        <p>
-            A practical solver is <strong>coordinate descent</strong>. For a standardized feature \(j\) the update
-            becomes:
-        </p>
-        <p class="math-display">
-            $$ \beta_j \leftarrow \frac{1}{1 + \alpha(1-\rho)} \; S\!\left( \frac{1}{n}\sum_{i=1}^n x_{ij}(y_i -
-            \hat{y}_{-j}),\; \frac{\alpha\rho}{n} \right), $$
-        </p>
-        <p>
-            where \(S(z,\gamma)\) is the <strong>soft-thresholding</strong> operator:
-        </p>
-        <p class="math-display">
-            $$ S(z,\gamma) = \mathrm{sign}(z)\cdot\max(|z|-\gamma,\,0). $$
-        </p>
-
-        <h3>Why the sign?</h3>
-        <p>
-            Soft-thresholding is the proximal operator for the L1 penalty. The operator needs to preserve the original
-            sign of \(z\) (so positive values stay positive after shrinking, negative stay negative),
-            while shrinking magnitude by \(\gamma\) and setting values with magnitude ≤ \(\gamma\) to zero. That's why
-            the \(\mathrm{sign}(z)\) multiplier is required.
-        </p>
-
-        <img src="/img/posts/ridge-elastic/elasticnet-proximal.png"
-            alt="Elastic Net proximal operator and soft-thresholding" class="img-fluid">
-        <p><em>Explanation:</em> apply the soft-threshold (L1 proximal), which may zero small values; then divide by the
-            L2-induced factor (1 + α(1−ρ)) to incorporate shrinkage.</p>
-
-        <h2>5. Step-by-Step Calculation</h2>
-        <p>
-            We'll reuse the tiny dataset so you can follow the exact arithmetic. This is a single-feature example to
-            show the per-coordinate update mechanics.
-        </p>
-
+        <h2>5. Manual Example (Single Feature)</h2>
+        <p>We’ll start with a small dataset to make the math transparent:</p>
         <table>
             <tr>
                 <th>X</th>
@@ -231,206 +199,165 @@ manual calculations, a Python manual demo, and a scikit-learn example."
             </tr>
         </table>
 
-        <p>Choose hyperparameters and assumptions:</p>
-        <ul>
-            <li>\(\alpha = 1.0\)</li>
-            <li>\(\rho = 0.5\) (50% L1, 50% L2)</li>
-            <li>Single feature, no intercept, and — for demonstration — we do a single coordinate update starting from
-                \(\beta=0\).</li>
-            <li>Sample size \(n=4\).</li>
-        </ul>
+        <p>Assume standardized features, no intercept. Set \(\alpha=1.0\), \(\rho=0.5\), and \(n=4\).</p>
 
-        <h3>Step 0 — compute \(z\)</h3>
+        <h3>Step-by-Step Calculation</h3>
+
+        <h4>Step 0 — Compute partial correlation \(z\)</h4>
         <p class="math-display">
-            \(z = \dfrac{1}{n}\sum_{i=1}^n x_i y_i = \dfrac{1}{4}(1\cdot2 + 2\cdot3 + 3\cdot5 + 4\cdot7).\)
-        </p>
-        <p>
-            Evaluate numerator: \(1\cdot2=2,\; 2\cdot3=6,\; 3\cdot5=15,\; 4\cdot7=28\). Sum = \(2+6+15+28=51\).
-            So \(z = 51/4 = 12.75.\)
+            \(z = \frac{1}{4}(1\cdot2 + 2\cdot3 + 3\cdot5 + 4\cdot7) = 12.75.\)
         </p>
 
-        <h3>Step 1 — compute soft-threshold parameter \(\gamma\)</h3>
+        <h4>Step 1 — Compute L1 threshold \(\gamma\)</h4>
         <p class="math-display">
-            \(\gamma = \dfrac{\alpha \rho}{n} = \dfrac{1 \cdot 0.5}{4} = 0.125.\)
+            \(\gamma = \frac{\alpha\rho}{n} = 0.125.\)
         </p>
 
-        <h3>Step 2 — compute denominator from L2 part</h3>
+        <h4>Step 2 — Compute L2 denominator</h4>
         <p class="math-display">
-            \(d = 1 + \alpha(1-\rho) = 1 + 1 \cdot (1 - 0.5) = 1 + 0.5 = 1.5.\)
+            \(d = 1+\alpha(1-\rho)=1.5.\)
         </p>
 
-        <h3>Step 3 — soft-thresholding and final update</h3>
+        <h4>Step 3 — Apply soft-thresholding and divide</h4>
         <p class="math-display">
-            First compute \(|z| - \gamma = 12.75 - 0.125 = 12.625.\)
-        </p>
-        <p class="math-display">
-            Soft-threshold: \(S(z,\gamma) = \mathrm{sign}(12.75)\cdot 12.625 = 12.625.\)
-        </p>
-        <p class="math-display">
-            Final update: \(\beta = \dfrac{12.625}{1.5} = 8.416666\ldots\)
+            \(\beta = \frac{S(z,\gamma)}{d} = \frac{12.625}{1.5} = 8.4167.\)
         </p>
 
-        <p>
-            So this single coordinate update yields \(\beta \approx 8.4167\). If we increased \(\rho\) (more L1), the
-            soft-threshold \(\gamma\) would grow and the numerator would shrink more (moving toward Lasso). If we
-            decreased \(\rho\) (more L2), the denominator gets larger and the coefficient is more smoothly shrunk
-            (moving toward Ridge).
-        </p>
-
-        <h3>Quick manual predictions</h3>
+        <h4>Step 4 — Compute predictions</h4>
         <p class="math-display">
-            \(\hat{y} = \beta x = 8.41667 \times [1,2,3,4] \approx [8.4167, 16.8333, 25.25, 33.6667].\)
+            \(\hat y = \beta x = [8.42,16.83,25.25,33.67].\)
         </p>
-        <p>
-            Note: This result looks unrealistic compared to observed y because this toy example skips
-            intercept/centering and does only a single update. The numerical goal here is to show the coordinate update
-            arithmetic.
-        </p>
+        <p><em>Note:</em> In practice, features are standardized and an intercept is fitted to prevent inflated
+            coefficients.</p>
 
-        <h2>6. Manual Python demo</h2>
-        <p>Run this locally to reproduce the arithmetic above. This shows only the single update (not a full solver
-            loop).</p>
+        <h2>6. Manual Python Demo</h2>
         <pre><code class="language-python">
 import numpy as np
 
-# Tiny dataset
-X = np.array([1.,2.,3.,4.])
-y = np.array([2.,3.,5.,7.])
+X = np.array([1,2,3,4], dtype=float)
+y = np.array([2,3,5,7], dtype=float)
 n = len(y)
 
-# Elastic Net hyperparams
 alpha = 1.0
 rho = 0.5
 
-# Step 0: compute z
-z = (1.0 / n) * np.sum(X * y)   # 51/4 = 12.75
+z = (1.0/n) * np.sum(X * y)
+gamma = alpha * rho / n
+denom = 1.0 + alpha * (1.0 - rho)
 
-# Step 1: gamma (soft-threshold)
-gamma = alpha * rho / n        # 0.125
-
-# Step 2: denom (L2 effect)
-denom = 1.0 + alpha * (1.0 - rho)  # 1.5
-
-# soft-threshold
 def soft_threshold(z, gamma):
-    if z > gamma:
-        return z - gamma
-    elif z < -gamma:
-        return z + gamma
-    else:
-        return 0.0
+    if z > gamma: return z - gamma
+    elif z < -gamma: return z + gamma
+    else: return 0.0
 
-num = soft_threshold(z, gamma)   # 12.625
-beta = num / denom               # 8.416666...
+beta = soft_threshold(z, gamma) / denom
 
 print("z =", z)
 print("gamma =", gamma)
 print("denom =", denom)
-print("soft-thresholded numerator =", num)
-print("Updated coefficient beta =", beta)
-print("Predictions (beta * X) =", beta * X)
-        </code></pre>
+print("Updated beta =", beta)
+print("Predictions:", beta * X)
+</code></pre>
 
-        <h2>7. Scikit-learn example</h2>
-        <p>Full practical example using <code>ElasticNet</code>. Important: scale features and (optionally) center y or
-            use a pipeline.</p>
+        <h2>7. Scikit-learn Example</h2>
         <pre><code class="language-python">
 from sklearn.linear_model import ElasticNet
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
-X = np.array([[1.],[2.],[3.],[4.]])
-y = np.array([2.,3.,5.,7.])
+X = np.array([[1],[2],[3],[4]], dtype=float)
+y = np.array([2,3,5,7], dtype=float)
 
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+Xs = scaler.fit_transform(X)
 
 model = ElasticNet(alpha=1.0, l1_ratio=0.5, fit_intercept=True, max_iter=10000)
-model.fit(X_scaled, y)
+model.fit(Xs, y)
 
+y_pred = model.predict(Xs)
 print("Intercept:", model.intercept_)
 print("Coefficient:", model.coef_)
-        </code></pre>
-        <p><em>Explanation:</em> sklearn performs full coordinate descent (many updates) and returns an intercept.
-            Always standardize so penalties treat features equally.</p>
+print("RMSE:", np.sqrt(mean_squared_error(y, y_pred)))
+print("R^2:", r2_score(y, y_pred))
+</code></pre>
 
-        <h2>8. Visuals</h2>
-        <p>Below are recommended images and short explanations.</p>
-
+        <h2>8. Visualization Gallery (Five Unique Charts)</h2>
         <ol>
-            <li>
-                <strong>Elastic Net geometry</strong>
-                <img src="/img/posts/ridge-elastic/elasticnet-geometry.png" alt="Elastic Net geometry"
+            <li><strong>Actual vs Predicted</strong><br>
+                <img src="/img/posts/ridge-elastic/elasticnet_actual_vs_pred.png" alt="Actual vs Predicted"
                     class="img-fluid">
-                <p><em>Explanation:</em> shows Lasso diamond, Ridge circle, and Elastic Net rounded diamond. Use this
-                    where you explain geometry and intuition.</p>
+                <p class="chart-caption"><em>Compares predicted vs actual target values — helps assess fit quality and
+                        bias.</em></p>
             </li>
 
-            <li>
-                <strong>Soft-threshold + sign visual</strong>
-                <img src="/img/posts/ridge-elastic/elasticnet-softthreshold.png" alt="Soft threshold function with sign"
-                    class="img-fluid">
-                <p><em>Explanation:</em> plot of S(z,γ) showing how values near 0 are set to 0 and larger values are
-                    shrunk — explicitly illustrate why sign(z) is needed.</p>
+            <li><strong>Coefficient Path (Regularization Path)</strong><br>
+                <img src="/img/posts/ridge-elastic/elasticnet_coeff_path.png" alt="Coefficient path" class="img-fluid">
+                <p class="chart-caption"><em>Shows how each coefficient changes as α increases. Elastic Net’s path is
+                        smoother than Lasso’s for correlated predictors.</em></p>
             </li>
 
-            <li>
-                <strong>Proximal operator sketch</strong>
-                <img src="/img/posts/ridge-elastic/elasticnet-proximal.png" alt="Elastic Net proximal operator"
+            <li><strong>Ridge vs Lasso vs Elastic Net — Coefficients</strong><br>
+                <img src="/img/posts/ridge-elastic/elasticnet_ridge_lasso_en_compare.png" alt="Ridge vs Lasso vs EN"
                     class="img-fluid">
-                <p><em>Explanation:</em> step-by-step diagram: compute inner product → soft-threshold → divide by L2
-                    factor. Good near the solver explanation.</p>
+                <p class="chart-caption"><em>Highlights shrinkage (Ridge), sparsity (Lasso), and balance (Elastic
+                        Net).</em></p>
             </li>
 
-            <li>
-                <strong>Coefficient path</strong>
-                <img src="/img/posts/ridge-elastic/elasticnet-path.png"
-                    alt="Elastic Net regularization coefficient path" class="img-fluid">
-                <p><em>Explanation:</em> shows how coefficients move as penalty grows (alpha increases). Compare to pure
-                    Lasso path to show smoothing by L2.</p>
+            <li><strong>Residual Plot (Elastic Net)</strong><br>
+                <img src="/img/posts/ridge-elastic/elasticnet_residuals.png" alt="Residual plot" class="img-fluid">
+                <p class="chart-caption"><em>Visual check for patterns in residuals — non-random patterns indicate model
+                        misspecification.</em></p>
             </li>
 
-            <li>
-                <strong>Error vs alpha (validation curve)</strong>
-                <img src="/img/posts/ridge-elastic/elasticnet-error.png" alt="Elastic Net validation curve"
+            <li><strong>Elastic Net Loss Surface</strong><br>
+                <img src="/img/posts/ridge-elastic/elasticnet_loss_surface.png" alt="Elastic Net loss surface"
                     class="img-fluid">
-                <p><em>Explanation:</em> training error increases with alpha; validation error often has a U-shape — use
-                    CV to choose best alpha and l1_ratio.</p>
+                <p class="chart-caption"><em>Conceptual contour showing how Elastic Net blends L1 + L2 regularization
+                        with the OLS loss surface.</em></p>
             </li>
         </ol>
 
-        <h2>9. Practical tips</h2>
+        <p><strong>All five visuals are distinct:</strong> Fit quality, regularization path, coefficient comparison,
+            residual diagnostics, and geometric loss visualization.</p>
+
+        <h2>10. Practical Tips</h2>
         <ul>
-            <li>Always <strong>standardize</strong> features; penalties assume comparable scales.</li>
-            <li>Grid-search or use <code>ElasticNetCV</code> to tune <code>alpha</code> and <code>l1_ratio</code>.</li>
-            <li>If predictors are highly correlated, Elastic Net tends to keep groups together rather than select one
-                arbitrarily.</li>
-            <li>For high-dimensional data (p &gt;&gt; n), Elastic Net is a robust default.</li>
+            <li>Always <strong>standardize features</strong> before applying regularization.</li>
+            <li>Use <code>ElasticNetCV</code> or <code>GridSearchCV</code> to tune <code>alpha</code> and
+                <code>l1_ratio</code>.</li>
+            <li>If predictors are highly correlated, Elastic Net groups them instead of arbitrarily choosing one.</li>
+            <li>Inspect coefficient paths and validation metrics to confirm model stability.</li>
         </ul>
 
-        <h2>10. Key takeaways</h2>
-        <ul>
-            <li>Elastic Net mixes L1 (sparsity) and L2 (stability) via <code>l1_ratio</code>.</li>
-            <li>Coordinate descent with soft-thresholding + L2 division is the per-coordinate core update.</li>
-            <li>The <code>sign(z)</code> in soft-threshold preserves sign while shrinking magnitude — crucial for
-                correct proximal updates.</li>
-        </ul>
+        <h2>11. Math Recap</h2>
+        <ol>
+            <li>\(z = \frac{1}{n}\sum x_i(y_i - \hat y_{-j})\)</li>
+            <li>\(\gamma = \frac{\alpha\rho}{n}\)</li>
+            <li>\(S(z,\gamma) = \operatorname{sign}(z)\max(|z|-\gamma,0)\)</li>
+            <li>\(\beta = \frac{S(z,\gamma)}{1+\alpha(1-\rho)}\)</li>
+        </ol>
 
-        <h2>11. References</h2>
         <div class="note">
+            <strong>Further Reading</strong>
             <ul>
-                <li>Zou, H., & Hastie, T. (2005). <em>Regularization and variable selection via the Elastic Net</em>.
-                </li>
-                <li>Scikit-learn ElasticNet docs — <a
-                        href="https://scikit-learn.org/stable/modules/linear_model.html#elastic-net"
-                        target="_blank">https://scikit-learn.org/stable/modules/linear_model.html#elastic-net</a></li>
-                <li>Hastie, Tibshirani, Friedman — <em>Elements of Statistical Learning</em>.</li>
+                <li>Zou, H., & Hastie, T. (2005). Regularization and Variable Selection via the Elastic Net.</li>
+                <li><a href="https://scikit-learn.org/stable/modules/linear_model.html#elastic-net"
+                        target="_blank">Scikit-learn Documentation — ElasticNet</a></li>
+                <li>Hastie, Tibshirani, & Friedman: *Elements of Statistical Learning*</li>
             </ul>
         </div>
 
-        <!-- BLOGPOST CONTENT ENDS -->
+        <h2>12. Key Takeaways</h2>
+        <ul>
+            <li>Elastic Net = L1 + L2 blend → balances sparsity and stability.</li>
+            <li>Tune <code>alpha</code> and <code>l1_ratio</code> using cross-validation.</li>
+            <li>Provides more stable feature selection when predictors are correlated.</li>
+        </ul>
 
+        {% include related-article.html %}
     </div>
+    <script src="/includes/blog-style.js"></script>
 </body>
 
 </html>
