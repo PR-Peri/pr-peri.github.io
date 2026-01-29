@@ -1,0 +1,489 @@
+---
+layout: post
+title: "A Beginner’s Guide to Agentic AI"
+subtitle: "Understanding how autonomous AI systems plan, act, and learn through feedback"
+date: 2025-11-06 19:05:13 -0400
+background: '/img/posts/blogpost/3.jpg'
+categories: [Artificial Intelligence, Agent Systems]
+tags: [agents, machine-learning, optimization, artificial-intelligence]
+description: "An informative introduction to agentic AI, explaining its architecture, core components, and how autonomous AI systems plan, act, and learn through feedback."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>A Beginner’s Guide to Agentic AI</h1>
+
+        <p>
+            Artificial Intelligence has long been associated with systems that respond to user input — we ask a
+            question, the model answers.
+            However, a new class of systems is emerging that behaves differently. Instead of only responding, these
+            systems can plan,
+            take actions, observe outcomes, and adapt their behavior. This paradigm is commonly referred to as
+            <b>Agentic AI</b>.
+        </p>
+
+        <p>
+            This post provides a structured and beginner-friendly introduction to Agentic AI: what it is, how it works,
+            how it differs
+            from traditional AI systems, and why it matters.
+        </p>
+
+        <hr>
+
+        <h2>1. What Is Agentic AI?</h2>
+
+        <p>
+            An <b>agentic AI system</b> is an artificial intelligence system designed to operate as an <i>agent</i>.
+            Rather than producing a single output in response to a prompt, an agentic system can:
+        </p>
+
+        <ul>
+            <li>Formulate goals</li>
+            <li>Plan sequences of actions</li>
+            <li>Interact with external tools or environments</li>
+            <li>Observe feedback from its actions</li>
+            <li>Update its behavior over time</li>
+        </ul>
+
+        <p>
+            In simple terms:
+        </p>
+
+        <blockquote>
+            <b>Traditional AI answers questions. Agentic AI takes actions.</b>
+        </blockquote>
+
+        <p>
+            This shift moves AI from a passive assistant to an autonomous problem-solving system.
+        </p>
+
+        <hr>
+
+        <h2>2. Agentic AI vs Traditional Chatbot Systems</h2>
+
+        <p>
+            To understand why agentic systems are different, it helps to compare them with conventional AI models such
+            as chatbots.
+        </p>
+
+        <table>
+            <tr>
+                <th>Aspect</th>
+                <th>Traditional AI</th>
+                <th>Agentic AI</th>
+            </tr>
+            <tr>
+                <td>Interaction style</td>
+                <td>Request → Response</td>
+                <td>Plan → Act → Observe → Update</td>
+            </tr>
+            <tr>
+                <td>Memory</td>
+                <td>Short-term or session-based</td>
+                <td>Persistent and contextual</td>
+            </tr>
+            <tr>
+                <td>Autonomy</td>
+                <td>Low</td>
+                <td>Moderate to High</td>
+            </tr>
+            <tr>
+                <td>Tool usage</td>
+                <td>Limited or none</td>
+                <td>Core capability</td>
+            </tr>
+        </table>
+
+        <p>
+            While traditional models excel at generating text or predictions, they are not designed to operate
+            independently.
+            Agentic systems, on the other hand, are explicitly built to perform multi-step tasks.
+        </p>
+
+        <hr>
+
+        <h2>3. Core Components of an Agentic AI System</h2>
+
+        <p>
+            Although implementations vary, most agentic AI systems share a common architecture composed of several key
+            components.
+        </p>
+
+        <h3>3.1 Goal or Objective Function</h3>
+
+        <p>
+            Every agent operates with an objective. This may be a clearly defined goal (e.g., “optimize a process”)
+            or a more abstract reward function. From a machine learning perspective, this is closely related to
+            loss functions and optimization objectives.
+        </p>
+
+        <h3>3.2 Planner or Policy</h3>
+
+        <p>
+            The planner determines which actions to take in order to achieve the goal.
+            This may involve reasoning, search, or learned policies.
+            In reinforcement learning, this component is often referred to as a <i>policy</i>.
+        </p>
+
+        <h3>3.3 Memory</h3>
+
+        <p>
+            Memory allows an agent to retain information across steps.
+            This can include past observations, previous actions, or intermediate results.
+            Without memory, long-horizon planning becomes nearly impossible.
+        </p>
+
+        <h3>3.4 Tool Interface</h3>
+
+        <p>
+            Agentic systems frequently interact with external tools such as:
+        </p>
+
+        <ul>
+            <li>APIs</li>
+            <li>Databases</li>
+            <li>File systems</li>
+            <li>Simulated or real environments</li>
+        </ul>
+
+        <p>
+            This capability allows agents to move beyond text generation into real-world execution.
+        </p>
+
+        <h3>3.5 Feedback Loop</h3>
+
+        <p>
+            After taking an action, the agent observes the outcome and updates its internal state.
+            This feedback loop enables learning, correction, and adaptation.
+        </p>
+
+        <hr>
+
+        <h2>4. A Simple Agent Loop</h2>
+
+        <p>
+            Most agentic systems follow a recurring loop:
+        </p>
+
+        <pre>
+1. Observe the current state
+2. Decide on an action
+3. Execute the action
+4. Receive feedback
+5. Update memory or policy
+6. Repeat
+</pre>
+
+        <p>
+            This structure closely resembles classical control systems and reinforcement learning pipelines,
+            but with modern AI models acting as the decision-making core.
+        </p>
+
+        <hr>
+
+        <h2>5. Real-World Use Cases</h2>
+
+        <p>
+            Agentic AI is already being applied across multiple domains:
+        </p>
+
+        <ul>
+            <li><b>Software engineering:</b> autonomous code refactoring, testing, and debugging</li>
+            <li><b>Research assistance:</b> literature review, experiment planning, result summarization</li>
+            <li><b>Operations:</b> monitoring systems, responding to incidents, optimizing workflows</li>
+            <li><b>Personal productivity:</b> scheduling, task execution, information retrieval</li>
+        </ul>
+
+        <p>
+            In each case, the defining characteristic is not intelligence alone, but <i>autonomy over sequences of
+                actions</i>.
+        </p>
+
+        <hr>
+
+        <h2>6. Challenges and Limitations</h2>
+
+        <p>
+            Despite their promise, agentic systems introduce new challenges:
+        </p>
+
+        <ul>
+            <li><b>Error amplification:</b> small mistakes can compound over multiple actions</li>
+            <li><b>Safety concerns:</b> autonomous actions may have unintended consequences</li>
+            <li><b>Evaluation difficulty:</b> success is harder to measure than single-step predictions</li>
+            <li><b>Alignment:</b> ensuring the agent’s actions remain consistent with human intent</li>
+        </ul>
+
+        <p>
+            These challenges make agentic AI an active area of research rather than a solved problem.
+        </p>
+
+        <hr>
+
+        <h2>7. Connection to Classical Machine Learning</h2>
+
+        <p>
+            Although agentic AI appears new, many of its foundations are rooted in classical machine learning:
+        </p>
+
+        <ul>
+            <li>Optimization and loss minimization</li>
+            <li>Policy learning</li>
+            <li>Evaluation metrics</li>
+            <li>Regularization and stability</li>
+        </ul>
+
+        <p>
+            Understanding regression models, evaluation metrics, and optimization techniques provides a strong
+            foundation
+            for understanding agentic systems.
+        </p>
+
+        <hr>
+
+        <h2>8. Why Agentic AI Matters</h2>
+
+        <p>
+            The significance of agentic AI lies not in making models smarter, but in making them more <b>useful</b>.
+            As AI systems transition from passive tools to autonomous agents, they begin to resemble collaborators
+            rather than utilities.
+        </p>
+
+        <p>
+            This shift has implications for productivity, safety, and how humans interact with intelligent systems.
+        </p>
+
+        <hr>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            Agentic AI represents a meaningful evolution in artificial intelligence systems.
+            By combining planning, memory, tool usage, and feedback, these systems extend beyond prediction
+            into autonomous action.
+        </p>
+
+        <p>
+            As research continues, understanding the architecture and limitations of agentic AI will be essential
+            for anyone working with modern AI systems.
+        </p>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
