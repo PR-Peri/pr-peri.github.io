@@ -1,0 +1,406 @@
+---
+layout: post
+title: "Why AI Models Fail in the Real World"
+subtitle: "From benchmarks to messy deployment environments"
+date: 2025-11-14 19:05:13 -0400
+background: '/img/posts/blogpost/5.jpg'
+categories: [AI,ML]
+tags: [machine-learning,artificial-intelligence, blogpost]
+description: "An in-depth, practical discussion of why machine learning models that perform well in development often
+fail after deployment, focusing on data shift, evaluation gaps, and system-level issues."
+---
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>Why AI Models Fail in the Real World</h1>
+
+        <p>
+            It is common to see machine learning models achieve impressive performance during development,
+            only to underperform or completely fail after deployment.
+            This gap between laboratory success and real-world reliability is one of the central problems in applied AI.
+        </p>
+
+        <p>
+            This post examines the most common reasons AI systems fail in practice,
+            focusing on issues that are often overlooked during model development.
+        </p>
+
+        <hr>
+
+        <h2>1. Benchmarks Are Cleaner Than Reality</h2>
+
+        <p>
+            Most machine learning models are trained and evaluated on curated datasets.
+            These datasets are cleaned, labeled, and often balanced in ways that do not reflect real-world conditions.
+        </p>
+
+        <p>
+            In deployment, models encounter:
+        </p>
+
+        <ul>
+            <li>Incomplete or noisy inputs</li>
+            <li>Unexpected edge cases</li>
+            <li>Changes in user behavior over time</li>
+        </ul>
+
+        <p>
+            High benchmark performance does not guarantee robustness under these conditions.
+        </p>
+
+        <hr>
+
+        <h2>2. Distribution Shift Is the Norm, Not the Exception</h2>
+
+        <p>
+            A core assumption in many machine learning setups is that training and test data
+            are drawn from the same distribution.
+            In practice, this assumption rarely holds.
+        </p>
+
+        <p>
+            Distribution shift can occur due to:
+        </p>
+
+        <ul>
+            <li>Temporal changes (data collected years later)</li>
+            <li>Geographical or demographic differences</li>
+            <li>Changes in measurement or data collection pipelines</li>
+        </ul>
+
+        <p>
+            Even small shifts can cause large drops in performance, especially for complex models.
+        </p>
+
+        <hr>
+
+        <h2>3. Metrics Often Hide Important Failures</h2>
+
+        <p>
+            Metrics such as accuracy, R², or RMSE provide useful summaries,
+            but they compress model behavior into a single number.
+        </p>
+
+        <p>
+            This hides critical details, such as:
+        </p>
+
+        <ul>
+            <li>Performance on rare but important cases</li>
+            <li>Error asymmetry</li>
+            <li>Failure modes at decision boundaries</li>
+        </ul>
+
+        <p>
+            A model can score well overall while failing in exactly the situations that matter most.
+        </p>
+
+        <hr>
+
+        <h2>4. Overfitting Is Subtle and Persistent</h2>
+
+        <p>
+            Overfitting is often associated with extreme cases,
+            but in practice it is usually subtle.
+            Models may appear to generalize while still encoding spurious correlations.
+        </p>
+
+        <p>
+            Regularization techniques such as Ridge, Lasso, and Elastic Net reduce this risk,
+            but they do not eliminate it.
+        </p>
+
+        <p>
+            The real challenge is identifying which patterns are causal
+            and which are artifacts of the training data.
+        </p>
+
+        <hr>
+
+        <h2>5. Models Are Deployed as Part of Systems</h2>
+
+        <p>
+            Once deployed, models interact with users, databases, and other software components.
+            These interactions create feedback loops.
+        </p>
+
+        <p>
+            For example:
+        </p>
+
+        <ul>
+            <li>Predictions influence future data collection</li>
+            <li>User behavior adapts to model outputs</li>
+            <li>Errors propagate through downstream systems</li>
+        </ul>
+
+        <p>
+            These system-level effects are rarely captured during offline evaluation.
+        </p>
+
+        <hr>
+
+        <h2>6. Confidence Without Uncertainty Is Dangerous</h2>
+
+        <p>
+            Many AI models produce predictions without meaningful estimates of uncertainty.
+            This encourages overconfidence in outputs that may be unreliable.
+        </p>
+
+        <p>
+            In high-stakes domains, knowing <i>when a model is unsure</i>
+            is often more important than raw accuracy.
+        </p>
+
+        <hr>
+
+        <h2>7. Monitoring Is Not Optional</h2>
+
+        <p>
+            Deployment is not the end of the machine learning lifecycle.
+            Models must be continuously monitored for:
+        </p>
+
+        <ul>
+            <li>Performance degradation</li>
+            <li>Data drift</li>
+            <li>Unexpected behavior</li>
+        </ul>
+
+        <p>
+            Without monitoring, failures often go unnoticed until they cause real harm.
+        </p>
+
+        <hr>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            AI models fail in the real world not because they are poorly designed,
+            but because the real world violates the assumptions made during training.
+        </p>
+
+        <p>
+            Bridging this gap requires better evaluation practices,
+            system-level thinking, and ongoing oversight.
+            Understanding failure is a prerequisite for building reliable AI systems.
+        </p>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
