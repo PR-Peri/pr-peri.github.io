@@ -1,6 +1,5 @@
 name: Update Most Read Articles
 
-# Trigger manually or daily
 on:
   workflow_dispatch:
   schedule:
@@ -11,21 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repo with push permissions
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      # Step 1: Checkout repo
+      - uses: actions/checkout@v3
         with:
-          persist-credentials: true  # allow pushing back changes
+          persist-credentials: true
 
       # Step 2: Setup Python
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.11
 
       # Step 3: Install dependencies
-      - name: Install dependencies
-        run: |
+      - run: |
           pip install --upgrade pip
           pip install pyyaml google-analytics-data
 
@@ -36,11 +32,23 @@ jobs:
           GA_CREDENTIALS_JSON: ${{ secrets.GA_CREDENTIALS_JSON }}
         run: python _scripts/fetch_most_read.py
 
-      # Step 5: Commit and push changes
-      - name: Commit and push _data/most_read.yml
+      # Step 5: Commit changes
+      - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git checkout -B update-most-read
           git add _data/most_read.yml
           git commit -m "Update most_read.yml" || echo "No changes to commit"
-          git push
+
+      # Step 6: Create or update pull request
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update most_read.yml"
+          branch: update-most-read
+          title: "Update most_read.yml"
+          body: "Automatically updated most read articles."
+          labels: "auto-generated"
+          base: main
