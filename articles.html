@@ -257,3 +257,14 @@ title: Articles
     </div>
 </div>
 {% endfor %}
+
+<section class="most-read">
+  <h2>Most Read</h2>
+  <ul>
+    {% for item in site.data.most_read %}
+      <li>
+        <a href="{{ item.url }}">{{ item.url | split: '/' | last | replace: '.html', '' | capitalize }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
