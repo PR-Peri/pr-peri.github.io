@@ -1,9 +1,9 @@
 name: Update Most Read Articles
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:          # Manual trigger
   schedule:
-    - cron: '0 0 * * *'  # daily at midnight UTC
+    - cron: '0 0 * * *'       # Daily at midnight UTC
 
 jobs:
   update_most_read:
@@ -25,8 +25,7 @@ jobs:
         env:
           GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
           GA_CREDENTIALS_JSON: ${{ secrets.GA_CREDENTIALS_JSON }}
-        run: |
-          python scripts/fetch_most_read.py
+        run: python _scripts/fetch_most_read.py
 
       - name: Commit updated most_read.yml
         run: |

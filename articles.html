@@ -263,7 +263,9 @@ title: Articles
   <ul>
     {% for item in site.data.most_read %}
       <li>
-        <a href="{{ item.url }}">{{ item.url | split: '/' | last | replace: '.html', '' | capitalize }}</a>
+        <a href="{{ item.url }}">
+          {{ item.url | split: '/' | last | replace: '.html', '' | capitalize }}
+        </a>
         ({{ item.views }} views)
       </li>
     {% endfor %}

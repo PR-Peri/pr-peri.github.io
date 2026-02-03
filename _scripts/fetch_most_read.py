@@ -41,6 +41,5 @@ os.makedirs("_data", exist_ok=True)
 with open("_data/most_read.yml", "w") as f:
     yaml.dump(most_read, f)
 
-# Debug print to GitHub Actions log
 print("✅ _data/most_read.yml content:")
 print(yaml.dump(most_read))
