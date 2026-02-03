@@ -13,7 +13,7 @@ jobs:
       # Step 1: Checkout repo
       - uses: actions/checkout@v3
         with:
-          persist-credentials: true
+          persist-credentials: true  # allow the action to commit/push
 
       # Step 2: Setup Python
       - uses: actions/setup-python@v4
@@ -25,23 +25,22 @@ jobs:
           pip install --upgrade pip
           pip install pyyaml google-analytics-data
 
-      # Step 4: Run Python script
+      # Step 4: Run Python script to generate _data/most_read.yml
       - name: Fetch most read articles
         env:
           GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
           GA_CREDENTIALS_JSON: ${{ secrets.GA_CREDENTIALS_JSON }}
         run: python _scripts/fetch_most_read.py
 
-      # Step 5: Commit changes
+      # Step 5: Commit any changes
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git checkout -B update-most-read
           git add _data/most_read.yml
           git commit -m "Update most_read.yml" || echo "No changes to commit"
 
-      # Step 6: Create or update pull request
+      # Step 6: Create or update a pull request
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -52,3 +51,4 @@ jobs:
           body: "Automatically updated most read articles."
           labels: "auto-generated"
           base: main
+          create-branch: true   # ✅ ensures branch is created if it doesn't exist yet
