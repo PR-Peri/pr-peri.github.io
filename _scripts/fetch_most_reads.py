@@ -4,49 +4,43 @@ from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest
 import yaml
 
-# 1️⃣ Load GA credentials from GitHub secret
-creds_json = os.environ["GA_CREDENTIALS_JSON"]
-creds = json.loads(creds_json)
+# GA4 property ID from workflow secrets
+PROPERTY_ID = os.environ.get("GA_PROPERTY_ID")
+# Service account JSON from workflow secret
+GA_CREDENTIALS_JSON = os.environ.get("GA_CREDENTIALS_JSON")
 
-# 2️⃣ Write temporary JSON file for Google library
-with open("ga_creds.json", "w") as f:
-    json.dump(creds, f)
+# Save JSON to a temp file
+with open("ga_key.json", "w") as f:
+    f.write(GA_CREDENTIALS_JSON)
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "ga_creds.json"
+client = BetaAnalyticsDataClient.from_service_account_file("ga_key.json")
 
-# 3️⃣ GA4 property ID from secret
-PROPERTY_ID = os.environ["GA_PROPERTY_ID"]
-
-# 4️⃣ Initialize GA4 client
-client = BetaAnalyticsDataClient()
-
-# 5️⃣ Request top pages in last 30 days
 request = RunReportRequest(
     property=f"properties/{PROPERTY_ID}",
     dimensions=[Dimension(name="pagePath")],
     metrics=[Metric(name="screenPageViews")],
-    date_ranges=[DateRange(start_date="30daysAgo", end_date="today")],
-    limit=10  # top 10 pages
+    date_ranges=[DateRange(start_date="2026-01-01", end_date="today")],
+    limit=10  # Top 10 pages
 )
 
 response = client.run_report(request)
 
-# 6️⃣ Filter articles and store in list
-articles = []
+most_read = []
+
 for row in response.rows:
     path = row.dimension_values[0].value
-    views = int(row.metric_values[0].value)
-
-    # Only include /articles/ paths
-    if path.startswith("/articles/"):
-        articles.append({
+    # Include only articles
+    if "/articles/" in path:
+        most_read.append({
             "url": path,
-            "views": views
+            "views": int(row.metric_values[0].value)
         })
 
-# 7️⃣ Save to _data/most_read.yml
+# Write to Jekyll _data folder
 os.makedirs("_data", exist_ok=True)
 with open("_data/most_read.yml", "w") as f:
-    yaml.dump(articles, f, sort_keys=False)
+    yaml.dump(most_read, f)
 
-print("✅ _data/most_read.yml updated successfully!")
+# Debug print to GitHub Actions log
+print("✅ _data/most_read.yml content:")
+print(yaml.dump(most_read))

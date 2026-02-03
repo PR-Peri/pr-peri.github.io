@@ -1,38 +1,37 @@
 name: Update Most Read Articles
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "0 3 * * *"   # runs daily at 3 AM UTC
-  workflow_dispatch:       # allows manual trigger
+    - cron: '0 0 * * *'  # daily at midnight UTC
 
 jobs:
-  build:
+  update_most_read:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: 3.11
 
       - name: Install dependencies
         run: |
-          pip install google-analytics-data pyyaml
+          pip install --upgrade pip
+          pip install pyyaml google-analytics-data
 
-      - name: Fetch GA data
+      - name: Run fetch_most_read.py
         env:
           GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
           GA_CREDENTIALS_JSON: ${{ secrets.GA_CREDENTIALS_JSON }}
         run: |
           python scripts/fetch_most_read.py
 
-      - name: Commit changes
+      - name: Commit updated most_read.yml
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add _data/most_read.yml
-          git commit -m "Update most read articles" || echo "No changes"
+          git commit -m "Update most_read.yml" || echo "No changes to commit"
           git push
