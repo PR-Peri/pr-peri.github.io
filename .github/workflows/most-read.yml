@@ -1,9 +1,13 @@
 name: Update Most Read Articles
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'  # daily at midnight UTC
+    - cron: '0 0 * * *'
 
 jobs:
   update_most_read:
