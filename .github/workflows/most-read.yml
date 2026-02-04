@@ -39,8 +39,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Update most_read.yml"
           branch: update-most-read
+          base: main
           title: "Update most_read.yml"
           body: "Automatically updated most read articles."
           labels: "auto-generated"
-          base: main
-          create-branch: true   # ✅ ensures branch is created if it doesn't exist yet
