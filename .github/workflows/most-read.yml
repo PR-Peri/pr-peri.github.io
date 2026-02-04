@@ -13,7 +13,7 @@ jobs:
       # Step 1: Checkout repo
       - uses: actions/checkout@v3
         with:
-          persist-credentials: true  # allow the action to commit/push
+          persist-credentials: true  # allows PR action to commit
 
       # Step 2: Setup Python
       - uses: actions/setup-python@v4
@@ -32,15 +32,7 @@ jobs:
           GA_CREDENTIALS_JSON: ${{ secrets.GA_CREDENTIALS_JSON }}
         run: python _scripts/fetch_most_read.py
 
-      # Step 5: Commit any changes
-      - name: Commit changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add _data/most_read.yml
-          git commit -m "Update most_read.yml" || echo "No changes to commit"
-
-      # Step 6: Create or update a pull request
+      # Step 5: Create or update pull request (no manual push needed)
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:

@@ -260,14 +260,26 @@ title: Articles
 
 <section class="most-read">
   <h2>Most Read</h2>
-  <ul>
-    {% for item in site.data.most_read %}
-      <li>
-        <a href="{{ item.url }}">
-          {{ item.url | split: '/' | last | replace: '.html', '' | capitalize }}
+
+  {% assign most_read = site.data.most_read | slice: 0, 5 %}
+
+  <div class="side-grid">
+    {% for item in most_read %}
+      {% assign post = site.posts | where: "url", item.path | first %}
+      {% if post %}
+        <a href="{{ post.url | relative_url }}" class="side-card">
+          {% if post.background %}
+            <img src="{{ post.background }}" alt="{{ post.title }}">
+          {% endif %}
+          <div class="content">
+            <h3>{{ post.title }}</h3>
+            <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
+            <p class="desc">
+              {{ post.description | strip_html | truncatewords: 12 }}
+            </p>
+          </div>
         </a>
-        ({{ item.views }} views)
-      </li>
+      {% endif %}
     {% endfor %}
-  </ul>
+  </div>
 </section>
