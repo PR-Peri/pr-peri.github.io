@@ -268,45 +268,95 @@ layout: default
         display: none;
       }
     }
+
+    .floating-share {
+      position: fixed;
+      /* stick to viewport */
+      top: 20px;
+      /* distance from top */
+      right: 20px;
+      /* distance from right */
+      z-index: 1000;
+      /* above other elements */
+      display: flex;
+      /* layout children horizontally */
+      gap: 8px;
+      /* spacing between buttons */
+    }
+
+    .floating-share a {
+      display: inline-block;
+      padding: 6px 10px;
+      background-color: #1da1f2;
+      /* Twitter/X blue */
+      color: #fff;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .floating-share {
+        top: auto;
+        bottom: 20px;
+        /* move to bottom on mobile */
+        right: 10px;
+        flex-direction: column;
+        /* stack links vertically */
+      }
+    }
   </style>
-<div class="floating-share">
 
-  <!-- Twitter / X -->
-  <a class="twitter" data-label="Share on X"
-     href="https://twitter.com/intent/tweet?url={{ site.url }}{{ page.url }}&text={{ page.title }}"
-     target="_blank"
-     onclick="gtag('event','share_click',{platform:'twitter',page:'{{ page.url }}',title:'{{ page.title }}'});">
-    <svg viewBox="0 0 24 24"><path d="M18.244 2H21.55l-7.227 8.26L22.8 22h-6.65l-5.21-6.84L4.92 22H1.61l7.73-8.84L1 2h6.82l4.71 6.23L18.244 2Zm-1.16 18h1.83L7.82 3.89H5.86L17.08 20Z"/></svg>
-  </a>
 
-  <!-- Facebook -->
-  <a class="facebook" data-label="Share on Facebook"
-     href="https://www.facebook.com/sharer/sharer.php?u={{ site.url }}{{ page.url }}"
-     target="_blank"
-     onclick="gtag('event','share_click',{platform:'facebook',page:'{{ page.url }}',title:'{{ page.title }}'});">
-    <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.5-3.89 3.8-3.89 1.1 0 2.25.2 2.25.2v2.46h-1.27c-1.25 0-1.64.78-1.64 1.57V12h2.8l-.45 2.89h-2.35v6.99A10 10 0 0 0 22 12"/></svg>
-  </a>
+  <div class="floating-share">
 
-  <!-- LinkedIn -->
-  <a class="linkedin" data-label="Share on LinkedIn"
-     href="https://www.linkedin.com/sharing/share-offsite/?url={{ site.url }}{{ page.url }}"
-     target="_blank"
-     onclick="gtag('event','share_click',{platform:'linkedin',page:'{{ page.url }}',title:'{{ page.title }}'});">
-    <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.95v5.66H9.35V9h3.4v1.56h.05c.47-.9 1.62-1.85 3.34-1.85 3.57 0 4.22 2.35 4.22 5.41v6.33ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22 2H2C.9 2 0 2.9 0 4v16c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2Z"/></svg>
-  </a>
+    <!-- Twitter / X -->
+    <a class="twitter" data-label="Share on X"
+      href="https://twitter.com/intent/tweet?url={{ site.url }}{{ page.url }}&text={{ page.title }}" target="_blank"
+      onclick="gtag('event','share_click',{platform:'twitter',page:'{{ page.url }}',title:'{{ page.title }}'});">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M18.244 2H21.55l-7.227 8.26L22.8 22h-6.65l-5.21-6.84L4.92 22H1.61l7.73-8.84L1 2h6.82l4.71 6.23L18.244 2Zm-1.16 18h1.83L7.82 3.89H5.86L17.08 20Z" />
+      </svg>
+    </a>
 
-  <!-- WhatsApp -->
-  <a class="whatsapp" data-label="Share on WhatsApp"
-     href="https://wa.me/?text={{ page.title }}%20{{ site.url }}{{ page.url }}"
-     target="_blank"
-     onclick="gtag('event','share_click',{platform:'whatsapp',page:'{{ page.url }}',title:'{{ page.title }}'});">
-    <svg viewBox="0 0 24 24"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.02 0C5.4 0 .03 5.37.03 11.99c0 2.11.55 4.17 1.6 6L0 24l6.2-1.62a11.96 11.96 0 0 0 5.82 1.48h.01c6.62 0 11.99-5.37 11.99-11.99 0-3.2-1.25-6.21-3.5-8.39ZM12.03 21.85h-.01a9.93 9.93 0 0 1-5.07-1.39l-.36-.21-3.68.96.98-3.59-.23-.37a9.92 9.92 0 0 1-1.52-5.27C2.14 6.5 6.54 2.1 12.03 2.1c2.62 0 5.08 1.02 6.93 2.87a9.72 9.72 0 0 1 2.86 6.93c0 5.49-4.4 9.95-9.79 9.95Zm5.67-7.49c-.31-.16-1.84-.91-2.12-1.01-.28-.1-.49-.16-.7.16-.21.31-.8 1.01-.98 1.22-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.49-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.13-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.68-.96-2.3-.25-.6-.5-.52-.7-.53h-.6c-.21 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.57 0 1.52 1.11 2.98 1.26 3.19.16.21 2.18 3.33 5.29 4.67.74.32 1.32.51 1.77.65.74.24 1.41.21 1.94.13.59-.09 1.84-.75 2.1-1.47.26-.72.26-1.33.18-1.47-.08-.13-.28-.21-.59-.37Z"/></svg>
-  </a>
+    <!-- Facebook -->
+    <a class="facebook" data-label="Share on Facebook"
+      href="https://www.facebook.com/sharer/sharer.php?u={{ site.url }}{{ page.url }}" target="_blank"
+      onclick="gtag('event','share_click',{platform:'facebook',page:'{{ page.url }}',title:'{{ page.title }}'});">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.5-3.89 3.8-3.89 1.1 0 2.25.2 2.25.2v2.46h-1.27c-1.25 0-1.64.78-1.64 1.57V12h2.8l-.45 2.89h-2.35v6.99A10 10 0 0 0 22 12" />
+      </svg>
+    </a>
 
-  <!-- Copy Link -->
-  <a class="copy" data-label="Copy link" href="#"
-     onclick="navigator.clipboard.writeText('{{ site.url }}{{ page.url }}'); gtag('event','share_click',{platform:'copy_link',page:'{{ page.url }}',title:'{{ page.title }}'}); alert('Link copied!'); return false;">
-    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1Zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Zm0 18H8V7h11v16Z"/></svg>
-  </a>
+    <!-- LinkedIn -->
+    <a class="linkedin" data-label="Share on LinkedIn"
+      href="https://www.linkedin.com/sharing/share-offsite/?url={{ site.url }}{{ page.url }}" target="_blank"
+      onclick="gtag('event','share_click',{platform:'linkedin',page:'{{ page.url }}',title:'{{ page.title }}'});">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.95v5.66H9.35V9h3.4v1.56h.05c.47-.9 1.62-1.85 3.34-1.85 3.57 0 4.22 2.35 4.22 5.41v6.33ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22 2H2C.9 2 0 2.9 0 4v16c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2Z" />
+      </svg>
+    </a>
 
-</div>
+    <!-- WhatsApp -->
+    <a class="whatsapp" data-label="Share on WhatsApp"
+      href="https://wa.me/?text={{ page.title }}%20{{ site.url }}{{ page.url }}" target="_blank"
+      onclick="gtag('event','share_click',{platform:'whatsapp',page:'{{ page.url }}',title:'{{ page.title }}'});">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M20.52 3.48A11.86 11.86 0 0 0 12.02 0C5.4 0 .03 5.37.03 11.99c0 2.11.55 4.17 1.6 6L0 24l6.2-1.62a11.96 11.96 0 0 0 5.82 1.48h.01c6.62 0 11.99-5.37 11.99-11.99 0-3.2-1.25-6.21-3.5-8.39ZM12.03 21.85h-.01a9.93 9.93 0 0 1-5.07-1.39l-.36-.21-3.68.96.98-3.59-.23-.37a9.92 9.92 0 0 1-1.52-5.27C2.14 6.5 6.54 2.1 12.03 2.1c2.62 0 5.08 1.02 6.93 2.87a9.72 9.72 0 0 1 2.86 6.93c0 5.49-4.4 9.95-9.79 9.95Zm5.67-7.49c-.31-.16-1.84-.91-2.12-1.01-.28-.1-.49-.16-.7.16-.21.31-.8 1.01-.98 1.22-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.49-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.13-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.68-.96-2.3-.25-.6-.5-.52-.7-.53h-.6c-.21 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.57 0 1.52 1.11 2.98 1.26 3.19.16.21 2.18 3.33 5.29 4.67.74.32 1.32.51 1.77.65.74.24 1.41.21 1.94.13.59-.09 1.84-.75 2.1-1.47.26-.72.26-1.33.18-1.47-.08-.13-.28-.21-.59-.37Z" />
+      </svg>
+    </a>
+
+    <!-- Copy Link -->
+    <a class="copy" data-label="Copy link" href="#"
+      onclick="navigator.clipboard.writeText('{{ site.url }}{{ page.url }}'); gtag('event','share_click',{platform:'copy_link',page:'{{ page.url }}',title:'{{ page.title }}'}); alert('Link copied!'); return false;">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1Zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Zm0 18H8V7h11v16Z" />
+      </svg>
+    </a>
+
+  </div>
