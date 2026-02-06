@@ -4,7 +4,6 @@ title: Articles
 ---
 
 <style>
-    /* === Page Wrapper === */
     .page-content .wrapper,
     .wrapper,
     .container,
@@ -20,9 +19,7 @@ title: Articles
         display: none !important;
     }
 
-    h1,
-    h2,
-    h3 {
+    h1, h2, h3 {
         color: #fff;
     }
 
@@ -34,7 +31,6 @@ title: Articles
         margin-bottom: 40px;
     }
 
-    /* Big featured card */
     .featured-card {
         background: #fff;
         border-radius: 8px;
@@ -50,7 +46,6 @@ title: Articles
         width: 100%;
         height: 220px;
         object-fit: cover;
-        /* fits the box */
     }
 
     .featured-card .content {
@@ -69,14 +64,7 @@ title: Articles
         color: #222;
     }
 
-
-    /* Right side small cards */
-    .side-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
+    /* === Side Cards (used for Recent list + All Articles) === */
     .side-card {
         display: flex;
         background: #fff;
@@ -85,17 +73,13 @@ title: Articles
         text-decoration: none;
         color: inherit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        min-height: 110px;
-        /* card grows with content */
+        height: 110px; /* fixed height so all cards match */
     }
 
     .side-card img {
         width: 110px;
-        /* fixed width */
-        height: 100%;
-        /* now follows card height */
+        height: 110px; /* force square image */
         object-fit: cover;
-        /* crop nicely */
         flex-shrink: 0;
     }
 
@@ -105,6 +89,7 @@ title: Articles
         display: flex;
         flex-direction: column;
         justify-content: center;
+        width: 100%;
     }
 
     .side-card h3 {
@@ -125,34 +110,27 @@ title: Articles
         font-size: 0.8rem;
         color: #555;
         display: -webkit-box;
-        /* allow 3 lines */
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
+    /* === Grid for Recent Side List (1 column) === */
+    .recent-side-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 
-    /* === All Articles Grid (3 per row) === */
+    /* === Grid for All Articles (3 per row) === */
     .all-articles-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 15px;
     }
 
-    .all-articles-grid .side-card {
-        height: auto;
-        /* allow text to expand */
-        flex-direction: column;
-        /* vertical layout for image on top */
-    }
-
-    .all-articles-grid .side-card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-    }
-
-    /* Responsive */
+    /* === Responsive Fix === */
     @media (max-width: 1100px) {
         .all-articles-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -174,14 +152,21 @@ title: Articles
             grid-template-columns: 1fr;
         }
 
+        .side-card {
+            height: auto;
+        }
+
         .side-card img {
-            height: 140px;
+            height: 100%;
+            width: 100px;
         }
     }
 </style>
 
+
 <!-- === Recent Posts === -->
 <h2>Recent Posts</h2>
+
 <div class="featured-grid">
     {% assign recent_posts = site.posts | slice: 0, 4 %}
     {% assign first_post = recent_posts[0] %}
@@ -197,7 +182,7 @@ title: Articles
         </div>
     </a>
 
-    <div class="side-grid">
+    <div class="recent-side-grid">
         {% for post in recent_posts offset:1 %}
         <a href="{{ post.url | relative_url }}" class="side-card">
             {% if post.background %}
@@ -215,8 +200,10 @@ title: Articles
 
 <hr>
 
-<!-- === All Articles (excluding recent posts) === -->
+
+<!-- === All Articles (excluding Recent Posts) === -->
 <h2>All Articles</h2>
+
 <div class="all-articles-grid">
     {% for post in site.posts offset:4 %}
     <a href="{{ post.url | relative_url }}" class="side-card">
@@ -226,7 +213,7 @@ title: Articles
         <div class="content">
             <h3>{{ post.title }}</h3>
             <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
-            <p class="desc">{{ post.description | strip_html | truncatewords: 16 }}</p>
+            <!-- <p class="desc">{{ post.description | strip_html | truncatewords: 16 }}</p> -->
         </div>
     </a>
     {% endfor %}
