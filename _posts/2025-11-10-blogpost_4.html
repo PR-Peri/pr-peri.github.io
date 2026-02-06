@@ -81,6 +81,20 @@ models, how they plan and act, and why they introduce new challenges in safety a
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
         }
 
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -332,25 +346,28 @@ models, how they plan and act, and why they introduce new challenges in safety a
         <p>
             Evaluating agentic systems is fundamentally different from evaluating classifiers or regressors.
         </p>
+        
+        <div class="table-responsive">
 
-        <table>
-            <tr>
-                <th>Challenge</th>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td>Non-stationarity</td>
-                <td>The environment changes as the agent acts</td>
-            </tr>
-            <tr>
-                <td>Delayed rewards</td>
-                <td>Actions may have long-term consequences</td>
-            </tr>
-            <tr>
-                <td>Emergent behavior</td>
-                <td>Unexpected strategies may arise</td>
-            </tr>
-        </table>
+            <table>
+                <tr>
+                    <th>Challenge</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Non-stationarity</td>
+                    <td>The environment changes as the agent acts</td>
+                </tr>
+                <tr>
+                    <td>Delayed rewards</td>
+                    <td>Actions may have long-term consequences</td>
+                </tr>
+                <tr>
+                    <td>Emergent behavior</td>
+                    <td>Unexpected strategies may arise</td>
+                </tr>
+            </table>
+        </div>
 
         <p>
             Traditional metrics like accuracy or RMSE are insufficient.
