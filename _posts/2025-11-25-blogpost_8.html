@@ -82,6 +82,20 @@ thoughtfully, and what can go wrong if you ignore them, with practical examples.
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
         }
 
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -337,34 +351,36 @@ thoughtfully, and what can go wrong if you ignore them, with practical examples.
 
         <h2>5. Feature Engineering Across Different Models</h2>
 
-        <table>
-            <tr>
-                <th>Model Type</th>
-                <th>Feature Sensitivity</th>
-                <th>Example</th>
-            </tr>
-            <tr>
-                <td>Linear Regression</td>
-                <td>Very sensitive</td>
-                <td>Age in years vs age in months – scaling affects impact</td>
-            </tr>
-            <tr>
-                <td>Decision Trees</td>
-                <td>Moderate</td>
-                <td>Can handle raw features but noisy columns cause overfitting</td>
-            </tr>
-            <tr>
-                <td>KNN / Distance-Based</td>
-                <td>Extremely sensitive</td>
-                <td>Distance calculations fail if features aren’t scaled</td>
-            </tr>
-            <tr>
-                <td>Neural Networks</td>
-                <td>Moderate</td>
-                <td>Can learn features automatically, but better input = faster, more reliable training</td>
-            </tr>
-        </table>
+        <div class="table-responsive">
 
+            <table>
+                <tr>
+                    <th>Model Type</th>
+                    <th>Feature Sensitivity</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>Linear Regression</td>
+                    <td>Very sensitive</td>
+                    <td>Age in years vs age in months – scaling affects impact</td>
+                </tr>
+                <tr>
+                    <td>Decision Trees</td>
+                    <td>Moderate</td>
+                    <td>Can handle raw features but noisy columns cause overfitting</td>
+                </tr>
+                <tr>
+                    <td>KNN / Distance-Based</td>
+                    <td>Extremely sensitive</td>
+                    <td>Distance calculations fail if features aren’t scaled</td>
+                </tr>
+                <tr>
+                    <td>Neural Networks</td>
+                    <td>Moderate</td>
+                    <td>Can learn features automatically, but better input = faster, more reliable training</td>
+                </tr>
+            </table>
+        </div>
         <hr>
 
         <h2>6. Feature Engineering as an Investment</h2>
@@ -403,5 +419,3 @@ thoughtfully, and what can go wrong if you ignore them, with practical examples.
 </body>
 
 </html>
-
-
