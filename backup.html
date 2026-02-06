@@ -1,260 +1,141 @@
 ---
-layout: page
-title: Articles
+layout: default
 ---
 
 <style>
-    .page-content .wrapper,
-    .wrapper,
-    .container,
-    .site-main {
-        max-width: 100% !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 10px !important;
-    }
+  body {
+    background: url('/img/trig.gif') center center / cover no-repeat fixed;
+    background-size: cover;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+  }
 
-    .page-content header,
-    .page-heading {
-        display: none !important;
-    }
+  .github-link {
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    text-align: left;
+    color: #0000FF;
+    font-style: italic;
+    font-size: medium;
+    text-decoration: none;
+  }
 
-    h1,
-    h2,
-    h3 {
-        color: #fff;
-    }
+  .github-link img {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+  }
 
-    /* === Recent Posts Section === */
-    .featured-grid {
-        display: grid;
-        grid-template-columns: 1.6fr 1.4fr;
-        /* shift balance: featured smaller, side bigger */
-        gap: 20px;
-        margin-bottom: 40px;
-    }
+  #myBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+    font-size: 15px;
+    border: none;
+    outline: none;
+    background-color: rgb(238, 208, 37);
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 4px;
+  }
 
-    /* Big featured (Recent only) */
-    .featured-card {
-        background: #fff;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .featured-card img {
-        width: 100%;
-        height: 220px;
-        /* reduced height */
-        object-fit: cover;
-    }
-
-    .featured-card .content {
-        padding: 15px;
-    }
-
-    .featured-card p.date {
-        margin: 0 0 4px;
-        font-size: 1.0rem;
-        color: #999;
-    }
-
-    .featured-card h2 {
-        margin: 0 0 8px;
-        font-size: 1.3rem;
-        color: #222;
-    }
-
-    /* Right side small cards */
-    .side-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .side-card {
-        display: flex;
-        background: #fff;
-        border-radius: 6px;
-        overflow: hidden;
-        text-decoration: none;
-        color: inherit;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        min-height: 110px;
-        /* card grows with content */
-    }
-
-    .side-card img {
-        width: 110px;
-        /* fixed width */
-        height: 100%;
-        /* now follows card height */
-        object-fit: cover;
-        /* crop nicely */
-        flex-shrink: 0;
-    }
-
-    .side-card .content {
-        padding: 10px;
-        font-size: 0.85rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .side-card h3 {
-        margin: 0 0 4px;
-        font-size: 1rem;
-        color: #222;
-        line-height: 1.2em;
-    }
-
-    .side-card p.date {
-        margin: 0 0 4px;
-        font-size: 0.75rem;
-        color: #999;
-    }
-
-    .side-card p.desc {
-        margin: 0;
-        font-size: 0.8rem;
-        color: #555;
-        display: -webkit-box;
-        /* allow 3 lines */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /* === Tags Section (50% smaller featured) === */
-    .tag-featured-grid {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-
-    .tag-featured-card {
-        background: #fff;
-        border-radius: 6px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .tag-featured-card img {
-        width: 100%;
-        height: 130px;
-        object-fit: cover;
-    }
-
-    .tag-featured-card .content {
-        padding: 8px;
-    }
-
-    .tag-featured-card h2 {
-        margin: 0 0 4px;
-        font-size: 0.9rem;
-        line-height: 1.3em;
-        color: #222;
-    }
-
-    .tag-featured-card p.date {
-        margin: 0 0 4px;
-        font-size: 0.75rem;
-        color: #999;
-    }
-
-    .tag-featured-card p.desc {
-        font-size: 0.85rem;
-        color: #555;
-        margin: 0;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .keyword-heading {
-        margin: 25px 0 12px;
-        font-size: 1rem;
-        font-weight: bold;
-        color: #fff;
-    }
+  #myBtn:hover {
+    background-color: #555;
+  }
 </style>
+<button onclick="topFunction()" id="myBtn" title="Back to top">
+  <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30">
+</button>
 
-<!-- === Recent Posts === -->
-<h2>Recent Posts</h2>
-<div class="featured-grid">
-    {% assign recent_posts = site.posts | slice: 0, 4 %}
-    {% assign first_post = recent_posts[0] %}
-    <a href="{{ first_post.url | relative_url }}" class="featured-card">
-        {% if first_post.background %}
-        <img src="{{ first_post.background }}" alt="{{ first_post.title }}">
-        {% endif %}
-        <div class="content">
-            <h2>{{ first_post.title }}</h2>
-            <p class="date">{{ first_post.date | date: "%B %d, %Y" }}</p>
-            <p>{{ first_post.description | strip_html | truncatewords: 18 }}</p>
-        </div>
-    </a>
+<script>
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  }
+  );
+  document.onkeydown = function (e) {
+    if (event.keyCode == 123) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+      return false;
+    }
+  }
 
-    <div class="side-grid">
-        {% for post in recent_posts offset:1 %}
-        <a href="{{ post.url | relative_url }}" class="side-card">
-            {% if post.background %}
-            <img src="{{ post.background }}" alt="{{ post.title }}">
+  var mybutton = document.getElementById("myBtn");
+  var message = "Right- Click Function Disabled!";
+
+
+  // When the user scrolls down 20px from the top of the document, show the button
+  window.onscroll = function () { scrollFunction() };
+
+  function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      mybutton.style.display = "block";
+    } else {
+      mybutton.style.display = "none";
+    }
+  }
+
+  // When the user clicks on the button, scroll to the top of the document
+  function topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+
+  function disableselect(e) {
+    return false
+  }
+
+  function reEnable() {
+    return true
+  }
+
+  //if IE4+  
+  document.onselectstart = new Function("return false")
+  document.oncontextmenu = new Function("return false")
+  document.oncontextmenu = new Function("alert(message);return false")
+
+  //if NS6  
+  if (window.sidebar) {
+    document.onmousedown = disableselect
+    document.onclick = reEnable
+
+  }
+
+</script>
+
+<!-- Page Header -->
+{% if page.background %}
+<header class="masthead"
+  style="background-image: url('{{ page.background | prepend: site.baseurl | replace: '//', '/' }}')">
+  {% else %}
+  <header class="masthead">
+    {% endif %}
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="page-heading">
+            <h1>{{ site.title }}</h1>
+            {% if site.description %}
+            <span class="subheading">{{ site.description }}</span>
             {% endif %}
-            <div class="content">
-                <h3>{{ post.title }}</h3>
-                <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
-                <p class="desc">{{ post.description | strip_html | truncatewords: 14 }}</p>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
-</div>
-
-<hr>
-
-<!-- === Posts by Tag === -->
-{% for tag in site.tags %}
-<h3 class="keyword-heading">Keyword: [{{ tag[0] }}]</h3>
-<div class="tag-featured-grid">
-    {% assign tag_posts = tag[1] | slice: 0, 3 %}
-    {% assign first_tag_post = tag_posts[0] %}
-    <a href="{{ first_tag_post.url | relative_url }}" class="tag-featured-card">
-        {% if first_tag_post.background %}
-        <img src="{{ first_tag_post.background }}" alt="{{ first_tag_post.title }}">
-        {% endif %}
-        <div class="content">
-            <h2>{{ first_tag_post.title }}</h2>
-            <p class="date">{{ first_tag_post.date | date: "%B %d, %Y" }}</p>
-            <p class="desc">{{ first_tag_post.description | strip_html | truncatewords: 12 }}</p>
+          </div>
         </div>
-    </a>
-
-    <div class="side-grid">
-        {% for post in tag_posts offset:1 %}
-        <a href="{{ post.url | relative_url }}" class="side-card">
-            {% if post.background %}
-            <img src="{{ post.background }}" alt="{{ post.title }}">
-            {% endif %}
-            <div class="content">
-                <h3>{{ post.title }}</h3>
-                <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
-                <p class="desc">{{ post.description | strip_html | truncatewords: 10 }}</p>
-            </div>
-        </a>
-        {% endfor %}
+      </div>
     </div>
-</div>
-{% endfor %}
-
+  </header>
