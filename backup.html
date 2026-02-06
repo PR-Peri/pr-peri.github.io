@@ -19,7 +19,9 @@ title: Articles
         display: none !important;
     }
 
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
         color: #fff;
     }
 
@@ -27,10 +29,12 @@ title: Articles
     .featured-grid {
         display: grid;
         grid-template-columns: 1.6fr 1.4fr;
+        /* shift balance: featured smaller, side bigger */
         gap: 20px;
         margin-bottom: 40px;
     }
 
+    /* Big featured (Recent only) */
     .featured-card {
         background: #fff;
         border-radius: 8px;
@@ -45,6 +49,7 @@ title: Articles
     .featured-card img {
         width: 100%;
         height: 220px;
+        /* reduced height */
         object-fit: cover;
     }
 
@@ -54,7 +59,7 @@ title: Articles
 
     .featured-card p.date {
         margin: 0 0 4px;
-        font-size: 1rem;
+        font-size: 1.0rem;
         color: #999;
     }
 
@@ -64,7 +69,13 @@ title: Articles
         color: #222;
     }
 
-    /* === Side Cards (used for Recent list + All Articles) === */
+    /* Right side small cards */
+    .side-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
     .side-card {
         display: flex;
         background: #fff;
@@ -73,13 +84,17 @@ title: Articles
         text-decoration: none;
         color: inherit;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        height: 110px; /* fixed height so all cards match */
+        min-height: 110px;
+        /* card grows with content */
     }
 
     .side-card img {
         width: 110px;
-        height: 110px; /* force square image */
+        /* fixed width */
+        height: 100%;
+        /* now follows card height */
         object-fit: cover;
+        /* crop nicely */
         flex-shrink: 0;
     }
 
@@ -89,7 +104,6 @@ title: Articles
         display: flex;
         flex-direction: column;
         justify-content: center;
-        width: 100%;
     }
 
     .side-card h3 {
@@ -110,67 +124,77 @@ title: Articles
         font-size: 0.8rem;
         color: #555;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        /* allow 3 lines */
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-    /* === Grid for Recent Side List (1 column) === */
-    .recent-side-grid {
+    /* === Tags Section (50% smaller featured) === */
+    .tag-featured-grid {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1.5fr 1fr;
         gap: 15px;
+        margin-bottom: 25px;
     }
 
-    /* === Grid for All Articles (3 per row) === */
-    .all-articles-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
+    .tag-featured-card {
+        background: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
     }
 
-    /* === Responsive Fix === */
-    @media (max-width: 1100px) {
-        .all-articles-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    .tag-featured-card img {
+        width: 100%;
+        height: 130px;
+        object-fit: cover;
     }
 
-    @media (max-width: 900px) {
-        .featured-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .featured-card img {
-            height: 200px;
-        }
+    .tag-featured-card .content {
+        padding: 8px;
     }
 
-    @media (max-width: 700px) {
-        .all-articles-grid {
-            grid-template-columns: 1fr;
-        }
+    .tag-featured-card h2 {
+        margin: 0 0 4px;
+        font-size: 0.9rem;
+        line-height: 1.3em;
+        color: #222;
+    }
 
-        .side-card {
-            height: auto;
-        }
+    .tag-featured-card p.date {
+        margin: 0 0 4px;
+        font-size: 0.75rem;
+        color: #999;
+    }
 
-        .side-card img {
-            height: 100%;
-            width: 100px;
-        }
+    .tag-featured-card p.desc {
+        font-size: 0.85rem;
+        color: #555;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .keyword-heading {
+        margin: 25px 0 12px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
     }
 </style>
 
-
 <!-- === Recent Posts === -->
 <h2>Recent Posts</h2>
-
 <div class="featured-grid">
     {% assign recent_posts = site.posts | slice: 0, 4 %}
     {% assign first_post = recent_posts[0] %}
-
     <a href="{{ first_post.url | relative_url }}" class="featured-card">
         {% if first_post.background %}
         <img src="{{ first_post.background }}" alt="{{ first_post.title }}">
@@ -182,7 +206,7 @@ title: Articles
         </div>
     </a>
 
-    <div class="recent-side-grid">
+    <div class="side-grid">
         {% for post in recent_posts offset:1 %}
         <a href="{{ post.url | relative_url }}" class="side-card">
             {% if post.background %}
@@ -200,21 +224,37 @@ title: Articles
 
 <hr>
 
-
-<!-- === All Articles (excluding Recent Posts) === -->
-<h2>All Articles</h2>
-
-<div class="all-articles-grid">
-    {% for post in site.posts offset:4 %}
-    <a href="{{ post.url | relative_url }}" class="side-card">
-        {% if post.background %}
-        <img src="{{ post.background }}" alt="{{ post.title }}">
+<!-- === Posts by Tag === -->
+{% for tag in site.tags %}
+<h3 class="keyword-heading">Keyword: [{{ tag[0] }}]</h3>
+<div class="tag-featured-grid">
+    {% assign tag_posts = tag[1] | slice: 0, 3 %}
+    {% assign first_tag_post = tag_posts[0] %}
+    <a href="{{ first_tag_post.url | relative_url }}" class="tag-featured-card">
+        {% if first_tag_post.background %}
+        <img src="{{ first_tag_post.background }}" alt="{{ first_tag_post.title }}">
         {% endif %}
         <div class="content">
-            <h3>{{ post.title }}</h3>
-            <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
-            <!-- <p class="desc">{{ post.description | strip_html | truncatewords: 16 }}</p> -->
+            <h2>{{ first_tag_post.title }}</h2>
+            <p class="date">{{ first_tag_post.date | date: "%B %d, %Y" }}</p>
+            <p class="desc">{{ first_tag_post.description | strip_html | truncatewords: 12 }}</p>
         </div>
     </a>
-    {% endfor %}
+
+    <div class="side-grid">
+        {% for post in tag_posts offset:1 %}
+        <a href="{{ post.url | relative_url }}" class="side-card">
+            {% if post.background %}
+            <img src="{{ post.background }}" alt="{{ post.title }}">
+            {% endif %}
+            <div class="content">
+                <h3>{{ post.title }}</h3>
+                <p class="date">{{ post.date | date: "%B %d, %Y" }}</p>
+                <p class="desc">{{ post.description | strip_html | truncatewords: 10 }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
 </div>
+{% endfor %}
+
