@@ -262,47 +262,31 @@ layout: default
       transform: translateX(0);
     }
 
-    /* Hide on mobile */
+    /* Mobile adjustments */
     @media screen and (max-width: 768px) {
       .floating-share {
-        display: none;
+        display: flex;
+        /* make sure it shows */
+        top: 50%;
+        /* vertical middle */
+        left: 10px;
+        /* closer to edge */
+        transform: translateY(-50%);
+        /* truly center vertically */
+        gap: 10px;
+        /* smaller spacing */
       }
-    }
 
-    .floating-share {
-      position: fixed;
-      /* stick to viewport */
-      top: 20px;
-      /* distance from top */
-      right: 20px;
-      /* distance from right */
-      z-index: 1000;
-      /* above other elements */
-      display: flex;
-      /* layout children horizontally */
-      gap: 8px;
-      /* spacing between buttons */
-    }
+      .floating-share a {
+        width: 40px;
+        /* slightly smaller icons */
+        height: 40px;
+      }
 
-    .floating-share a {
-      display: inline-block;
-      padding: 6px 10px;
-      background-color: #1da1f2;
-      /* Twitter/X blue */
-      color: #fff;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    @media (max-width: 480px) {
-      .floating-share {
-        top: auto;
-        bottom: 20px;
-        /* move to bottom on mobile */
-        right: 10px;
-        flex-direction: column;
-        /* stack links vertically */
+      .floating-share a svg {
+        width: 18px;
+        /* scale down icons */
+        height: 18px;
       }
     }
   </style>
