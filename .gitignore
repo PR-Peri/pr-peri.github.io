@@ -3,5 +3,3 @@ _site
 node_modules
 Gemfile.lock
 *.gem
-_config.yml
-config.yml
