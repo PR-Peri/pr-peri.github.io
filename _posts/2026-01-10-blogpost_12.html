@@ -275,62 +275,63 @@ for deployment."
         <hr>
 
         <h2>Comparison Table: Pinecone, Weaviate, Qdrant</h2>
+        <div class="table-responsive">
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Feature</th>
-                    <th>Pinecone</th>
-                    <th>Weaviate</th>
-                    <th>Qdrant</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Deployment</td>
-                    <td>Managed SaaS</td>
-                    <td>Self-host or Cloud</td>
-                    <td>Self-host or Cloud</td>
-                </tr>
-                <tr>
-                    <td>Indexing Algorithms</td>
-                    <td>HNSW, IVF (automatic)</td>
-                    <td>HNSW, IVF, Flat</td>
-                    <td>HNSW, PQ</td>
-                </tr>
-                <tr>
-                    <td>Multi-modal Support</td>
-                    <td>No native multi-modal</td>
-                    <td>Yes (text, images, audio)</td>
-                    <td>Limited (vectors only)</td>
-                </tr>
-                <tr>
-                    <td>API / SDK</td>
-                    <td>Python, REST, gRPC</td>
-                    <td>GraphQL, REST, Python</td>
-                    <td>REST, Python, gRPC</td>
-                </tr>
-                <tr>
-                    <td>RAG Integration</td>
-                    <td>Easy with Python clients and LangChain</td>
-                    <td>Direct integration with LangChain & OpenAI embeddings</td>
-                    <td>Works with LangChain, slightly more setup</td>
-                </tr>
-                <tr>
-                    <td>Scalability</td>
-                    <td>Automatic, managed</td>
-                    <td>Manual sharding / scaling</td>
-                    <td>Manual scaling but high throughput</td>
-                </tr>
-                <tr>
-                    <td>Cost</td>
-                    <td>Paid, subscription-based</td>
-                    <td>Free self-host or paid cloud</td>
-                    <td>Free self-host or paid cloud</td>
-                </tr>
-            </tbody>
-        </table>
-
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Pinecone</th>
+                        <th>Weaviate</th>
+                        <th>Qdrant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Deployment</td>
+                        <td>Managed SaaS</td>
+                        <td>Self-host or Cloud</td>
+                        <td>Self-host or Cloud</td>
+                    </tr>
+                    <tr>
+                        <td>Indexing Algorithms</td>
+                        <td>HNSW, IVF (automatic)</td>
+                        <td>HNSW, IVF, Flat</td>
+                        <td>HNSW, PQ</td>
+                    </tr>
+                    <tr>
+                        <td>Multi-modal Support</td>
+                        <td>No native multi-modal</td>
+                        <td>Yes (text, images, audio)</td>
+                        <td>Limited (vectors only)</td>
+                    </tr>
+                    <tr>
+                        <td>API / SDK</td>
+                        <td>Python, REST, gRPC</td>
+                        <td>GraphQL, REST, Python</td>
+                        <td>REST, Python, gRPC</td>
+                    </tr>
+                    <tr>
+                        <td>RAG Integration</td>
+                        <td>Easy with Python clients and LangChain</td>
+                        <td>Direct integration with LangChain & OpenAI embeddings</td>
+                        <td>Works with LangChain, slightly more setup</td>
+                    </tr>
+                    <tr>
+                        <td>Scalability</td>
+                        <td>Automatic, managed</td>
+                        <td>Manual sharding / scaling</td>
+                        <td>Manual scaling but high throughput</td>
+                    </tr>
+                    <tr>
+                        <td>Cost</td>
+                        <td>Paid, subscription-based</td>
+                        <td>Free self-host or paid cloud</td>
+                        <td>Free self-host or paid cloud</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <hr>
 
         <h2>Strengths and Weaknesses</h2>
