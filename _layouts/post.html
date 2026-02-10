@@ -192,252 +192,183 @@ layout: default
   </div>
 
   <!-- Floating Share Buttons -->
-  <style>
-    .floating-share {
-      position: fixed;
-      top: 40%;
-      left: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 9999;
-    }
-
-    .floating-share a {
-      width: 46px;
-      height: 46px;
-      background: rgba(15, 15, 15, 0.85);
-      backdrop-filter: blur(8px);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.25);
-      transition: all 0.25s ease;
-    }
-
-    .floating-share a svg {
-      width: 22px;
-      height: 22px;
-      fill: white;
-      transition: 0.25s ease;
-    }
-
-    .floating-share a:hover {
-      transform: translateY(-3px) scale(1.06);
-    }
-
-    .floating-share a.twitter:hover {
-      background: #000;
-    }
-
-    .floating-share a.facebook:hover {
-      background: #1877F2;
-    }
-
-    .floating-share a.linkedin:hover {
-      background: #0A66C2;
-    }
-
-    .floating-share a.whatsapp:hover {
-      background: #25D366;
-    }
-
-    .floating-share a.copy:hover {
-      background: #6D28D9;
-    }
-
-    /* Tooltip */
-    .floating-share a::after {
-      content: attr(data-label);
-      position: absolute;
-      left: 60px;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      padding: 6px 10px;
-      font-size: 12px;
-      border-radius: 8px;
-      opacity: 0;
-      transform: translateX(-10px);
-      pointer-events: none;
-      transition: 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .floating-share a:hover::after {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    /* Mobile adjustments */
-    @media screen and (max-width: 768px) {
-      .floating-share {
-        display: flex;
-        /* make sure it shows */
-        top: 50%;
-        /* vertical middle */
-        left: 10px;
-        /* closer to edge */
-        transform: translateY(-50%);
-        /* truly center vertically */
-        gap: 10px;
-        /* smaller spacing */
-      }
-
-      .floating-share a {
-        width: 40px;
-        /* slightly smaller icons */
-        height: 40px;
-      }
-
-      .floating-share a svg {
-        width: 18px;
-        /* scale down icons */
-        height: 18px;
-      }
-    }
-  </style>
-
-
-<!-- Floating Share Button (Transparent, Top-Right, All Devices) -->
+<!-- Floating Share Button at Bottom Center with Arrow Indicator -->
 <style>
+  /* Wrapper at bottom center */
   #floatingShareWrapper {
     position: fixed;
-    top: 200px;
-    left: 20px;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-  }
-
-  /* Main share button */
-  #floatingShareBtn {
-    background: rgba(11, 4, 143, 0.7); /* semi-transparent */
-    backdrop-filter: blur(8px);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
   }
 
-  #floatingShareBtn:hover {
-    transform: scale(1.1);
-    background: rgba(0,0,0,0.5);
-  }
-
-  /* Expanded buttons container */
+  /* Social buttons container (hidden by default) */
   #floatingShareButtons {
-    display: none;
-    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row; /* horizontal layout */
     gap: 10px;
-    flex-direction: column;
-    align-items: flex-end;
+    margin-bottom: 10px; /* space above main button */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
   }
 
+  /* Show social buttons when active */
+  #floatingShareWrapper.active #floatingShareButtons {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Individual social buttons */
   #floatingShareButtons a {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    box-shadow: 0px 8px 18px rgba(0,0,0,0.25);
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  #floatingShareButtons a svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
+
+  #floatingShareButtons a:hover {
+    transform: translateY(-3px) scale(1.06);
+  }
+
+  /* Tooltip labels */
+  #floatingShareButtons a::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 100%; /* show tooltip above each icon */
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    background: rgba(0,0,0,0.85);
     color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
-    background: rgba(0,0,0,0.3); /* semi-transparent background */
-    backdrop-filter: blur(8px);
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
   }
 
-  #floatingShareButtons a:hover {
-    transform: scale(1.1);
+  #floatingShareButtons a:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
   }
 
-  /* Platform icon colors */
-  #floatingShareButtons a.twitter svg { fill: #1DA1F2; }
-  #floatingShareButtons a.facebook svg { fill: #1877F2; }
-  #floatingShareButtons a.linkedin svg { fill: #0A66C2; }
-  #floatingShareButtons a.whatsapp svg { fill: #25D366; }
-  #floatingShareButtons a.telegram svg { fill: #0088cc; }
-  #floatingShareButtons a.copy svg { fill: #6D28D9; }
+  /* Main share button */
+  #floatingShareBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 15, 15, 0.6);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    box-shadow: 0px 6px 16px rgba(0,0,0,0.25);
+    transition: all 0.2s ease;
+  }
 
-  #floatingShareButtons a:hover {
-    background: rgba(0,0,0,0.5);
+  #floatingShareBtn:hover {
+    transform: scale(1.05);
+    background: rgba(15, 15, 15, 0.8);
+  }
+
+  /* Arrow indicator */
+  #floatingShareBtn .arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  /* Rotate arrow when active */
+  #floatingShareWrapper.active #floatingShareBtn .arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Mobile adjustments */
+  @media screen and (max-width: 768px) {
+    #floatingShareWrapper {
+      bottom: 20px;
+    }
+
+    #floatingShareButtons a {
+      width: 40px;
+      height: 40px;
+    }
+
+    #floatingShareButtons a svg {
+      width: 18px;
+      height: 18px;
+    }
   }
 </style>
 
 <div id="floatingShareWrapper">
-  <!-- Main share button -->
-  <button id="floatingShareBtn" aria-label="Share this post">🔗</button>
-
-  <!-- Expanded share options -->
+  <!-- Social buttons (float on top of main button) -->
   <div id="floatingShareButtons">
-    <!-- Twitter / X -->
-    <a class="twitter"
-       href="https://twitter.com/intent/tweet?url={{ site.url }}{{ page.url }}&text={{ page.title }}"
-       target="_blank"
-       onclick="gtag('event','share_click_twitter',{platform:'twitter',page:'{{ page.url }}',title:'{{ page.title }}'});">
+    <!-- Twitter -->
+    <a class="twitter" data-label="Twitter"
+      href="https://twitter.com/intent/tweet?url={{ site.url }}{{ page.url }}&text={{ page.title }}" target="_blank"
+      onclick="gtag('event','share_click_twitter',{platform:'twitter',page:'{{ page.url }}',title:'{{ page.title }}'});">
       <svg viewBox="0 0 24 24"><path d="M18.244 2H21.55l-7.227 8.26L22.8 22h-6.65l-5.21-6.84L4.92 22H1.61l7.73-8.84L1 2h6.82l4.71 6.23L18.244 2Zm-1.16 18h1.83L7.82 3.89H5.86L17.08 20Z"/></svg>
     </a>
-
     <!-- Facebook -->
-    <a class="facebook"
-       href="https://www.facebook.com/sharer/sharer.php?u={{ site.url }}{{ page.url }}"
-       target="_blank"
-       onclick="gtag('event','share_click_facebook',{platform:'facebook',page:'{{ page.url }}',title:'{{ page.title }}'});">
+    <a class="facebook" data-label="Facebook"
+      href="https://www.facebook.com/sharer/sharer.php?u={{ site.url }}{{ page.url }}" target="_blank"
+      onclick="gtag('event','share_click_facebook',{platform:'facebook',page:'{{ page.url }}',title:'{{ page.title }}'});">
       <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.5-3.89 3.8-3.89 1.1 0 2.25.2 2.25.2v2.46h-1.27c-1.25 0-1.64.78-1.64 1.57V12h2.8l-.45 2.89h-2.35v6.99A10 10 0 0 0 22 12"/></svg>
     </a>
-
     <!-- LinkedIn -->
-    <a class="linkedin"
-       href="https://www.linkedin.com/sharing/share-offsite/?url={{ site.url }}{{ page.url }}"
-       target="_blank"
-       onclick="gtag('event','share_click_linkedin',{platform:'linkedin',page:'{{ page.url }}',title:'{{ page.title }}'});">
+    <a class="linkedin" data-label="LinkedIn"
+      href="https://www.linkedin.com/sharing/share-offsite/?url={{ site.url }}{{ page.url }}" target="_blank"
+      onclick="gtag('event','share_click_linkedin',{platform:'linkedin',page:'{{ page.url }}',title:'{{ page.title }}'});">
       <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.95v5.66H9.35V9h3.4v1.56h.05c.47-.9 1.62-1.85 3.34-1.85 3.57 0 4.22 2.35 4.22 5.41v6.33ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22 2H2C.9 2 0 2.9 0 4v16c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2Z"/></svg>
     </a>
-
     <!-- WhatsApp -->
-    <a class="whatsapp"
-       href="https://wa.me/?text={{ page.title }}%20{{ site.url }}{{ page.url }}"
-       target="_blank"
-       onclick="gtag('event','share_click_whatsapp',{platform:'whatsapp',page:'{{ page.url }}',title:'{{ page.title }}'});">
+    <a class="whatsapp" data-label="WhatsApp"
+      href="https://wa.me/?text={{ page.title }}%20{{ site.url }}{{ page.url }}" target="_blank"
+      onclick="gtag('event','share_click_whatsapp',{platform:'whatsapp',page:'{{ page.url }}',title:'{{ page.title }}'});">
       <svg viewBox="0 0 24 24"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.02 0C5.4 0 .03 5.37.03 11.99c0 2.11.55 4.17 1.6 6L0 24l6.2-1.62a11.96 11.96 0 0 0 5.82 1.48h.01c6.62 0 11.99-5.37 11.99-11.99 0-3.2-1.25-6.21-3.5-8.39ZM12.03 21.85h-.01a9.93 9.93 0 0 1-5.07-1.39l-.36-.21-3.68.96.98-3.59-.23-.37a9.92 9.92 0 0 1-1.52-5.27C2.14 6.5 6.54 2.1 12.03 2.1c2.62 0 5.08 1.02 6.93 2.87a9.72 9.72 0 0 1 2.86 6.93c0 5.49-4.4 9.95-9.79 9.95Zm5.67-7.49c-.31-.16-1.84-.91-2.12-1.01-.28-.1-.49-.16-.7.16-.21.31-.8 1.01-.98 1.22-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.49-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.13-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.68-.96-2.3-.25-.6-.5-.52-.7-.53h-.6c-.21 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.57 0 1.52 1.11 2.98 1.26 3.19.16.21 2.18 3.33 5.29 4.67.74.32 1.32.51 1.77.65.74.24 1.41.21 1.94.13.59-.09 1.84-.75 2.1-1.47.26-.72.26-1.33.18-1.47-.08-.13-.28-.21-.59-.37Z"/></svg>
     </a>
-
-    <!-- Telegram -->
-    <a class="telegram"
-       href="https://t.me/share/url?url={{ site.url }}{{ page.url }}&text={{ page.title }}"
-       target="_blank"
-       onclick="gtag('event','share_click_telegram',{platform:'telegram',page:'{{ page.url }}',title:'{{ page.title }}'});">
-      <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 6.62 5.37 11.99 12 11.99s12-5.37 12-11.99C24 5.37 18.63 0 12 0zm5.47 8.78l-1.71 8.06c-.13.57-.46.7-.93.44l-2.58-1.91-1.24 1.19c-.14.14-.26.26-.53.26l.19-2.74 4.99-4.51c.22-.19-.05-.29-.34-.1l-6.17 3.88-2.66-.83c-.58-.18-.59-.58.12-.86l10.39-4.01c.49-.19.91.12.76.85z"/></svg>
-    </a>
-
     <!-- Copy Link -->
-    <a class="copy"
-       href="#"
-       onclick="navigator.clipboard.writeText('{{ site.url }}{{ page.url }}'); gtag('event','share_click_copy_link',{platform:'copy_link',page:'{{ page.url }}',title:'{{ page.title }}'}); alert('Link copied!'); return false;">
+    <a class="copy" data-label="Copy Link" href="#"
+      onclick="navigator.clipboard.writeText('{{ site.url }}{{ page.url }}'); gtag('event','share_click_copy_link',{platform:'copy_link',page:'{{ page.url }}',title:'{{ page.title }}'}); alert('Link copied!'); return false;">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1Zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Zm0 18H8V7h11v16Z"/></svg>
     </a>
   </div>
+
+  <!-- Main button with arrow -->
+  <button id="floatingShareBtn">🔗 Click here to share <span class="arrow">▼</span></button>
 </div>
 
 <script>
   const shareBtn = document.getElementById('floatingShareBtn');
-  const shareLinks = document.getElementById('floatingShareButtons');
-  let open = false;
+  const shareWrapper = document.getElementById('floatingShareWrapper');
 
   shareBtn.addEventListener('click', () => {
-    open = !open;
-    shareLinks.style.display = open ? 'flex' : 'none';
+    shareWrapper.classList.toggle('active'); // toggle social buttons visibility
   });
 </script>
