@@ -1,6 +1,7 @@
 ---
 layout: null
 ---
+
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
@@ -10,22 +11,26 @@ layout: null
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
   </url>
 
+  <!-- Key pages -->
+  <url>
+    <loc>{{ site.url }}/about.html</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
+  <url>
+    <loc>{{ site.url }}/contact.html</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
+  <url>
+    <loc>{{ site.url }}/articles.html</loc>
+    <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+  </url>
+
   <!-- All posts -->
   {% for post in site.posts %}
   <url>
     <loc>{{ site.url }}{{ post.url }}</loc>
     <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
   </url>
-  {% endfor %}
-
-  <!-- Optional pages you want Google to index -->
-  {% for page in site.pages %}
-    {% if page.sitemap != false and page.url != "/" %}
-  <url>
-    <loc>{{ site.url }}{{ page.url }}</loc>
-    <lastmod>{{ page.date | default: site.time | date_to_xmlschema }}</lastmod>
-  </url>
-    {% endif %}
   {% endfor %}
 
 </urlset>
