@@ -163,6 +163,18 @@ and why it is important in regression analysis."
             max-width: 100%;
         }
 
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
 
         body.dark-mode {
             background-color: #121212 !important;
@@ -230,7 +242,7 @@ and why it is important in regression analysis."
 </head>
 
 <body>
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>

@@ -1,12 +1,13 @@
 ---
 layout: post
 title: "A Beginner’s Guide to Ridge Regression (L2 Regularization)"
-subtitle:  "Regularization Techniques II"
+subtitle: "Regularization Techniques II"
 date: 2025-10-02 19:05:13 -0400
 background: '/img/posts/ridge-post/ridge-01.jpg'
 categories: [machine-learning]
 tags: [machine-learning, regression]
-description: "Learn Ridge Regression (L2 regularization) step by step with beginner-friendly explanations, manual calculations, derivations, Python code, and visualizations."
+description: "Learn Ridge Regression (L2 regularization) step by step with beginner-friendly explanations, manual
+calculations, derivations, Python code, and visualizations."
 ---
 
 <!DOCTYPE html>
@@ -121,6 +122,19 @@ description: "Learn Ridge Regression (L2 regularization) step by step with begin
             max-width: 100%;
         }
 
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
         /* Dark mode */
         body.dark-mode {
             background-color: #121212 !important;
@@ -160,7 +174,7 @@ description: "Learn Ridge Regression (L2 regularization) step by step with begin
 
 <body>
     <!-- 🌙 Dark Mode Toggle Button -->
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>
@@ -465,9 +479,9 @@ print("Coefficient:", ridge.coef_)
             </ul>
 
             <!-- ✅ BLOGPOST CONTENT ENDS -->
-        {% include related-article.html %}
-    </div>
-    <script src="/includes/blog-style.js"></script>
+            {% include related-article.html %}
+        </div>
+        <script src="/includes/blog-style.js"></script>
 </body>
 
 </html>

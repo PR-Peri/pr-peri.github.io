@@ -179,7 +179,18 @@ and DeepSeek, with practical advice on choosing, deploying, and fine-tuning mode
             max-width: 100%;
         }
 
-
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
         /* 🌙 Dark mode styles */
         body.dark-mode {
             background-color: #121212 !important;
@@ -221,7 +232,7 @@ and DeepSeek, with practical advice on choosing, deploying, and fine-tuning mode
 
 <body>
     <!-- 🌙 Dark Mode Toggle Button -->
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>

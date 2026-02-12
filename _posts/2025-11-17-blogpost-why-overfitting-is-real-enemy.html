@@ -162,7 +162,18 @@ description: "An in-depth, intuitive explanation of overfitting in machine learn
             max-width: 100%;
         }
 
-
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
         /* 🌙 Dark mode styles */
         body.dark-mode {
             background-color: #121212 !important;
@@ -204,7 +215,7 @@ description: "An in-depth, intuitive explanation of overfitting in machine learn
 
 <body>
     <!-- 🌙 Dark Mode Toggle Button -->
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>

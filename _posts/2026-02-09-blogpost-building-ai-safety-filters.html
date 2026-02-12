@@ -176,7 +176,18 @@ description: "Learn how AI safety filters work, why they’re important, and how
             display: block;
             max-width: 100%;
         }
-
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
 
         /* 🌙 Dark mode styles */
         body.dark-mode {
@@ -219,7 +230,7 @@ description: "Learn how AI safety filters work, why they’re important, and how
 
 <body>
     <!-- 🌙 Dark Mode Toggle Button -->
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>

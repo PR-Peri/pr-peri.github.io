@@ -163,7 +163,18 @@ often misleading, how different metrics encode tradeoffs, and how poor metric ch
             display: block;
             max-width: 100%;
         }
-
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
 
         /* 🌙 Dark mode styles */
         body.dark-mode {
@@ -206,7 +217,7 @@ often misleading, how different metrics encode tradeoffs, and how poor metric ch
 
 <body>
     <!-- 🌙 Dark Mode Toggle Button -->
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>

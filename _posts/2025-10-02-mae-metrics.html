@@ -6,7 +6,8 @@ date: 2025-10-01 19:05:13 -0400
 background: '/img/posts/mae-post/img-01.jpg'
 categories: [performance]
 tags: [blogpost, error-metrics]
-description: "Learn Mean Absolute Error (MAE) with beginner-friendly guide to understand error metrics in machine learning and model evaluation."
+description: "Learn Mean Absolute Error (MAE) with beginner-friendly guide to understand error metrics in machine
+learning and model evaluation."
 ---
 
 <!DOCTYPE html>
@@ -156,6 +157,19 @@ description: "Learn Mean Absolute Error (MAE) with beginner-friendly guide to un
             max-width: 100%;
         }
 
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
         body.dark-mode {
             background-color: #121212 !important;
             color: #f0f0f0 !important;
@@ -193,7 +207,7 @@ description: "Learn Mean Absolute Error (MAE) with beginner-friendly guide to un
 </head>
 
 <body>
-    <button id="darkModeToggle" class="toggle-btn">🌙 Dark Mode</button>
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
 
     <div class="content">
         <script>
