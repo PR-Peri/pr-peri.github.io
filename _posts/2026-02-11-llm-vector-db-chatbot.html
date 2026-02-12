@@ -178,6 +178,27 @@ architecture, chunking strategies, retrieval pipelines, and production best prac
             max-width: 100%;
         }
 
+        /* Mobile-specific dark mode button positioning */
+        @media (max-width: 900px) {
+
+            /* Adjust dark mode toggle on phones */
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed on screen */
+                bottom: 20px;
+                /* distance from bottom */
+                right: 20px;
+                /* distance from right */
+                z-index: 2000;
+                /* higher than mobile menu */
+            }
+
+            /* Optional: make sure menu button stays below */
+            .nav-toggle {
+                z-index: 1500;
+                /* lower than dark mode toggle */
+            }
+        }
 
         /* 🌙 Dark mode styles */
         body.dark-mode {
