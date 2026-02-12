@@ -10,17 +10,20 @@ description: "Learn what Lasso Regression is, why it matters, and how it works s
 explanations."
 ---
 
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>A Beginner’s Guide to Lasso Regression</title>
+    <title>Understanding : A Step-by-Step Guide</title>
+
 
     <!-- MathJax for LaTeX rendering -->
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
     <style>
+        /* Page background (kept from original) */
         body {
             background: url('/img/trig.gif') center center / cover no-repeat fixed;
             background-size: cover;
@@ -32,9 +35,14 @@ explanations."
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             user-select: none;
         }
 
+        /* Content container for better contrast */
         .content {
             background: rgba(255, 255, 255, 0.92);
             max-width: 1000px;
@@ -45,8 +53,8 @@ explanations."
         }
 
         h1 {
-            font-size: 30px;
             margin-top: 0;
+            font-size: 30px;
         }
 
         h2 {
@@ -59,6 +67,11 @@ explanations."
             margin: 12px 0;
         }
 
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
         p {
             text-align: justify;
         }
@@ -68,6 +81,20 @@ explanations."
             padding: 3px 6px;
             border-radius: 4px;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
         }
 
         table {
@@ -94,6 +121,43 @@ explanations."
             margin: 14px 0;
         }
 
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
         pre {
             overflow-x: auto;
             background: #f7f7f7;
@@ -101,8 +165,10 @@ explanations."
             border-radius: 6px;
         }
 
+        /* Put this inside <style> in the <head> */
         .math-display {
             overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
             white-space: normal !important;
             word-break: break-word !important;
         }
@@ -112,11 +178,79 @@ explanations."
             display: block;
             max-width: 100%;
         }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
     </style>
+
 </head>
 
 <body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
     <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
 
         <!-- ✅ BLOGPOST CONTENT STARTS -->
         <h1>A Beginner’s Guide to Lasso Regression</h1>
