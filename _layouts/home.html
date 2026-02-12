@@ -194,6 +194,29 @@ title: Articles
       height: 140px;
     }
   }
+
+  .hidden-article {
+    display: none;
+  }
+
+  .see-more-btn {
+    margin: 20px auto 50px;
+    display: block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    background-color: rgb(238, 208, 37);
+    color: #000;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .see-more-btn:hover {
+    background-color: #fff;
+    color: #000;
+  }
 </style>
 
 <!-- Scroll to top button -->
@@ -288,9 +311,11 @@ title: Articles
 
     <!-- All Articles -->
     <h2>All Articles</h2>
-    <div class="all-articles-grid">
+
+    <div class="all-articles-grid" id="allArticlesGrid">
       {% for post in site.posts offset:4 %}
-      <a href="{{ post.url | relative_url }}" class="side-card">
+      <a href="{{ post.url | relative_url }}"
+        class="side-card all-article-item {% if forloop.index > 6 %}hidden-article{% endif %}">
         {% if post.background %}
         <img src="{{ post.background }}" alt="{{ post.title }}">
         {% endif %}
@@ -302,5 +327,25 @@ title: Articles
       </a>
       {% endfor %}
     </div>
+
+    <button id="seeMoreBtn" class="see-more-btn">See More</button>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const seeMoreBtn = document.getElementById("seeMoreBtn");
+        const hiddenArticles = document.querySelectorAll(".hidden-article");
+
+        if (hiddenArticles.length === 0) {
+          seeMoreBtn.style.display = "none";
+        }
+
+        seeMoreBtn.addEventListener("click", function () {
+          hiddenArticles.forEach(article => {
+            article.style.display = "flex";
+          });
+
+          seeMoreBtn.style.display = "none";
+        });
+      });
+    </script>
 
   </div>
