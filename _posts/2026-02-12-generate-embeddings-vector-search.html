@@ -1,0 +1,877 @@
+---
+layout: post
+title: "How to Generate Better Embeddings for Vector Search"
+subtitle: "A practical guide to improving retrieval quality with chunking, cleaning, metadata, and embedding
+strategies"
+date: 2026-02-12 22:05:13 +0800
+background: '/img/posts/vector/1.jpg'
+categories: [llm]
+tags: [embeddings, vector-search, rag, vectordb, semantic-search, retrieval, chunking, llm]
+description: "Learn how to generate higher-quality embeddings for vector search by improving text preprocessing,
+chunking strategies, embedding models, metadata, and retrieval evaluation."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h2>Introduction: Embeddings Are Usually the Real Problem</h2>
+
+        <p>
+            Most people assume vector search quality depends on which vector database they choose. Pinecone, Weaviate,
+            Qdrant, Milvus, Chroma, FAISS — the tools change, but the same retrieval problems still happen.
+        </p>
+
+        <p>
+            In real production systems, bad vector search is rarely caused by the database itself. The most common issue
+            is that embeddings were generated from low-quality chunks or poorly structured text.
+        </p>
+
+        <p>
+            This is why two teams can use the same embedding model and still get completely different results. The
+            difference usually comes down to preprocessing, chunking strategy, metadata, and evaluation.
+        </p>
+
+        <p>
+            In this post, I’ll go through the practical ways to generate better embeddings so your vector search results
+            become more accurate, consistent, and useful in real-world RAG pipelines.
+        </p>
+
+        <hr />
+
+        <h2>What Does “Better Embeddings” Actually Mean?</h2>
+
+        <p>
+            When people say “better embeddings”, they usually mean retrieval works better in real usage, not just in a
+            demo.
+        </p>
+
+        <ul>
+            <li>Retrieval returns the correct document more often.</li>
+            <li>Retrieval results are more consistent across similar queries.</li>
+            <li>Top results contain fewer irrelevant matches.</li>
+            <li>The system performs better with vague natural language questions.</li>
+            <li>Similarity ranking becomes more predictable and logical.</li>
+        </ul>
+
+        <p>
+            A better embedding pipeline is not about producing “nicer vectors”. It is about improving what your system
+            retrieves.
+        </p>
+
+        <hr />
+
+        <h2>Common Symptoms of Bad Embeddings</h2>
+
+        <p>
+            Before improving embeddings, it helps to recognize the usual failure patterns.
+        </p>
+
+        <ul>
+            <li>Retrieval returns documents that share keywords but are semantically unrelated.</li>
+            <li>Minor wording changes cause completely different retrieval results.</li>
+            <li>Short queries like “pricing” return random chunks.</li>
+            <li>Retrieval works in testing but fails with real user questions.</li>
+            <li>The system retrieves chunks that are incomplete or lack context.</li>
+        </ul>
+
+        <p>
+            If you are seeing these issues, your embedding model might not be the problem. The text going into the
+            embedding model is often the real cause.
+        </p>
+
+        <hr />
+
+        <h2>Step 1: Clean the Text Before Embedding</h2>
+
+        <p>
+            If you embed messy input, you get messy vectors. Many teams embed raw scraped HTML, PDF text, or markdown
+            without cleaning, which introduces a lot of noise.
+        </p>
+
+        <p>
+            A solid preprocessing pipeline should remove:
+        </p>
+
+        <ul>
+            <li>Navigation menus.</li>
+            <li>Repeated headers and footers.</li>
+            <li>Cookie banners and privacy popups.</li>
+            <li>Ads and irrelevant sidebar content.</li>
+            <li>Page numbers, watermark text, and PDF artifacts.</li>
+            <li>Extra whitespace and broken formatting.</li>
+        </ul>
+
+        <p>
+            A simple rule works well: if a human would ignore the text, do not embed it.
+        </p>
+
+        <hr />
+
+        <h2>Step 2: Chunking Matters More Than Model Choice</h2>
+
+        <p>
+            Chunking is one of the biggest factors in retrieval quality. Even the best embedding model cannot fix poor
+            chunking.
+        </p>
+
+        <p>
+            Chunking defines what information is compressed into a single vector. If chunks are too large, they become
+            vague. If chunks are too small, they lose meaning.
+        </p>
+
+        <h3>Chunking mistakes that destroy retrieval quality</h3>
+
+        <ul>
+            <li>Splitting text every N tokens without respecting structure.</li>
+            <li>Cutting chunks in the middle of sentences.</li>
+            <li>Embedding entire documents as one chunk.</li>
+            <li>Embedding only headings with no content.</li>
+            <li>Embedding bullet lists without the paragraph explaining them.</li>
+        </ul>
+
+        <p>
+            A good chunk should feel like something a human could read and understand by itself.
+        </p>
+
+        <hr />
+
+        <h2>Chunk Size: What Works in Practice?</h2>
+
+        <p>
+            There is no universal chunk size, but most production RAG systems fall into predictable ranges.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Chunk Size</th>
+                    <th>Best For</th>
+                    <th>Typical Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>150–300 tokens</td>
+                    <td>FAQs, short Q&amp;A datasets</td>
+                    <td>High precision, weaker context</td>
+                </tr>
+                <tr>
+                    <td>300–700 tokens</td>
+                    <td>General RAG pipelines</td>
+                    <td>Strong balance of context and relevance</td>
+                </tr>
+                <tr>
+                    <td>700–1200 tokens</td>
+                    <td>Technical docs and manuals</td>
+                    <td>More context, but risk of being too broad</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            For most chatbot and documentation retrieval systems, 400–800 tokens is a strong baseline.
+        </p>
+
+        <p>
+            A good way to validate chunk size is to ask:
+        </p>
+
+        <ul>
+            <li>Can this chunk answer a question on its own?</li>
+            <li>Does it contain enough context to make sense?</li>
+            <li>Is it too broad to match specific queries?</li>
+        </ul>
+
+        <hr />
+
+        <h2>Step 3: Use Overlap, But Do Not Overdo It</h2>
+
+        <p>
+            Chunk overlap prevents context loss at chunk boundaries. Without overlap, important sentences can get cut
+            off.
+        </p>
+
+        <p>
+            Common overlap values:
+        </p>
+
+        <ul>
+            <li>10% overlap for general text.</li>
+            <li>15–20% overlap for technical documentation.</li>
+            <li>30% overlap only when chunks are extremely small.</li>
+        </ul>
+
+        <p>
+            Overlap improves recall, but too much overlap causes duplicated results and wastes vector storage.
+        </p>
+
+        <p>
+            A practical baseline is 100–200 tokens overlap.
+        </p>
+
+        <hr />
+
+        <h2>Step 4: Chunk by Meaning, Not by Token Count</h2>
+
+        <p>
+            One of the best improvements you can make is semantic chunking. Instead of splitting every 500 tokens, split
+            by document structure.
+        </p>
+
+        <ul>
+            <li>Headings and subheadings.</li>
+            <li>Paragraph boundaries.</li>
+            <li>Code blocks and explanation blocks.</li>
+            <li>Lists and bullet groups.</li>
+            <li>Table sections.</li>
+        </ul>
+
+        <p>
+            This produces chunks that represent real concepts, not random fragments.
+        </p>
+
+        <hr />
+
+        <h2>Step 5: Add Context Headers Inside Each Chunk</h2>
+
+        <p>
+            This is one of the most underrated tricks in embedding pipelines.
+        </p>
+
+        <p>
+            When you chunk a document, each chunk loses context such as the page title and section name. That context
+            matters for embeddings.
+        </p>
+
+        <p>
+            Instead of embedding the chunk alone, prepend a short header.
+        </p>
+
+        <h3>Example</h3>
+
+        <p>
+            Instead of embedding:
+        </p>
+
+        <pre><code>Rate limits apply to all API calls...</code></pre>
+
+        <p>
+            Embed:
+        </p>
+
+        <pre><code>Document: API Documentation
+Section: Rate Limiting
+
+Rate limits apply to all API calls...</code></pre>
+
+        <p>
+            This simple change often improves retrieval quality dramatically.
+        </p>
+
+        <hr />
+
+        <h2>Step 6: Handle Tables and Code Blocks Correctly</h2>
+
+        <p>
+            Tables and code blocks are common sources of embedding failure.
+        </p>
+
+        <p>
+            If you embed raw tables from HTML or PDF extraction, the content often becomes unreadable and confusing.
+        </p>
+
+        <p>
+            For example, this is what bad extracted table text looks like:
+        </p>
+
+        <pre><code>Plan Price Limit Basic 10 1000 Pro 25 10000</code></pre>
+
+        <p>
+            Instead, represent it in a structured format or natural language.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Plan</th>
+                    <th>Price</th>
+                    <th>Request Limit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic</td>
+                    <td>$10</td>
+                    <td>1000 requests</td>
+                </tr>
+                <tr>
+                    <td>Pro</td>
+                    <td>$25</td>
+                    <td>10,000 requests</td>
+                </tr>
+                <tr>
+                    <td>Enterprise</td>
+                    <td>Custom</td>
+                    <td>Unlimited</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            For code blocks, embedding works well only if the chunk includes explanation text. Raw code by itself is
+            harder to retrieve meaningfully.
+        </p>
+
+        <ul>
+            <li>Keep code blocks together with the paragraph explaining them.</li>
+            <li>Avoid embedding minified or generated code.</li>
+            <li>Do not separate code examples from their headings.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Step 7: Choose the Right Embedding Model for Your Domain</h2>
+
+        <p>
+            Once chunking and preprocessing are done properly, embedding model choice becomes more important.
+        </p>
+
+        <p>
+            When evaluating models, look for:
+        </p>
+
+        <ul>
+            <li>Strong performance on your content domain.</li>
+            <li>Stable similarity behavior across query variations.</li>
+            <li>Reasonable vector dimensions for your scale.</li>
+            <li>Cost efficiency for large ingestion workloads.</li>
+            <li>Low latency for real-time query embedding.</li>
+        </ul>
+
+        <p>
+            Benchmarks are useful, but the real benchmark is your own dataset and your own queries.
+        </p>
+
+        <hr />
+
+        <h2>Step 8: Normalize Queries and Documents</h2>
+
+        <p>
+            A common mistake is embedding documents and user queries in completely different formats.
+        </p>
+
+        <p>
+            Documents often contain structured text, but user queries are short and vague. This gap can hurt retrieval.
+        </p>
+
+        <p>
+            You can improve results by lightly normalizing queries:
+        </p>
+
+        <ul>
+            <li>Expanding abbreviations like “db” to “database”.</li>
+            <li>Removing noisy punctuation and repeated whitespace.</li>
+            <li>Converting vague follow-ups into complete questions.</li>
+        </ul>
+
+        <p>
+            This becomes even more important in chatbots, where users ask follow-up questions like “what about pricing?”
+            without context.
+        </p>
+
+        <hr />
+
+        <h2>Step 9: Use Query Rewriting for Better Recall</h2>
+
+        <p>
+            Query rewriting is one of the strongest production techniques for improving retrieval.
+        </p>
+
+        <p>
+            Instead of embedding the raw query, you run a lightweight LLM prompt that rewrites the query into a more
+            descriptive form.
+        </p>
+
+        <h3>Example</h3>
+
+        <blockquote>
+            User query: "how do i do this?"
+        </blockquote>
+
+        <blockquote>
+            Rewritten query: "How do I configure vector database indexing for better similarity search performance?"
+        </blockquote>
+
+        <p>
+            Now the embedding represents meaning instead of vague phrasing, which improves retrieval consistency.
+        </p>
+
+        <hr />
+
+        <h2>Step 10: Use Metadata Filters to Reduce Noise</h2>
+
+        <p>
+            Better embeddings are not only about vector similarity. Metadata is equally important in real systems.
+        </p>
+
+        <p>
+            Store metadata such as:
+        </p>
+
+        <ul>
+            <li>Document type (blog, docs, FAQ).</li>
+            <li>Category (pricing, troubleshooting, setup).</li>
+            <li>Language.</li>
+            <li>Source URL or source system.</li>
+            <li>Timestamp or version.</li>
+            <li>Product name or project name.</li>
+        </ul>
+
+        <p>
+            Then filter retrieval based on context. This reduces irrelevant matches and makes similarity search more
+            stable.
+        </p>
+
+        <hr />
+
+        <h2>Step 11: Use Hybrid Search (Dense + Keyword)</h2>
+
+        <p>
+            Dense embeddings are strong for semantic similarity, but they often fail for:
+        </p>
+
+        <ul>
+            <li>Exact model names.</li>
+            <li>API endpoints and file paths.</li>
+            <li>Error codes.</li>
+            <li>Version numbers.</li>
+        </ul>
+
+        <p>
+            That is why many production systems combine dense vector search with keyword search (BM25).
+            This approach is usually called hybrid search.
+        </p>
+
+        <p>
+            If you work with technical documentation, hybrid search almost always improves retrieval quality.
+        </p>
+
+        <hr />
+
+        <h2>Step 12: Evaluate Embedding Quality Properly</h2>
+
+        <p>
+            One of the biggest mistakes teams make is relying on random manual testing.
+            Embedding quality should be evaluated systematically.
+        </p>
+
+        <p>
+            A good evaluation dataset contains:
+        </p>
+
+        <ul>
+            <li>Real user queries from logs.</li>
+            <li>Expected relevant chunks for each query.</li>
+            <li>Expected irrelevant chunks for comparison.</li>
+        </ul>
+
+        <p>
+            Then you can measure:
+        </p>
+
+        <ul>
+            <li>Recall@K.</li>
+            <li>Precision@K.</li>
+            <li>MRR (Mean Reciprocal Rank).</li>
+            <li>nDCG (Normalized Discounted Cumulative Gain).</li>
+        </ul>
+
+        <p>
+            This is how you make improvements based on data instead of guessing.
+        </p>
+
+        <hr />
+
+        <h2>Step 13: Remove Duplicate and Near-Duplicate Chunks</h2>
+
+        <p>
+            Duplicate chunks cause your vector search to return the same content repeatedly.
+            This wastes your context window and reduces retrieval diversity.
+        </p>
+
+        <p>
+            You should deduplicate chunks before inserting them into your vector database.
+        </p>
+
+        <ul>
+            <li>Use hashing to remove exact duplicates.</li>
+            <li>Use similarity matching to remove near duplicates.</li>
+            <li>Remove boilerplate repeated across many pages.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Step 14: Add a Reranker for Better Precision</h2>
+
+        <p>
+            Even with good embeddings, similarity search is not perfect. Many teams improve final retrieval quality by
+            using reranking.
+        </p>
+
+        <p>
+            A common pipeline looks like this:
+        </p>
+
+        <ol>
+            <li>Vector search retrieves top 20 candidate chunks.</li>
+            <li>A reranker model scores candidates against the query.</li>
+            <li>The system selects the top 5 most relevant chunks.</li>
+        </ol>
+
+        <p>
+            This improves precision and reduces irrelevant content passed into the LLM.
+        </p>
+
+        <p>
+            If your system is used in production, reranking is often worth the extra latency.
+        </p>
+
+        <hr />
+
+        <h2>Step 15: Cache Embeddings to Reduce Cost</h2>
+
+        <p>
+            Embedding calls can become expensive at scale, especially when you are embedding queries in real time.
+        </p>
+
+        <p>
+            Caching helps reduce cost and improves performance:
+        </p>
+
+        <ul>
+            <li>Cache query embeddings for repeated user queries.</li>
+            <li>Cache document embeddings for stable content.</li>
+            <li>Avoid re-embedding documents that have not changed.</li>
+        </ul>
+
+        <p>
+            Caching does not improve retrieval accuracy directly, but it allows you to experiment and scale without
+            unnecessary cost.
+        </p>
+
+        <hr />
+
+        <h2>A Recommended Embedding Pipeline (Good Baseline Setup)</h2>
+
+        <p>
+            If you want a strong production baseline, this is a reliable pipeline:
+        </p>
+
+        <ol>
+            <li>Clean input text and remove boilerplate noise.</li>
+            <li>Chunk by headings and paragraph boundaries.</li>
+            <li>Apply overlap (100–200 tokens).</li>
+            <li>Prepend each chunk with document title and section name.</li>
+            <li>Generate embeddings using a reliable embedding model.</li>
+            <li>Store metadata fields for filtering and ranking.</li>
+            <li>Deduplicate chunks before insertion.</li>
+            <li>Evaluate retrieval using Recall@K and MRR.</li>
+        </ol>
+
+        <p>
+            Most RAG systems become significantly better just by following these steps consistently.
+        </p>
+
+        <hr />
+
+        <h2>Common Mistakes That Kill Retrieval Quality</h2>
+
+        <ul>
+            <li>Embedding raw HTML and PDF artifacts.</li>
+            <li>Using random chunk splitting without semantic structure.</li>
+            <li>Storing chunks without document or section context.</li>
+            <li>Keeping duplicated chunks in your vector database.</li>
+            <li>Retrieving too many irrelevant chunks.</li>
+            <li>Skipping evaluation and relying on manual testing only.</li>
+            <li>Ignoring metadata filters.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Conclusion: Better Embeddings Come From Better Input</h2>
+
+        <p>
+            Most embedding problems are not caused by the embedding model itself. They are caused by bad chunking, messy
+            preprocessing, and lack of evaluation.
+        </p>
+
+        <p>
+            If you want your vector search system to work reliably, focus on making chunks clean, meaningful, and
+            context-rich. Once your embedding pipeline is strong, your retrieval becomes dramatically more accurate even
+            without changing your vector database.
+        </p>
+
+        <p>
+            In production, the teams that win are not the ones with the fanciest models. They are the ones who treat
+            embeddings as an engineering pipeline instead of a single API call.
+        </p>
+
+        <hr />
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>Chunking and preprocessing have more impact than model choice.</li>
+            <li>Chunk by meaning, not by token count.</li>
+            <li>Prepend chunks with context headers for better retrieval.</li>
+            <li>Use overlap carefully to preserve boundaries.</li>
+            <li>Metadata filtering improves retrieval accuracy significantly.</li>
+            <li>Hybrid search is useful for technical content.</li>
+            <li>Reranking improves precision when similarity search is not enough.</li>
+            <li>Always evaluate embeddings with real queries and metrics.</li>
+        </ul>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
