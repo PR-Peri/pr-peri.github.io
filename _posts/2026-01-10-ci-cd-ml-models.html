@@ -6,7 +6,8 @@ date: 2026-01-10 04:05:13 -0400
 background: '/img/posts/ci-cd/1.jpg'
 categories: [blogpost]
 tags: [machine-learning, mlops, cicd, github-actions, docker, kubernetes, deployment]
-description: "A detailed beginner-friendly guide to building CI/CD pipelines for machine learning models using GitHub Actions, Docker, and Kubernetes."
+description: "A detailed beginner-friendly guide to building CI/CD pipelines for machine learning models using GitHub
+Actions, Docker, and Kubernetes."
 ---
 
 <!DOCTYPE html>
@@ -176,6 +177,7 @@ description: "A detailed beginner-friendly guide to building CI/CD pipelines for
             display: block;
             max-width: 100%;
         }
+
         @media (max-width: 900px) {
             #darkModeToggle {
                 position: fixed;
@@ -251,10 +253,13 @@ description: "A detailed beginner-friendly guide to building CI/CD pipelines for
         <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
 
         <h1>CI/CD for ML Models using GitHub Actions, Docker, and Kubernetes</h1>
-
+        <br>
+        <h2>Introduction</h2>
         <p>
-            Deploying a machine learning model is very different from training it. Training usually happens in a notebook
-            or a local script, but deployment requires an engineering workflow that ensures the model is stable, testable,
+            Deploying a machine learning model is very different from training it. Training usually happens in a
+            notebook
+            or a local script, but deployment requires an engineering workflow that ensures the model is stable,
+            testable,
             scalable, and reproducible.
         </p>
 
@@ -435,7 +440,8 @@ description: "A detailed beginner-friendly guide to building CI/CD pipelines for
 
         <p>
             In most real ML deployments, the model is wrapped in a web API.
-            A common approach is to use FastAPI because it is lightweight, fast, and supports automatic API documentation.
+            A common approach is to use FastAPI because it is lightweight, fast, and supports automatic API
+            documentation.
         </p>
 
         <h3>Inference API code</h3>
@@ -484,7 +490,8 @@ def predict(payload: dict):
 
         <p>
             Docker solves one major issue in ML deployment: environment reproducibility.
-            Instead of manually installing dependencies on a server, Docker ensures the same environment runs everywhere.
+            Instead of manually installing dependencies on a server, Docker ensures the same environment runs
+            everywhere.
         </p>
 
         <h3>requirements.txt</h3>
@@ -723,7 +730,8 @@ jobs:
         </ul>
 
         <p>
-            In the GitHub Actions workflow, it is decoded back into a kubeconfig file so that <code>kubectl</code> works.
+            In the GitHub Actions workflow, it is decoded back into a kubeconfig file so that <code>kubectl</code>
+            works.
         </p>
 
         <hr>
