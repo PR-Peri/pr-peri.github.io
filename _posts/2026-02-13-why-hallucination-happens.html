@@ -1,0 +1,993 @@
+---
+layout: post
+title: "Context Window Limits: Why Your LLM Still Hallucinates"
+subtitle: "Understanding token limits, retrieval failures, and why bigger context windows don’t automatically mean
+better answers"
+date: 2026-02-13 22:45:13 +0800
+background: '/img/posts/llm-hallu/1.jpg'
+categories: [llm]
+tags: [llm, context-window, rag, hallucination, tokens, prompt-engineering, vector-search, retrieval]
+description: "Learn why LLMs hallucinate even with large context windows, how token limits impact reasoning, and what
+strategies reduce hallucinations in production systems."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>Context Window Limits: Why Your LLM Still Hallucinates</h1>
+        <br>
+        <h2>Introduction</h2>
+
+        <p>
+            When large language models first became mainstream, most people assumed hallucinations were a temporary
+            limitation.
+            The logic seemed simple: if the model has access to more information, it will stop making things up.
+        </p>
+
+        <p>
+            Then context windows started growing quickly. 4K became 16K, then 32K, then 128K, and now even larger.
+            Many teams upgraded models expecting hallucinations to disappear.
+        </p>
+
+        <p>
+            But in real production systems, hallucinations still happen. Sometimes even more frequently.
+        </p>
+
+        <p>
+            This is where many engineers get confused. If the model can see the correct information, why does it still
+            respond confidently with wrong answers?
+        </p>
+
+        <p>
+            The answer is that context window size is only one part of the system. It improves capacity, but it does not
+            guarantee correct retrieval, correct reasoning, or correct grounding.
+        </p>
+
+        <p>
+            This post explains why context window limits still matter, why hallucinations continue even with large
+            context windows, and what practical strategies actually reduce hallucination rates.
+        </p>
+
+        <hr />
+
+        <h2>What Is a Context Window?</h2>
+
+        <p>
+            A context window is the amount of text an LLM can "see" at once. This includes:
+        </p>
+
+        <ul>
+            <li>The system prompt.</li>
+            <li>The user prompt.</li>
+            <li>Chat history.</li>
+            <li>Tool responses (search results, API calls, database queries).</li>
+            <li>RAG retrieved chunks.</li>
+            <li>The model’s own intermediate reasoning tokens.</li>
+        </ul>
+
+        <p>
+            Everything counts as tokens, and once you exceed the context limit, older tokens are either truncated or
+            dropped.
+        </p>
+
+        <p>
+            This means context window is not just about how much your knowledge base can fit. It is about how much your
+            entire conversation can fit, including all the things you might not realize are taking space.
+        </p>
+
+        <hr />
+
+        <h2>Tokens: The Real Currency of Context</h2>
+
+        <p>
+            A common misunderstanding is thinking that a 128K context window means you can paste 128,000 words.
+            That is not how it works.
+        </p>
+
+        <p>
+            LLMs operate on tokens, not words. Tokens are sub-word units. For English text, the average is roughly:
+        </p>
+
+        <ul>
+            <li>1 token ≈ 0.75 words.</li>
+            <li>1 token ≈ 4 characters.</li>
+        </ul>
+
+        <p>
+            So a 32K context window is not 32,000 words. It is closer to 20,000 to 25,000 words depending on formatting.
+        </p>
+
+        <p>
+            Once you include chat history, RAG chunks, and system instructions, the usable space shrinks quickly.
+        </p>
+
+        <hr />
+
+        <h2>Why Hallucinations Still Happen With Large Context Windows</h2>
+
+        <p>
+            To understand hallucination, you have to understand what the model is doing.
+            The LLM is not "looking up facts". It is predicting the next token based on probability.
+        </p>
+
+        <p>
+            If the correct answer is not strongly represented in the context, or if the prompt encourages guessing, the
+            model will generate an answer that sounds correct.
+        </p>
+
+        <p>
+            Large context windows reduce some hallucinations, but they introduce new failure modes.
+        </p>
+
+        <hr />
+
+        <h2>Problem 1: You Still Cannot Fit Everything</h2>
+
+        <p>
+            Even with a large context window, most real knowledge bases are too large to fit.
+        </p>
+
+        <p>
+            For example:
+        </p>
+
+        <ul>
+            <li>A company wiki might contain hundreds of thousands of pages.</li>
+            <li>A legal document archive can contain millions of tokens.</li>
+            <li>A codebase can easily exceed millions of tokens.</li>
+        </ul>
+
+        <p>
+            So even with 128K context, you still have to select what information gets inserted into the prompt.
+            This selection step is retrieval.
+        </p>
+
+        <p>
+            And retrieval is where most RAG systems fail.
+        </p>
+
+        <hr />
+
+        <h2>Problem 2: Retrieval Can Still Be Wrong</h2>
+
+        <p>
+            In RAG systems, the model can only answer correctly if you retrieve the correct chunks.
+        </p>
+
+        <p>
+            If retrieval fails, the LLM will not respond with "I do not know" by default.
+            Instead, it will often generate a confident answer based on what it has seen before in training.
+        </p>
+
+        <p>
+            This is one of the most common causes of hallucination in production:
+        </p>
+
+        <ul>
+            <li>The answer exists in your database.</li>
+            <li>The vector search fails to retrieve it.</li>
+            <li>The model fills the gap with a plausible guess.</li>
+        </ul>
+
+        <p>
+            This is why simply increasing the context window does not fix hallucination. If the wrong context is
+            retrieved, the model will hallucinate confidently.
+        </p>
+
+        <hr />
+
+        <h2>Problem 3: More Context Can Mean More Noise</h2>
+
+        <p>
+            Bigger context windows allow you to insert more documents, but that does not mean you should.
+        </p>
+
+        <p>
+            In many RAG pipelines, teams retrieve 20 chunks, 30 chunks, or even 50 chunks because they have room.
+            This often hurts answer quality.
+        </p>
+
+        <p>
+            Why? Because the LLM is now reading a prompt filled with partially relevant information, irrelevant
+            sections, and repeated content.
+        </p>
+
+        <p>
+            When the context contains conflicting or noisy information, the model may:
+        </p>
+
+        <ul>
+            <li>Mix multiple sources into one incorrect answer.</li>
+            <li>Pick the wrong section of the context.</li>
+            <li>Overfit to the most recent chunk rather than the correct chunk.</li>
+            <li>Generate a summary that sounds reasonable but is factually wrong.</li>
+        </ul>
+
+        <p>
+            More context does not always improve accuracy. Often it reduces clarity.
+        </p>
+
+        <hr />
+
+        <h2>Problem 4: The Model Does Not “Know” What Is Important</h2>
+
+        <p>
+            Humans can scan a long document and quickly identify what matters.
+            LLMs do not behave like that.
+        </p>
+
+        <p>
+            Even if the correct answer exists somewhere in the context, the model may ignore it.
+            This happens when:
+        </p>
+
+        <ul>
+            <li>The relevant text is buried deep in the prompt.</li>
+            <li>The wording does not strongly match the question.</li>
+            <li>The chunk is poorly formatted or lacks context.</li>
+            <li>The prompt contains many similar but irrelevant passages.</li>
+        </ul>
+
+        <p>
+            The model processes tokens sequentially. It does not truly "search" inside the context like a database query
+            engine.
+        </p>
+
+        <p>
+            This is why context window size is not the same as attention quality.
+        </p>
+
+        <hr />
+
+        <h2>Problem 5: Context Truncation Happens More Than People Think</h2>
+
+        <p>
+            Even if your model supports 32K or 128K context, your application might not actually be using it
+            effectively.
+        </p>
+
+        <p>
+            Many production systems accidentally waste context on:
+        </p>
+
+        <ul>
+            <li>Long system prompts with repeated rules.</li>
+            <li>Verbose tool outputs.</li>
+            <li>Full JSON logs being injected into the prompt.</li>
+            <li>Chat history that is never summarized.</li>
+        </ul>
+
+        <p>
+            When you hit the context limit, your system will truncate older parts of the prompt.
+            If that includes key user requirements or key retrieved documents, hallucinations become much more likely.
+        </p>
+
+        <p>
+            In other words, your model might be hallucinating because it literally cannot see the information anymore.
+        </p>
+
+        <hr />
+
+        <h2>Problem 6: The Model Still Tries to Be Helpful</h2>
+
+        <p>
+            Most LLMs are trained to respond with something useful rather than refusing.
+            That is part of why they feel conversational and intelligent.
+        </p>
+
+        <p>
+            But this helpfulness creates a major problem in production: when the model does not know the answer, it
+            guesses.
+        </p>
+
+        <p>
+            Even if you provide a system prompt like:
+        </p>
+
+        <pre><code>If you are not sure, say you do not know.</code></pre>
+
+        <p>
+            The model may still hallucinate because it believes it can infer a likely answer.
+        </p>
+
+        <p>
+            This is not always a model bug. It is a behavior pattern learned from training data.
+        </p>
+
+        <hr />
+
+        <h2>Problem 7: Context Window Does Not Improve Reasoning Automatically</h2>
+
+        <p>
+            Many teams assume hallucination is just a missing context issue. But hallucination also happens because of
+            reasoning failure.
+        </p>
+
+        <p>
+            For example:
+        </p>
+
+        <ul>
+            <li>The model misinterprets the user’s question.</li>
+            <li>The model confuses two similar products or versions.</li>
+            <li>The model fails multi-step reasoning and invents intermediate facts.</li>
+            <li>The model incorrectly merges multiple sources into one conclusion.</li>
+        </ul>
+
+        <p>
+            In these cases, giving the model more context might not help. It may even make reasoning harder because the
+            prompt becomes longer and more complex.
+        </p>
+
+        <hr />
+
+        <h2>Why Large Context Windows Sometimes Increase Hallucinations</h2>
+
+        <p>
+            This sounds counterintuitive, but it happens often.
+        </p>
+
+        <p>
+            When you provide a lot of context, the model starts seeing partial evidence that something is true, even if
+            it is not.
+            Then it fills in the missing details with plausible completions.
+        </p>
+
+        <p>
+            This can produce answers that feel highly grounded, but are still wrong.
+        </p>
+
+        <p>
+            A common example is technical documentation retrieval. If you retrieve multiple versions of the same
+            documentation, the model might combine them incorrectly.
+        </p>
+
+        <ul>
+            <li>It reads one chunk from version 1.0.</li>
+            <li>It reads another chunk from version 2.0.</li>
+            <li>It merges both into an answer that matches neither version.</li>
+        </ul>
+
+        <p>
+            This is not fixed by more context. It is fixed by better retrieval filtering and metadata constraints.
+        </p>
+
+        <hr />
+
+        <h2>The “Lost in the Middle” Problem</h2>
+
+        <p>
+            Researchers have observed that LLMs often perform best when relevant information appears near the beginning
+            or end of the prompt.
+            Information placed in the middle may be ignored or used less effectively.
+        </p>
+
+        <p>
+            This is sometimes called the <strong>lost in the middle</strong> effect.
+        </p>
+
+        <p>
+            This becomes worse as context windows get larger, because the model has to distribute attention across more
+            tokens.
+        </p>
+
+        <p>
+            So even if you insert the correct document chunk, the model might not use it if it is buried among many
+            irrelevant chunks.
+        </p>
+
+        <hr />
+
+        <h2>Context Window vs Knowledge: They Are Not the Same Thing</h2>
+
+        <p>
+            A common misconception is thinking:
+        </p>
+
+        <blockquote>
+            If the model has a huge context window, it becomes a better knowledge system.
+        </blockquote>
+
+        <p>
+            A large context window is not memory. It is temporary attention.
+            Once the conversation ends, the model forgets everything unless you store it.
+        </p>
+
+        <p>
+            Even within a conversation, the model does not "remember" everything equally. It prioritizes patterns and
+            relevance.
+        </p>
+
+        <p>
+            So context window is better understood as:
+        </p>
+
+        <ul>
+            <li>A limited scratchpad.</li>
+            <li>A temporary working space.</li>
+            <li>A short-term buffer for the current task.</li>
+        </ul>
+
+        <p>
+            It is not a replacement for structured storage, retrieval, or databases.
+        </p>
+
+        <hr />
+
+        <h2>How Token Limits Break Long Conversations</h2>
+
+        <p>
+            If you build a chatbot with long conversation history, token limits become a real problem quickly.
+        </p>
+
+        <p>
+            Example scenario:
+        </p>
+
+        <ul>
+            <li>User chats for 30 minutes.</li>
+            <li>The conversation contains code snippets, tables, and documents.</li>
+            <li>The system keeps appending the full chat history.</li>
+            <li>Eventually, the system prompt truncates older messages.</li>
+        </ul>
+
+        <p>
+            At that point, the model starts hallucinating because it lost critical information from earlier in the
+            conversation.
+        </p>
+
+        <p>
+            The user sees this as the chatbot "forgetting" or "making things up".
+            But the real issue is that the conversation exceeded the context window.
+        </p>
+
+        <hr />
+
+        <h2>How to Reduce Hallucinations Despite Context Limits</h2>
+
+        <p>
+            Context window limits are unavoidable, but hallucinations can be reduced significantly with good system
+            design.
+        </p>
+
+        <p>
+            Below are strategies that actually work in production.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 1: Improve Retrieval Quality (RAG Done Properly)</h2>
+
+        <p>
+            Most hallucinations in enterprise LLM systems are retrieval failures.
+            If the correct chunk is not retrieved, hallucination becomes likely.
+        </p>
+
+        <p>
+            To improve retrieval:
+        </p>
+
+        <ul>
+            <li>Use better chunking (semantic chunking instead of fixed token chunking).</li>
+            <li>Add chunk overlap to prevent boundary loss.</li>
+            <li>Store headings and document titles inside chunk text.</li>
+            <li>Deduplicate repeated chunks.</li>
+            <li>Use metadata filtering (version, product, language, date).</li>
+        </ul>
+
+        <p>
+            A better vector database does not fix bad embeddings. Better embeddings fix retrieval.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 2: Use Reranking Before Sending Context to the LLM</h2>
+
+        <p>
+            Retrieving top 20 chunks and dumping them into the prompt is a common mistake.
+        </p>
+
+        <p>
+            A better approach:
+        </p>
+
+        <ul>
+            <li>Retrieve top 20 candidates from the vector database.</li>
+            <li>Rerank using a cross-encoder or reranker model.</li>
+            <li>Send only the top 5 or top 8 most relevant chunks to the LLM.</li>
+        </ul>
+
+        <p>
+            This improves grounding and reduces noisy context, which directly reduces hallucinations.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 3: Keep Context Short and High Quality</h2>
+
+        <p>
+            Even if you have a 128K context window, you should not aim to fill it.
+        </p>
+
+        <p>
+            High-quality retrieval usually beats high-volume retrieval.
+        </p>
+
+        <p>
+            Instead of sending 50 chunks, send 6 chunks that are highly relevant.
+            Instead of sending an entire PDF, send the exact section the question refers to.
+        </p>
+
+        <p>
+            This gives the model fewer opportunities to get distracted.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 4: Summarize Conversation History</h2>
+
+        <p>
+            For long conversations, storing the entire chat history is inefficient.
+            Instead, maintain a rolling summary.
+        </p>
+
+        <p>
+            A strong approach:
+        </p>
+
+        <ul>
+            <li>Keep the last 5–10 messages in full detail.</li>
+            <li>Summarize older messages into a structured memory block.</li>
+            <li>Store key user preferences, goals, and constraints.</li>
+        </ul>
+
+        <p>
+            This prevents token explosion while preserving important context.
+        </p>
+
+        <p>
+            Many production chatbots use this technique because it is simple and effective.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 5: Store Long-Term Memory Outside the Prompt</h2>
+
+        <p>
+            Context windows are not long-term memory. If you want memory, you need storage.
+        </p>
+
+        <p>
+            A common architecture is:
+        </p>
+
+        <ul>
+            <li>Store user history and preferences in a database.</li>
+            <li>Store conversation embeddings in a vector database.</li>
+            <li>Retrieve relevant memories only when needed.</li>
+        </ul>
+
+        <p>
+            This makes the system scalable and prevents the prompt from becoming bloated.
+        </p>
+
+        <p>
+            It also reduces hallucinations because the model sees only relevant memory, not an entire chat log.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 6: Add Citation-Style Answering</h2>
+
+        <p>
+            One of the best ways to reduce hallucinations is forcing the model to reference sources.
+        </p>
+
+        <p>
+            Instead of asking:
+        </p>
+
+        <pre><code>Answer the user question.</code></pre>
+
+        <p>
+            Ask:
+        </p>
+
+        <pre><code>Answer the question only using the provided context.
+If the answer is not in the context, say "Not found in the provided documents."</code></pre>
+
+        <p>
+            This does not eliminate hallucinations completely, but it improves grounded responses significantly.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 7: Detect When Context Is Missing</h2>
+
+        <p>
+            In production, you should treat missing context as a system failure, not a user failure.
+        </p>
+
+        <p>
+            One useful technique is a confidence gate:
+        </p>
+
+        <ul>
+            <li>Measure similarity scores from retrieval.</li>
+            <li>If similarity is below a threshold, do not answer.</li>
+            <li>Ask the user for clarification or request more information.</li>
+        </ul>
+
+        <p>
+            This is often better than generating a low-confidence answer.
+        </p>
+
+        <hr />
+
+        <h2>Strategy 8: Use Tool Calling Instead of Guessing</h2>
+
+        <p>
+            If your system supports tools (search, database query, API calls), the model should use them rather than
+            guessing.
+        </p>
+
+        <p>
+            A common hallucination scenario is:
+        </p>
+
+        <ul>
+            <li>User asks about current pricing.</li>
+            <li>The model guesses based on old training data.</li>
+            <li>The answer is outdated and wrong.</li>
+        </ul>
+
+        <p>
+            Instead, the model should call a pricing API or query the database.
+        </p>
+
+        <p>
+            Hallucination is often a symptom of missing tool integration.
+        </p>
+
+        <hr />
+
+        <h2>Why You Cannot Fully Remove Hallucinations</h2>
+
+        <p>
+            Even with perfect retrieval and perfect prompt engineering, hallucinations are still possible.
+            This is because the model is still generating probabilistic text.
+        </p>
+
+        <p>
+            The goal in production is not to eliminate hallucinations completely. The goal is to reduce them enough that
+            the system becomes reliable.
+        </p>
+
+        <p>
+            A good LLM system behaves like:
+        </p>
+
+        <ul>
+            <li>It answers confidently when grounded evidence exists.</li>
+            <li>It refuses when the evidence is missing.</li>
+            <li>It asks clarifying questions when the user query is vague.</li>
+        </ul>
+
+        <p>
+            This is how you build trust.
+        </p>
+
+        <hr />
+
+        <h2>Context Window Tradeoffs: Bigger Is Not Always Better</h2>
+
+        <p>
+            Large context windows introduce real engineering tradeoffs:
+        </p>
+
+        <ul>
+            <li>Higher latency.</li>
+            <li>Higher inference cost.</li>
+            <li>More noise injected into prompts.</li>
+            <li>Harder debugging and evaluation.</li>
+        </ul>
+
+        <p>
+            For many production systems, a smaller context window with strong retrieval and reranking performs better
+            than a massive context window with weak retrieval.
+        </p>
+
+        <hr />
+
+        <h2>Practical Rule of Thumb for Production RAG</h2>
+
+        <p>
+            If you are building a production RAG system, these rules are generally reliable:
+        </p>
+
+        <ul>
+            <li>Retrieval quality matters more than context size.</li>
+            <li>Six relevant chunks are better than fifty noisy chunks.</li>
+            <li>Reranking is worth the cost if accuracy matters.</li>
+            <li>Metadata filtering prevents mixing different versions of truth.</li>
+            <li>Summarization is required for long conversations.</li>
+            <li>LLMs should refuse rather than guess.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Conclusion: Context Windows Are Capacity, Not Accuracy</h2>
+
+        <p>
+            Large context windows are useful, but they are not a magic fix for hallucination.
+            Hallucinations happen because of retrieval failures, noisy prompts, truncated history, or reasoning
+            mistakes.
+        </p>
+
+        <p>
+            The real solution is not simply "use a bigger model". The solution is building a system that retrieves the
+            right information, removes irrelevant noise, and forces the model to stay grounded.
+        </p>
+
+        <p>
+            Context windows increase capacity. System design determines correctness.
+        </p>
+
+        <hr />
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>Context window size does not guarantee grounded answers.</li>
+            <li>Most hallucinations happen when retrieval fails or context is missing.</li>
+            <li>More context can introduce noise and conflicting information.</li>
+            <li>Conversation history must be summarized to avoid token overflow.</li>
+            <li>Reranking improves retrieval precision significantly.</li>
+            <li>Metadata filtering prevents mixing different versions of truth.</li>
+            <li>The best systems are designed to refuse when evidence is missing.</li>
+        </ul>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
