@@ -1,0 +1,229 @@
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2024/08/25/simple-linear-regression.html
+</loc>
+        <lastmod>2024-08-25T12:00:10+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2024/08/26/multi-linear-regression.html
+</loc>
+        <lastmod>2024-08-26T22:00:18+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/performance/2025/09/29/rmse-metrics.html
+</loc>
+        <lastmod>2025-09-29T00:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/performance/2025/10/01/r-square-metrics.html
+</loc>
+        <lastmod>2025-10-01T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/performance/2025/10/01/mae-metrics.html
+</loc>
+        <lastmod>2025-10-01T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/performance/2025/10/02/rss-metrics.html
+</loc>
+        <lastmod>2025-10-02T05:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2025/10/02/ridge-classifier.html
+</loc>
+        <lastmod>2025-10-02T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2025/10/03/ridge-lasso.html
+</loc>
+        <lastmod>2025-10-03T07:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2025/10/04/elastic-net.html
+</loc>
+        <lastmod>2025-10-04T16:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2025/10/05/knn-clasify.html
+</loc>
+        <lastmod>2025-10-05T09:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/06/blogpost-goverments-care-about-ai.html
+</loc>
+        <lastmod>2025-11-06T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/06/blogpost-medical-ai-model.html
+</loc>
+        <lastmod>2025-11-06T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/09/blogpost-autonomous-ai-system.html
+</loc>
+        <lastmod>2025-11-09T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/10/blogpost-agentic-ai-autonomous-system.html
+</loc>
+        <lastmod>2025-11-10T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/14/blogpost-why-ai-models-fail.html
+</loc>
+        <lastmod>2025-11-14T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/17/blogpost-why-overfitting-is-real-enemy.html
+</loc>
+        <lastmod>2025-11-17T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/23/blogpost-metrics-beyond-accuracy.html
+</loc>
+        <lastmod>2025-11-23T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/11/25/blogpost-feature-engineering.html
+</loc>
+        <lastmod>2025-11-25T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2025/12/05/blogpost-how-to-monitor-data-drift.html
+</loc>
+        <lastmod>2025-12-05T13:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2025/12/18/blogpost-how-netflix-recommender-works.html
+</loc>
+        <lastmod>2025-12-18T13:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2026/01/08/blogpost-best-open-source-llm.html
+</loc>
+        <lastmod>2026-01-08T13:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2026/01/10/ci-cd-ml-models.html
+</loc>
+        <lastmod>2026-01-10T08:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2026/01/10/blogpost-vector-db-comparison.html
+</loc>
+        <lastmod>2026-01-10T13:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2026/01/27/blogpost-how-openai-builds.html
+</loc>
+        <lastmod>2026-01-27T12:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/blogpost/2026/02/08/blogpost-airflow-vs-prefect.html
+</loc>
+        <lastmod>2026-02-08T13:00:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2026/02/10/blogpost-building-ai-safety-filters.html
+</loc>
+        <lastmod>2026-02-10T00:30:00+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/machine-learning/2026/02/10/blogpost-rag-comparison.html
+</loc>
+        <lastmod>2026-02-10T23:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/llm/2026/02/12/llm-vector-db-chatbot.html
+</loc>
+        <lastmod>2026-02-12T14:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/llm/2026/02/12/generate-embeddings-vector-search.html
+</loc>
+        <lastmod>2026-02-12T14:05:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/llm/2026/02/13/why-hallucination-happens.html
+</loc>
+        <lastmod>2026-02-13T14:45:13+00:00</lastmod>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/CODE_OF_CONDUCT.html</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/about.html</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/articles.html</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/backup.html</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/contact.html</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/posts/</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/template.html</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/posts/page2/</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/posts/page3/</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/posts/page4/</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/posts/page5/</loc>
+    </url>
+    <url>
+        <loc>https://pr-peri.github.io/posts/page6/</loc>
+    </url>
+    <url>
+        <loc>
+            https://pr-peri.github.io/googlefac71c1e2d6569d3.html
+</loc>
+        <lastmod>2026-02-15T05:26:29+00:00</lastmod>
+    </url>
+</urlset>
