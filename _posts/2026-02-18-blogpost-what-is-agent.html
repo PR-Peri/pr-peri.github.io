@@ -1,0 +1,857 @@
+---
+layout: post
+title: "What is an AI Agent?"
+subtitle: ""
+date: 2026-02-18 19:05:13 -0400
+background: "/img/posts/blogpost/18.jpg"
+categories: [blogpost]
+tags: [llm-agents, tool-calling, memory, react, orchestration]
+description: "A detailed breakdown of what LLM agents really are, how they work internally, and the architecture
+behind planning, tools, memory, and execution loops."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+
+        <h1>What is an AI Agent?</h1>
+        <br>
+        <h2>Introduction</h2>
+
+        <p>
+            Large Language Models (LLMs) have made chatbots feel smarter than ever. You can ask questions, generate
+            summaries, write code, and get explanations instantly.
+            But as soon as you try to turn an LLM into something that can actually do work in the real world, you
+            quickly realize that plain chat completion is not enough.
+        </p>
+
+        <p>
+            This is where AI agents come in.
+        </p>
+
+        <p>
+            AI agents are not just “LLMs with memory” or “LLMs with better prompts”.
+            A real AI agent is an architecture: a loop-based system that can plan tasks, call tools, observe results,
+            and decide what to do next.
+        </p>
+
+        <p>
+            In this post, we will break down what an AI agent really is, how it works internally, and what a realistic
+            LLM agent architecture looks like in production.
+            We will also explain a popular agent architecture diagram from PromptingGuide, which is one of the clearest
+            representations of how modern tool-using agents operate.
+        </p>
+
+        <hr>
+
+        <h2>What is an AI Agent?</h2>
+
+        <p>
+            An AI agent is a system that uses an LLM as its reasoning engine, but is capable of taking actions through
+            external tools in order to complete a goal.
+        </p>
+
+        <p>
+            A chatbot generates responses.
+            An agent generates outcomes.
+        </p>
+
+        <p>
+            Instead of answering a single question and stopping, an agent can do multi-step reasoning and continue
+            working until the task is finished.
+            This usually involves calling APIs, querying databases, retrieving documents, or running code.
+        </p>
+
+        <p>
+            A practical definition is:
+        </p>
+
+        <p>
+            <strong>An AI agent is an LLM-driven loop that can plan, act, observe, and repeat until it completes a
+                task.</strong>
+        </p>
+
+        <p>
+            The most important word here is <strong>loop</strong>. If your system only responds once, it is not really
+            an agent.
+        </p>
+
+        <hr>
+
+        <h2>Chatbot vs AI Agent (The Real Difference)</h2>
+
+        <p>
+            A normal LLM chatbot behaves like this:
+        </p>
+
+        <ul>
+            <li>User asks a question.</li>
+            <li>Model generates an answer.</li>
+            <li>End.</li>
+        </ul>
+
+        <p>
+            An AI agent behaves differently:
+        </p>
+
+        <ul>
+            <li>User gives a task or objective.</li>
+            <li>Agent breaks the task into steps.</li>
+            <li>Agent chooses which tool to call.</li>
+            <li>Agent runs the tool.</li>
+            <li>Agent reads the tool output.</li>
+            <li>Agent decides the next action.</li>
+            <li>Repeat until the objective is achieved.</li>
+        </ul>
+
+        <p>
+            This is why agents are powerful, but also why they are harder to deploy.
+            They require orchestration, tool integration, and control logic around the model.
+        </p>
+
+        <hr>
+
+        <h2>Why LLMs Alone Are Not Enough</h2>
+
+        <p>
+            LLMs are great at language generation, but they have major limitations when used as standalone systems:
+        </p>
+
+        <ul>
+            <li>They cannot access real-time information reliably.</li>
+            <li>They cannot query your database directly.</li>
+            <li>They cannot execute code safely on their own.</li>
+            <li>They cannot take real-world actions like sending emails or booking tickets.</li>
+            <li>They hallucinate facts when the answer is not in context.</li>
+        </ul>
+
+        <p>
+            If you want your system to do anything beyond conversation, you need a way to connect the LLM to external
+            tools and trusted sources of truth.
+            That connection layer is what transforms a chatbot into an agent.
+        </p>
+
+        <hr>
+
+        <h2>The Core Components of an LLM Agent System</h2>
+
+        <p>
+            Most AI agent architectures, regardless of framework, include the same components.
+        </p>
+
+        <h3>1. The LLM (Reasoning Engine)</h3>
+
+        <p>
+            The LLM is responsible for interpreting the user’s goal and deciding what to do next.
+            However, the LLM should not be treated as the system itself.
+            In production, it is only one part of the pipeline.
+        </p>
+
+        <h3>2. Tools (Action Interface)</h3>
+
+        <p>
+            Tools are external functions or services that the agent can call.
+        </p>
+
+        <p>
+            Examples include:
+        </p>
+
+        <ul>
+            <li>Web search</li>
+            <li>SQL database query</li>
+            <li>Vector database retrieval</li>
+            <li>OCR extraction</li>
+            <li>Calendar scheduling</li>
+            <li>Payment processing</li>
+            <li>File reading and writing</li>
+            <li>API requests</li>
+        </ul>
+
+        <p>
+            Tools are what make the agent capable of real-world execution.
+        </p>
+
+        <h3>3. Memory (State Persistence)</h3>
+
+        <p>
+            Memory is what allows an agent to remember useful information beyond the immediate chat history.
+        </p>
+
+        <p>
+            This is usually implemented as external storage such as:
+        </p>
+
+        <ul>
+            <li>SQL databases for structured memory (profiles, logs, transactions)</li>
+            <li>Vector databases for semantic memory (unstructured text, documents, conversation history)</li>
+            <li>Object storage for files (PDFs, images, transcripts)</li>
+        </ul>
+
+        <p>
+            Without memory, an agent becomes inconsistent over time and cannot support long-term workflows.
+        </p>
+
+        <h3>4. Planner (Task Decomposition)</h3>
+
+        <p>
+            The planner breaks a high-level goal into smaller steps.
+        </p>
+
+        <p>
+            For example, if the user says:
+        </p>
+
+        <blockquote>
+            Summarize my meeting notes and email them to my manager.
+        </blockquote>
+
+        <p>
+            The planner might generate steps like:
+        </p>
+
+        <ul>
+            <li>Read the meeting notes.</li>
+            <li>Extract key points and decisions.</li>
+            <li>Write a structured summary.</li>
+            <li>Draft an email.</li>
+            <li>Ask user for approval.</li>
+            <li>Send the email.</li>
+        </ul>
+
+        <p>
+            Planning is what gives the agent structure.
+            Without it, the agent tends to produce incomplete answers or rush to conclusions.
+        </p>
+
+        <h3>5. Executor (Tool Calling and Workflow Execution)</h3>
+
+        <p>
+            The executor is the component that actually runs tool calls.
+            This is important because in production systems, the LLM should not have direct control over execution.
+            The LLM outputs a tool request, but the backend system executes it.
+        </p>
+
+        <p>
+            This separation improves reliability and safety.
+        </p>
+
+        <h3>6. Verifier / Critic (Quality Control)</h3>
+
+        <p>
+            Many production agents use a verification step to reduce hallucination.
+            A verifier checks whether:
+        </p>
+
+        <ul>
+            <li>The tool output matches the final response.</li>
+            <li>The agent’s reasoning is consistent.</li>
+            <li>The agent is making unsafe assumptions.</li>
+            <li>The final answer includes fabricated information.</li>
+        </ul>
+
+        <p>
+            This is especially important in domains like finance, healthcare, or compliance workflows.
+        </p>
+
+        <hr>
+
+        <h2>Understanding the Agent Architecture Diagram</h2>
+
+        <p>
+            The architecture image below from PromptingGuide is one of the best diagrams to explain how an LLM agent
+            actually works.
+            The key idea is that an agent is not a single model call.
+            It is a loop-based architecture.
+        </p>
+
+        <img src="/img/posts/blogpost/agent-components.png" alt="LLM Agent Architecture Diagram" class="img-fluid">
+        <p class="caption">AI agent architecture showing the reasoning, action, and observation loop.</p>
+
+        <hr>
+
+        <h2>Step-by-Step Explanation of the Architecture</h2>
+
+        <h3>Step 1: The User Sends a Goal</h3>
+
+        <p>
+            Agents are usually goal-driven.
+            Instead of asking a simple factual question, the user provides an objective.
+            For example:
+        </p>
+
+        <blockquote>
+            Plan a 3-day Tokyo itinerary with food recommendations and estimated costs.
+        </blockquote>
+
+        <p>
+            This is not a simple Q&amp;A problem. It requires planning, retrieval, and synthesis.
+        </p>
+
+        <h3>Step 2: The Agent Enters the Reasoning Loop</h3>
+
+        <p>
+            The diagram shows the agent performing reasoning. This is the stage where the agent decides:
+        </p>
+
+        <ul>
+            <li>What is the user’s goal?</li>
+            <li>What information is missing?</li>
+            <li>What tools should I use?</li>
+            <li>What is the next best step?</li>
+        </ul>
+
+        <p>
+            At this stage, the agent is not answering the user yet.
+            It is deciding what to do.
+        </p>
+
+        <h3>Step 3: The Agent Calls Tools</h3>
+
+        <p>
+            The next part of the diagram shows the agent interacting with tools.
+            This is the most important difference between an agent and a chatbot.
+        </p>
+
+        <p>
+            For example, if the user asks:
+        </p>
+
+        <blockquote>
+            What are the cheapest flights to Tokyo next week?
+        </blockquote>
+
+        <p>
+            A chatbot might hallucinate prices.
+            An agent would call a tool like:
+        </p>
+
+        <pre><code>search_flights(origin="KUL", destination="HND", date_range="next week")</code></pre>
+
+        <p>
+            Tool calls provide real data, not generated guesses.
+            This is where function calling becomes extremely useful, because the agent can generate structured tool
+            requests instead of vague instructions.
+        </p>
+
+        <h3>Step 4: Observation (Tool Results Are Fed Back Into the Agent)</h3>
+
+        <p>
+            After a tool runs, the system returns the result to the agent.
+            This is the “observation” stage.
+            The agent reads the tool output and updates its reasoning.
+        </p>
+
+        <p>
+            At this point the agent may decide:
+        </p>
+
+        <ul>
+            <li>Is this enough information?</li>
+            <li>Do I need another tool call?</li>
+            <li>Should I ask the user for clarification?</li>
+            <li>Do I have conflicting results that need verification?</li>
+        </ul>
+
+        <p>
+            This observe-and-decide loop is what makes agents iterative.
+        </p>
+
+        <h3>Step 5: Memory and Knowledge Storage</h3>
+
+        <p>
+            The diagram also shows memory as a separate component.
+            This is critical because agent systems cannot rely on chat history alone.
+        </p>
+
+        <p>
+            In production, memory is usually split into:
+        </p>
+
+        <ul>
+            <li><strong>Short-term memory</strong>: recent chat history and working context.</li>
+            <li><strong>Long-term memory</strong>: stored externally, retrieved when needed.</li>
+        </ul>
+
+        <p>
+            Long-term memory is often implemented using vector databases, because they allow semantic recall.
+            For example, an agent can remember:
+        </p>
+
+        <ul>
+            <li>You prefer halal food.</li>
+            <li>You avoid seafood.</li>
+            <li>You are tracking calories.</li>
+            <li>You previously asked for Tokyo budget planning.</li>
+        </ul>
+
+        <p>
+            Without memory, agents reset after each session, which makes them feel unreliable and unusable.
+        </p>
+
+        <h3>Step 6: The Agent Produces a Final Answer</h3>
+
+        <p>
+            Once the agent decides it has enough information, it generates a final response for the user.
+            The key point is that the final response should be based on evidence collected through tools and memory, not
+            purely generated text.
+        </p>
+
+        <p>
+            This is what reduces hallucination and increases reliability.
+        </p>
+
+        <hr>
+
+        <h2>Why Agents Are Expensive (Cost and Token Usage)</h2>
+
+        <p>
+            One of the first things engineers notice is that agents cost significantly more than chatbots.
+        </p>
+
+        <p>
+            A chatbot is usually one model call.
+            An agent can involve:
+        </p>
+
+        <ul>
+            <li>A planning call</li>
+            <li>A tool selection call</li>
+            <li>A retrieval call</li>
+            <li>A reasoning call after tool observation</li>
+            <li>A final response call</li>
+        </ul>
+
+        <p>
+            In many cases, a single user request can trigger multiple LLM calls.
+            This increases token usage and creates unpredictable inference costs, especially when tool outputs are
+            large.
+        </p>
+
+        <p>
+            This is why production agent systems require strong cost controls.
+        </p>
+
+        <hr>
+
+        <h2>Why Agents Are Slow (Latency Bottlenecks)</h2>
+
+        <p>
+            Agents also introduce latency.
+            Even if each model call takes only a few seconds, an agent doing multiple steps can easily take 10 to 20
+            seconds.
+        </p>
+
+        <p>
+            Latency increases because:
+        </p>
+
+        <ul>
+            <li>Tool calls take time.</li>
+            <li>Database queries take time.</li>
+            <li>Retrieval pipelines add overhead.</li>
+            <li>The LLM repeatedly reprocesses context windows.</li>
+        </ul>
+
+        <p>
+            This is why many real products simplify agent behavior and reduce tool loops unless necessary.
+        </p>
+
+        <hr>
+
+        <h2>Why Agents Fail in Production (Reliability Issues)</h2>
+
+        <p>
+            Agents are powerful, but they fail in predictable ways.
+            Common production failures include:
+        </p>
+
+        <ul>
+            <li><strong>Tool hallucination</strong>: the model assumes tool results without actually calling them.</li>
+            <li><strong>Wrong tool choice</strong>: the agent uses search when it should query a database.</li>
+            <li><strong>Infinite loops</strong>: repeated tool calls without reaching a stopping condition.</li>
+            <li><strong>Overconfidence</strong>: confident responses with missing evidence.</li>
+            <li><strong>Context pollution</strong>: irrelevant tool outputs fill the context window.</li>
+        </ul>
+
+        <p>
+            This is why production agents require guardrails and strict orchestration logic.
+        </p>
+
+        <hr>
+
+        <h2>Guardrails: What Makes an Agent Production-Ready</h2>
+
+        <p>
+            A production agent needs constraints.
+            Common guardrails include:
+        </p>
+
+        <ul>
+            <li>Maximum tool calls per request.</li>
+            <li>Timeout limits for tool execution.</li>
+            <li>Validation of tool inputs and tool schemas.</li>
+            <li>Output verification rules.</li>
+            <li>Refusal behavior when confidence is low.</li>
+            <li>User approval for sensitive actions.</li>
+        </ul>
+
+        <p>
+            For example, an agent should never send an email, place an order, or trigger payments without user
+            confirmation.
+        </p>
+
+        <hr>
+
+        <h2>Single Agent vs Multi-Agent Systems</h2>
+
+        <p>
+            Many people assume AI agents always mean multi-agent systems.
+            That is not true.
+        </p>
+
+        <h3>Single Agent System</h3>
+
+        <p>
+            A single LLM controls planning, tool use, and final output.
+            This is simpler and usually the best starting point.
+        </p>
+
+        <h3>Multi-Agent System</h3>
+
+        <p>
+            Multiple specialized agents collaborate.
+            For example:
+        </p>
+
+        <ul>
+            <li>Research agent</li>
+            <li>Planning agent</li>
+            <li>Execution agent</li>
+            <li>Verification agent</li>
+        </ul>
+
+        <p>
+            Multi-agent systems can improve quality, but increase complexity, latency, and cost.
+            Most production teams start with a single agent and only move to multi-agent systems when they have clear
+            bottlenecks.
+        </p>
+
+        <hr>
+
+        <h2>Where AI Agents Actually Make Sense</h2>
+
+        <p>
+            Not every application needs an agent.
+            Agents are most valuable when tasks require:
+        </p>
+
+        <ul>
+            <li>Multiple steps</li>
+            <li>External tool calls</li>
+            <li>Retrieval and memory</li>
+            <li>Repeated workflows</li>
+            <li>Decision-making logic</li>
+        </ul>
+
+        <p>
+            Examples of strong agent use cases include:
+        </p>
+
+        <ul>
+            <li>Customer support automation with escalation workflows</li>
+            <li>Report generation and analytics</li>
+            <li>Resume screening and hiring automation</li>
+            <li>Knowledge base assistants with document retrieval</li>
+            <li>Code review and debugging assistants</li>
+            <li>Personal productivity assistants</li>
+        </ul>
+
+        <p>
+            If your product is simple Q&amp;A, a chatbot is usually enough.
+            If your product needs execution and automation, agents become useful.
+        </p>
+
+        <hr>
+
+        <h2>Conclusion</h2>
+
+        <p>
+            An AI agent is not just an LLM answering questions. It is an architecture built around the LLM.
+            A real agent system includes planning, tool execution, memory retrieval, observation loops, and guardrails.
+        </p>
+
+        <p>
+            The PromptingGuide architecture diagram captures the key idea clearly: agents operate as a loop.
+            They reason, act, observe, and repeat until the goal is completed.
+        </p>
+
+        <p>
+            The biggest takeaway is that agent performance depends more on system design than model size.
+            A well-designed pipeline with good tool integration and memory can outperform a larger model running as a
+            basic chatbot.
+        </p>
+
+        <p>
+            As LLM agents become more common, the teams that succeed will be the ones who treat agents like software
+            systems, not just prompts.
+        </p>
+
+        <hr>
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>An AI agent is a loop-based system, not a single response generator.</li>
+            <li>Agents combine LLM reasoning with tools, memory, and execution logic.</li>
+            <li>Tool calling is what allows agents to interact with real-world systems.</li>
+            <li>Memory is external in production, often using SQL and vector databases.</li>
+            <li>Agents are slower and more expensive than chatbots due to multi-step workflows.</li>
+            <li>Guardrails are required to prevent hallucination, looping, and unsafe actions.</li>
+            <li>A strong architecture matters more than choosing the biggest model.</li>
+        </ul>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
