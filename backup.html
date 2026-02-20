@@ -1,0 +1,141 @@
+---
+layout: default
+---
+
+<style>
+  body {
+    background: url('/img/trig.gif') center center / cover no-repeat fixed;
+    background-size: cover;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+  }
+
+  .github-link {
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    text-align: left;
+    color: #0000FF;
+    font-style: italic;
+    font-size: medium;
+    text-decoration: none;
+  }
+
+  .github-link img {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+  }
+
+  #myBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+    font-size: 15px;
+    border: none;
+    outline: none;
+    background-color: rgb(238, 208, 37);
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  #myBtn:hover {
+    background-color: #555;
+  }
+</style>
+<button onclick="topFunction()" id="myBtn" title="Back to top">
+  <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30">
+</button>
+
+<script>
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  }
+  );
+  document.onkeydown = function (e) {
+    if (event.keyCode == 123) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+      return false;
+    }
+  }
+
+  var mybutton = document.getElementById("myBtn");
+  var message = "Right- Click Function Disabled!";
+
+
+  // When the user scrolls down 20px from the top of the document, show the button
+  window.onscroll = function () { scrollFunction() };
+
+  function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      mybutton.style.display = "block";
+    } else {
+      mybutton.style.display = "none";
+    }
+  }
+
+  // When the user clicks on the button, scroll to the top of the document
+  function topFunction() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+
+  function disableselect(e) {
+    return false
+  }
+
+  function reEnable() {
+    return true
+  }
+
+  //if IE4+  
+  document.onselectstart = new Function("return false")
+  document.oncontextmenu = new Function("return false")
+  document.oncontextmenu = new Function("alert(message);return false")
+
+  //if NS6  
+  if (window.sidebar) {
+    document.onmousedown = disableselect
+    document.onclick = reEnable
+
+  }
+
+</script>
+
+<!-- Page Header -->
+{% if page.background %}
+<header class="masthead"
+  style="background-image: url('{{ page.background | prepend: site.baseurl | replace: '//', '/' }}')">
+  {% else %}
+  <header class="masthead">
+    {% endif %}
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="page-heading">
+            <h1>{{ site.title }}</h1>
+            {% if site.description %}
+            <span class="subheading">{{ site.description }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
