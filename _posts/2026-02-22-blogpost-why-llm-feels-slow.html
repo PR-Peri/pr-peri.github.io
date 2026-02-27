@@ -6,7 +6,9 @@ date: 2026-02-22 19:05:13 -0400
 background: '/img/posts/blogpost/22.jpg'
 categories: [blogpost]
 tags: [llm, latency-optimization, system-design, machine-learning, production-ai, rag, streaming, inference-performance]
-description: "Production LLM applications often feel slow not because of model limitations but due to architectural pipeline bottlenecks. This post explains where latency originates and how to optimize inference, retrieval, networking, and application orchestration."
+description: "Production LLM applications often feel slow not because of model limitations but due to architectural
+pipeline bottlenecks. This post explains where latency originates and how to optimize inference, retrieval, networking,
+and application orchestration."
 ---
 
 <!DOCTYPE html>
@@ -288,57 +290,57 @@ description: "Production LLM applications often feel slow not because of model l
             A typical request usually travels through several layers before a response is returned to the user.
         </p>
 
- <div style="display:flex; justify-content:center; margin:25px 0;">
-<div style="display:grid; gap:10px; width:300px; font-family:monospace; font-size:14px;">
+        <div style="display:flex; justify-content:center; margin:25px 0;">
+            <div style="display:grid; gap:10px; width:300px; font-family:monospace; font-size:14px;">
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Request Reception
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Request Reception
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Authentication and Validation
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Authentication and Validation
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Embedding Generation (if using retrieval augmentation)
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Embedding Generation (if using retrieval augmentation)
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Vector Database Search
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Vector Database Search
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Context Assembly
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Context Assembly
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Model Inference
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Model Inference
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Post-processing
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Post-processing
+                </div>
 
-<div style="text-align:center;">↓</div>
+                <div style="text-align:center;">↓</div>
 
-<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
-Response Delivery
-</div>
+                <div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
+                    Response Delivery
+                </div>
 
-</div>
-</div>
+            </div>
+        </div>
 
         <p>
             Latency accumulates across these stages.
