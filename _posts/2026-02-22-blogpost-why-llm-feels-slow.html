@@ -288,23 +288,57 @@ description: ""
             A typical request usually travels through several layers before a response is returned to the user.
         </p>
 
-        <pre>
+ <div style="display:flex; justify-content:center; margin:25px 0;">
+<div style="display:grid; gap:10px; width:300px; font-family:monospace; font-size:14px;">
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Request Reception
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Authentication and Validation
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Embedding Generation (if using retrieval augmentation)
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Vector Database Search
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Context Assembly
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Model Inference
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Post-processing
-↓
+</div>
+
+<div style="text-align:center;">↓</div>
+
+<div style="padding:10px; border:1px solid #ccc; border-radius:8px; text-align:center;">
 Response Delivery
-</pre>
+</div>
+
+</div>
+</div>
 
         <p>
             Latency accumulates across these stages.
