@@ -1,0 +1,550 @@
+---
+layout: post
+title: "A Beginner’s Guide to"
+subtitle: ""
+date: 2025-10-01 19:05:13 -0400
+background: '/img/posts/FD-01.jpg'
+categories: [performance, R²]
+tags: []
+description: ""
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>Why Your LLM App Feels Slow (And Exactly How to Fix It)</h1>
+
+        <p>
+            Most LLM applications do not fail because of intelligence.
+            They fail because of latency.
+        </p>
+
+        <p>
+            Users tolerate occasional hallucinations. They tolerate imperfect answers.
+            They do not tolerate waiting 8 seconds for a response.
+        </p>
+
+        <p>
+            If your LLM application feels slow, the bottleneck is almost always architectural.
+            Model inference is only one component of total latency — and often not the dominant one.
+        </p>
+
+        <hr>
+
+        <h2>Understanding the Full Latency Surface</h2>
+
+        <p>An LLM application is a distributed system, not a single API call.</p>
+
+        <pre>
+Total Response Time =
+    Network Overhead
+  + Retrieval (if RAG)
+  + Preprocessing
+  + Model Inference
+  + Post-processing
+  + Rendering / Streaming
+</pre>
+
+        <p>
+            Optimizing only inference while ignoring upstream and downstream bottlenecks is a systems design mistake.
+            Performance requires latency budgeting.
+        </p>
+
+        <hr>
+
+        <h2>1. Model Inference Latency</h2>
+
+        <h3>First-Token Latency</h3>
+        <p>
+            Time between sending the request and receiving the first generated token.
+            This is the most important metric for perceived performance.
+        </p>
+
+        <h3>Token Generation Throughput</h3>
+        <p>
+            Measured in tokens per second. Users perceive responsiveness primarily through first-token latency,
+            not total completion time.
+        </p>
+
+        <h3>Token Scaling Effects</h3>
+
+        <pre>
+Latency ∝ (Input Tokens + Output Tokens)
+</pre>
+
+        <p>Common anti-patterns:</p>
+        <ul>
+            <li>Sending entire chat history uncompressed</li>
+            <li>Including redundant system instructions</li>
+            <li>Injecting large RAG chunks without trimming</li>
+            <li>Over-allocating max_tokens</li>
+        </ul>
+
+        <p><strong>Architectural Fixes:</strong></p>
+        <ul>
+            <li>Implement rolling conversation summarization</li>
+            <li>Enforce hard token caps</li>
+            <li>Dynamically adjust max_tokens</li>
+            <li>Store structured state instead of raw transcript replay</li>
+        </ul>
+
+        <hr>
+
+        <h2>2. Network Overhead</h2>
+
+        <p>Network latency compounds in distributed AI systems.</p>
+
+        <p>Common sources:</p>
+        <ul>
+            <li>TLS negotiation</li>
+            <li>Cross-region API calls</li>
+            <li>Serverless cold starts</li>
+            <li>Sequential HTTP chaining</li>
+            <li>Container spin-up delays</li>
+        </ul>
+
+        <p>If your system performs multiple sequential calls, latency stacks.</p>
+
+        <p><strong>Mitigations:</strong></p>
+        <ul>
+            <li>Use connection pooling</li>
+            <li>Co-locate compute near model endpoints</li>
+            <li>Warm serverless instances</li>
+            <li>Batch internal service calls</li>
+            <li>Remove unnecessary inter-service chatter</li>
+        </ul>
+
+        <hr>
+
+        <h2>3. Retrieval Latency in RAG Architectures</h2>
+
+        <p>Retrieval-Augmented Generation introduces additional layers:</p>
+
+        <ol>
+            <li>Query embedding generation</li>
+            <li>Vector similarity search</li>
+            <li>Metadata filtering</li>
+            <li>Optional re-ranking</li>
+            <li>Context assembly</li>
+            <li>Model inference</li>
+        </ol>
+
+        <h3>Common RAG Anti-Patterns</h3>
+        <ul>
+            <li>Recomputing embeddings for identical queries</li>
+            <li>Fetching top-10 documents when top-3 suffices</li>
+            <li>Sending full documents instead of trimmed chunks</li>
+            <li>Overlapping chunks creating redundant tokens</li>
+            <li>Synchronous retrieval execution</li>
+        </ul>
+
+        <h3>Retrieval Optimizations</h3>
+        <ul>
+            <li>Cache embeddings</li>
+            <li>Cache query → result mappings</li>
+            <li>Reduce chunk size</li>
+            <li>Limit top_k</li>
+            <li>Pre-trim content before injection</li>
+        </ul>
+
+        <hr>
+
+        <h2>4. Application Layer Bottlenecks</h2>
+
+        <p>Even optimized inference pipelines slow down due to application design issues:</p>
+
+        <ul>
+            <li>Blocking synchronous execution</li>
+            <li>Poor async handling</li>
+            <li>Serial tool invocation</li>
+            <li>Inefficient database queries</li>
+            <li>No streaming implementation</li>
+        </ul>
+
+        <p>Bad pipeline design:</p>
+
+        <pre>
+Wait → Wait → Wait → Wait
+</pre>
+
+        <p>Proper design:</p>
+
+        <pre>
+Parallel retrieval
+Parallel preprocessing
+Immediate streaming
+Async post-processing
+</pre>
+
+        <hr>
+
+        <h2>5. Perceived Performance vs Actual Performance</h2>
+
+        <p>
+            Users judge responsiveness based on:
+        </p>
+
+        <ul>
+            <li>Time to first token</li>
+            <li>UI feedback speed</li>
+            <li>Streaming continuity</li>
+        </ul>
+
+        <p>
+            A 6-second streamed completion feels faster than a 3-second silent wait.
+            Streaming is now a baseline expectation.
+        </p>
+
+        <hr>
+
+        <h2>6. Latency Budgeting (Treat It Like an SLO)</h2>
+
+        <p>You need observability for:</p>
+
+        <ul>
+            <li>First-token latency</li>
+            <li>Total completion time</li>
+            <li>Tokens per second</li>
+            <li>Retrieval time</li>
+            <li>Network overhead</li>
+            <li>Cache hit rate</li>
+        </ul>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Target</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Retrieval</td>
+                    <td>300ms</td>
+                </tr>
+                <tr>
+                    <td>Network</td>
+                    <td>200ms</td>
+                </tr>
+                <tr>
+                    <td>First Token</td>
+                    <td>&lt;1s</td>
+                </tr>
+                <tr>
+                    <td>Post-processing</td>
+                    <td>200ms</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Target</strong></td>
+                    <td><strong>&lt;1.5–2s</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            If you cannot decompose latency into measurable segments, you cannot optimize it.
+        </p>
+
+        <hr>
+
+        <h2>7. Advanced Optimization Techniques</h2>
+
+        <h3>Model Routing</h3>
+        <ul>
+            <li>Use smaller models for simple tasks</li>
+            <li>Escalate to larger models only when required</li>
+        </ul>
+
+        <h3>Context Compression</h3>
+        <ul>
+            <li>Summarize conversation periodically</li>
+            <li>Store structured memory</li>
+            <li>Inject compact representations</li>
+        </ul>
+
+        <h3>Parallel Tool Execution</h3>
+        <ul>
+            <li>Use asynchronous orchestration</li>
+            <li>Parallelize external API calls</li>
+            <li>Avoid blocking pipelines</li>
+        </ul>
+
+        <h3>Caching Strategy</h3>
+        <ul>
+            <li>Cache embeddings</li>
+            <li>Cache retrieval outputs</li>
+            <li>Cache deterministic responses</li>
+            <li>Cache partial completions</li>
+        </ul>
+
+        <hr>
+
+        <h2>Final Perspective</h2>
+
+        <p>
+            Most teams optimize prompts.
+            Very few optimize architecture.
+        </p>
+
+        <p>
+            If your LLM application feels slow, ask:
+        </p>
+
+        <ul>
+            <li>Are we sending unnecessary tokens?</li>
+            <li>Are we blocking execution unnecessarily?</li>
+            <li>Are we retrieving too much data?</li>
+            <li>Are we caching aggressively?</li>
+            <li>Do we measure first-token latency?</li>
+            <li>Do we have a latency budget?</li>
+        </ul>
+
+        <p>
+            Large Language Models are powerful.
+            But performance is architectural.
+        </p>
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
