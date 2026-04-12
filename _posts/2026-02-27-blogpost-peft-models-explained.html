@@ -1,0 +1,871 @@
+---
+layout: post
+title: "PEFT Methods Explained: LoRA, QLoRA, and Adapter-Based Fine-Tuning"
+subtitle: "Understanding parameter-efficient fine-tuning techniques that let you customize LLMs without breaking the bank"
+date: 2026-02-27 10:30:00 +0800
+background: '/img/posts/blogpost/23.jpg'
+categories: [blogpost]
+tags: [llm, fine-tuning, LoRA, QLoRA, PEFT, adapter, training, optimization]
+description: "Learn how parameter-efficient fine-tuning (PEFT) methods like LoRA and QLoRA allow you to customize large language models with minimal computational resources and memory footprint."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>PEFT Methods Explained: LoRA, QLoRA, and Adapter-Based Fine-Tuning</h1>
+        <br>
+        <h2>Introduction</h2>
+
+        <p>
+            Fine-tuning large language models used to be expensive and impractical for most teams. Full fine-tuning
+            requires updating billions of parameters, which demands massive GPU memory and computational resources.
+        </p>
+
+        <p>
+            For a 7B parameter model, full fine-tuning can require 80GB+ of VRAM. For 70B models, you need distributed
+            training across multiple expensive GPUs.
+        </p>
+
+        <p>
+            This made customization accessible only to well-funded organizations with significant infrastructure.
+        </p>
+
+        <p>
+            Parameter-efficient fine-tuning (PEFT) changed this completely. Instead of updating all parameters, PEFT
+            methods update only a small subset or add trainable adapter layers.
+        </p>
+
+        <p>
+            The result is that you can fine-tune LLMs on a single consumer GPU while achieving comparable performance to
+            full fine-tuning.
+        </p>
+
+        <p>
+            This post explains how PEFT methods work, when to use them, and how they compare to traditional fine-tuning
+            and retrieval-augmented generation (RAG).
+        </p>
+
+        <hr />
+
+        <h2>The Problem with Full Fine-Tuning</h2>
+
+        <p>
+            Full fine-tuning updates every parameter in the model. For modern LLMs, this creates several problems:
+        </p>
+
+        <ul>
+            <li>Memory requirements scale with model size.</li>
+            <li>Training time increases significantly.</li>
+            <li>Risk of catastrophic forgetting, where the model loses general capabilities.</li>
+            <li>Requires storing separate copies of the entire model for each task.</li>
+        </ul>
+
+        <p>
+            For example, fine-tuning Llama 2 7B with full precision requires approximately 28GB just to store the model
+            weights in memory, plus additional memory for optimizer states and gradients.
+        </p>
+
+        <p>
+            With the Adam optimizer, memory requirements can triple or quadruple, pushing total VRAM usage to 80GB or
+            more.
+        </p>
+
+        <p>
+            This is why PEFT emerged as a practical alternative.
+        </p>
+
+        <hr />
+
+        <h2>What Is Parameter-Efficient Fine-Tuning (PEFT)?</h2>
+
+        <p>
+            PEFT is a family of techniques that reduce the number of trainable parameters during fine-tuning.
+        </p>
+
+        <p>
+            Instead of updating all parameters, PEFT methods either:
+        </p>
+
+        <ul>
+            <li>Freeze the base model and add small trainable modules (adapters, LoRA).</li>
+            <li>Update only a small subset of existing parameters (BitFit, prefix tuning).</li>
+            <li>Reparameterize updates using low-rank decomposition (LoRA, QLoRA).</li>
+        </ul>
+
+        <p>
+            The frozen base model remains unchanged, and only the small added components are trained.
+        </p>
+
+        <p>
+            This reduces memory, speeds up training, and allows switching between multiple tasks by swapping lightweight
+            adapters.
+        </p>
+
+        <hr />
+
+        <h2>How LoRA Works</h2>
+
+        <p>
+            LoRA (Low-Rank Adaptation) is the most widely used PEFT method today.
+        </p>
+
+        <p>
+            The core idea is simple: instead of updating the full weight matrix directly, LoRA decomposes the update
+            into two smaller low-rank matrices.
+        </p>
+
+        <h3>The Mathematical Foundation</h3>
+
+        <p>
+            In a standard transformer layer, you have a weight matrix <code>W</code> with dimensions <code>d × k</code>.
+        </p>
+
+        <p>
+            During fine-tuning, this matrix would be updated to <code>W + ΔW</code>, where <code>ΔW</code> represents
+            the learned changes.
+        </p>
+
+        <p>
+            LoRA hypothesizes that <code>ΔW</code> has a low intrinsic rank. Instead of learning the full matrix
+            <code>ΔW</code>, LoRA approximates it as:
+        </p>
+
+        <div class="math-display">
+            \[
+            \Delta W = BA
+            \]
+        </div>
+
+        <p>
+            Where:
+        </p>
+
+        <ul>
+            <li><code>B</code> is a <code>d × r</code> matrix.</li>
+            <li><code>A</code> is a <code>r × k</code> matrix.</li>
+            <li><code>r</code> is the rank, typically much smaller than <code>d</code> or <code>k</code>.</li>
+        </ul>
+
+        <p>
+            The number of trainable parameters drops from <code>d × k</code> to <code>d × r + r × k</code>.
+        </p>
+
+        <p>
+            For example, if <code>d = 4096</code>, <code>k = 4096</code>, and <code>r = 8</code>:
+        </p>
+
+        <ul>
+            <li>Full update: 16,777,216 parameters.</li>
+            <li>LoRA update: 65,536 parameters (400× reduction).</li>
+        </ul>
+
+        <h3>Which Layers Get LoRA Adapters?</h3>
+
+        <p>
+            LoRA is typically applied to the attention projection layers: query, key, value, and output projections.
+        </p>
+
+        <p>
+            You can also apply LoRA to feed-forward layers, though this is less common.
+        </p>
+
+        <p>
+            The original LoRA paper found that applying it only to attention layers often works well, but recent
+            research shows that adding it to MLPs can improve performance for certain tasks.
+        </p>
+
+        <h3>LoRA Hyperparameters</h3>
+
+        <p>
+            The key hyperparameters are:
+        </p>
+
+        <ul>
+            <li><strong>Rank (r):</strong> Controls the capacity of the adapter. Common values are 4, 8, 16, or 32.</li>
+            <li><strong>Alpha (α):</strong> Scaling factor applied to the LoRA update. Typically set to <code>r</code>
+                or <code>2r</code>.</li>
+            <li><strong>Target modules:</strong> Which layers to apply LoRA to (query, key, value, output).</li>
+            <li><strong>Dropout:</strong> Optional regularization to prevent overfitting.</li>
+        </ul>
+
+        <p>
+            Higher rank means more expressiveness but also more parameters and memory usage.
+        </p>
+
+        <hr />
+
+        <h2>QLoRA: Quantized Low-Rank Adaptation</h2>
+
+        <p>
+            QLoRA extends LoRA by adding 4-bit quantization to the base model.
+        </p>
+
+        <p>
+            This allows you to fine-tune even larger models on consumer hardware.
+        </p>
+
+        <h3>How QLoRA Reduces Memory</h3>
+
+        <p>
+            QLoRA makes three key changes:
+        </p>
+
+        <ul>
+            <li><strong>4-bit NormalFloat (NF4) quantization:</strong> The base model weights are stored in 4-bit
+                precision instead of 16-bit.</li>
+            <li><strong>Double quantization:</strong> Quantization constants themselves are quantized to save additional
+                memory.</li>
+            <li><strong>Paged optimizers:</strong> Optimizer states are offloaded to CPU memory when GPU memory is full.
+            </li>
+        </ul>
+
+        <p>
+            With QLoRA, you can fine-tune a 65B parameter model on a single 48GB GPU.
+        </p>
+
+        <p>
+            The base model is loaded in 4-bit precision (consuming about 33GB), and only the LoRA adapters are trained
+            in higher precision.
+        </p>
+
+        <h3>Does Quantization Hurt Performance?</h3>
+
+        <p>
+            Surprisingly, no. The QLoRA paper showed that fine-tuning with 4-bit base weights achieves performance
+            nearly identical to full 16-bit fine-tuning.
+        </p>
+
+        <p>
+            This is because the trainable LoRA adapters remain in full precision, allowing the model to learn
+            task-specific patterns effectively.
+        </p>
+
+        <p>
+            The frozen quantized base model provides general language understanding, while the adapters capture
+            task-specific knowledge.
+        </p>
+
+        <hr />
+
+        <h2>Adapter-Based Fine-Tuning</h2>
+
+        <p>
+            Adapters are small neural network modules inserted into transformer layers.
+        </p>
+
+        <p>
+            The idea is older than LoRA but follows a similar principle: freeze the base model and train only
+            lightweight inserted modules.
+        </p>
+
+        <h3>Adapter Architecture</h3>
+
+        <p>
+            A typical adapter consists of:
+        </p>
+
+        <ul>
+            <li>A down-projection layer that reduces dimensionality.</li>
+            <li>A non-linear activation function.</li>
+            <li>An up-projection layer that restores the original dimension.</li>
+            <li>A residual connection that adds the adapter output to the input.</li>
+        </ul>
+
+        <p>
+            Adapters are inserted after each transformer sub-layer (attention and feed-forward).
+        </p>
+
+        <p>
+            During fine-tuning, only the adapter parameters are updated.
+        </p>
+
+        <h3>Adapters vs LoRA</h3>
+
+        <p>
+            Both methods achieve similar goals, but there are differences:
+        </p>
+
+        <ul>
+            <li><strong>Adapters</strong> add new layers to the model, increasing inference latency slightly.</li>
+            <li><strong>LoRA</strong> modifies existing weight matrices and can be merged with the base model for zero
+                latency overhead.</li>
+        </ul>
+
+        <p>
+            LoRA has become more popular because it is easier to implement and does not slow down inference when merged.
+        </p>
+
+        <hr />
+
+        <h2>When to Use PEFT vs Full Fine-Tuning</h2>
+
+        <p>
+            PEFT is ideal when:
+        </p>
+
+        <ul>
+            <li>You have limited GPU resources.</li>
+            <li>You need to fine-tune multiple tasks and want to avoid storing separate full models.</li>
+            <li>You want faster experimentation and iteration.</li>
+            <li>Your task is similar to the base model's pre-training distribution.</li>
+        </ul>
+
+        <p>
+            Full fine-tuning is better when:
+        </p>
+
+        <ul>
+            <li>You need maximum performance and have the compute budget.</li>
+            <li>Your task differs significantly from the base model's training (domain shift).</li>
+            <li>You want to inject large amounts of new knowledge into the model.</li>
+        </ul>
+
+        <p>
+            For most production use cases, PEFT methods like LoRA or QLoRA provide an excellent balance of cost, speed,
+            and performance.
+        </p>
+
+        <hr />
+
+        <h2>PEFT vs RAG: Which Should You Choose?</h2>
+
+        <p>
+            PEFT and RAG solve different problems, and they can be used together.
+        </p>
+
+        <h3>When to Use RAG</h3>
+
+        <ul>
+            <li>Your data changes frequently (daily updates, news, product catalogs).</li>
+            <li>You need transparent citations and source attribution.</li>
+            <li>You want to avoid retraining the model.</li>
+            <li>Your knowledge base is large and dynamic.</li>
+        </ul>
+
+        <h3>When to Use PEFT</h3>
+
+        <ul>
+            <li>You need to change the model's behavior, tone, or output style.</li>
+            <li>Your task requires specialized reasoning or domain-specific patterns.</li>
+            <li>Your knowledge is static or slow-changing.</li>
+            <li>You want lower inference latency than retrieval-based systems.</li>
+        </ul>
+
+        <h3>Combining PEFT and RAG</h3>
+
+        <p>
+            Many production systems use both:
+        </p>
+
+        <ul>
+            <li>Use PEFT to adapt the model to your domain and writing style.</li>
+            <li>Use RAG to inject up-to-date or document-specific information at inference time.</li>
+        </ul>
+
+        <p>
+            For example, a legal assistant might be fine-tuned on legal reasoning patterns (PEFT) while retrieving case
+            law and statutes dynamically (RAG).
+        </p>
+
+        <hr />
+
+        <h2>Practical Considerations for PEFT in Production</h2>
+
+        <h3>Memory Requirements</h3>
+
+        <p>
+            LoRA typically requires 2-3× the memory of inference due to optimizer states and gradients.
+        </p>
+
+        <p>
+            QLoRA reduces this significantly through quantization and paged optimizers.
+        </p>
+
+        <h3>Training Speed</h3>
+
+        <p>
+            PEFT is faster than full fine-tuning because fewer parameters are updated.
+        </p>
+
+        <p>
+            However, the wall-clock time depends on your batch size, sequence length, and GPU.
+        </p>
+
+        <h3>Adapter Management</h3>
+
+        <p>
+            If you are training multiple LoRA adapters for different tasks, you need a system to store and load them
+            dynamically.
+        </p>
+
+        <p>
+            Libraries like Hugging Face PEFT make this straightforward with adapter swapping.
+        </p>
+
+        <h3>Merging Adapters</h3>
+
+        <p>
+            LoRA adapters can be merged back into the base model for deployment, eliminating any inference overhead.
+        </p>
+
+        <p>
+            This is useful when you want a single deployable model instead of base + adapter.
+        </p>
+
+        <hr />
+
+        <h2>Common PEFT Pitfalls</h2>
+
+        <h3>Rank Too Low</h3>
+
+        <p>
+            If the LoRA rank is too low, the model may not have enough capacity to learn the task.
+        </p>
+
+        <p>
+            Start with rank 8 or 16 and increase if performance plateaus.
+        </p>
+
+        <h3>Overfitting</h3>
+
+        <p>
+            PEFT models can still overfit, especially on small datasets.
+        </p>
+
+        <p>
+            Use dropout, early stopping, and validation monitoring.
+        </p>
+
+        <h3>Catastrophic Forgetting</h3>
+
+        <p>
+            Even with PEFT, the model can forget general capabilities if you fine-tune too aggressively.
+        </p>
+
+        <p>
+            Monitor performance on general benchmarks during training.
+        </p>
+
+        <hr />
+
+        <h2>Example: Fine-Tuning with LoRA Using Hugging Face</h2>
+
+        <p>
+            Here is a minimal example of fine-tuning a model with LoRA:
+        </p>
+
+        <pre><code>from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
+from peft import LoraConfig, get_peft_model
+from datasets import load_dataset
+
+# Load base model and tokenizer
+model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf")
+tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf")
+
+# Configure LoRA
+lora_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM"
+)
+
+# Wrap model with LoRA adapters
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+
+# Load dataset
+dataset = load_dataset("your-dataset")
+
+# Training arguments
+training_args = TrainingArguments(
+    output_dir="./lora-model",
+    per_device_train_batch_size=4,
+    gradient_accumulation_steps=4,
+    num_train_epochs=3,
+    learning_rate=2e-4,
+    fp16=True,
+    logging_steps=10,
+    save_steps=100
+)
+
+# Train
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=dataset["train"]
+)
+
+trainer.train()
+
+# Save adapter
+model.save_pretrained("./lora-adapter")
+</code></pre>
+
+        <p>
+            This trains only the LoRA adapters while keeping the base model frozen.
+        </p>
+
+        <hr />
+
+        <h2>Comparison Table: PEFT Methods</h2>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Parameters Trained</th>
+                        <th>Memory Usage</th>
+                        <th>Inference Overhead</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full Fine-Tuning</td>
+                        <td>100%</td>
+                        <td>Very High</td>
+                        <td>None</td>
+                        <td>Maximum performance, domain shift</td>
+                    </tr>
+                    <tr>
+                        <td>LoRA</td>
+                        <td>0.1-1%</td>
+                        <td>Low</td>
+                        <td>None (if merged)</td>
+                        <td>General purpose, fast iteration</td>
+                    </tr>
+                    <tr>
+                        <td>QLoRA</td>
+                        <td>0.1-1%</td>
+                        <td>Very Low</td>
+                        <td>None (if merged)</td>
+                        <td>Large models, limited GPU</td>
+                    </tr>
+                    <tr>
+                        <td>Adapters</td>
+                        <td>0.5-2%</td>
+                        <td>Low</td>
+                        <td>Small (5-10% latency)</td>
+                        <td>Multi-task scenarios</td>
+                    </tr>
+                    <tr>
+                        <td>Prefix Tuning</td>
+                        <td>&lt; 0.1%</td>
+                        <td>Very Low</td>
+                        <td>None</td>
+                        <td>Extremely limited resources</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr />
+
+        <h2>Future of PEFT</h2>
+
+        <p>
+            PEFT is evolving rapidly. Recent developments include:
+        </p>
+
+        <ul>
+            <li><strong>Multi-LoRA inference:</strong> Serving multiple adapters simultaneously for different users or
+                tasks.</li>
+            <li><strong>Dynamic rank selection:</strong> Automatically choosing the optimal rank per layer.</li>
+            <li><strong>DoRA (Weight-Decomposed Low-Rank Adaptation):</strong> Improved variant of LoRA with better
+                performance.</li>
+            <li><strong>Task arithmetic:</strong> Combining multiple adapters by adding or subtracting their weights.
+            </li>
+        </ul>
+
+        <p>
+            As models grow larger, PEFT will become even more critical for practical fine-tuning.
+        </p>
+
+        <hr />
+
+        <h2>Conclusion</h2>
+
+        <p>
+            Parameter-efficient fine-tuning has democratized LLM customization. What once required expensive GPU
+            clusters can now be done on a single consumer-grade GPU.
+        </p>
+
+        <p>
+            LoRA and QLoRA have become the default choice for fine-tuning because they are simple, effective, and
+            well-supported by libraries like Hugging Face PEFT.
+        </p>
+
+        <p>
+            For production systems, PEFT offers an excellent balance: you get task-specific performance without the cost
+            and complexity of full fine-tuning.
+        </p>
+
+        <p>
+            Whether you choose LoRA, QLoRA, or traditional adapters depends on your constraints, but the underlying
+            principle remains the same: freeze most of the model and train only what matters.
+        </p>
+
+        <hr />
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>PEFT reduces fine-tuning costs by training only a small subset of parameters.</li>
+            <li>LoRA decomposes weight updates into low-rank matrices, cutting memory usage by 100-400×.</li>
+            <li>QLoRA adds 4-bit quantization, enabling fine-tuning of 70B models on consumer GPUs.</li>
+            <li>Adapters insert small trainable modules but add slight inference overhead.</li>
+            <li>PEFT works best when your task is similar to the base model's pre-training distribution.</li>
+            <li>PEFT and RAG solve different problems and can be combined in production systems.</li>
+            <li>Start with LoRA rank 8-16 and increase if performance plateaus.</li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
