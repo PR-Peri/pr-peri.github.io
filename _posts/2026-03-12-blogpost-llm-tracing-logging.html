@@ -1,0 +1,873 @@
+---
+layout: post
+title: "LLM Observability: Tracing, Logging, and Debugging AI Applications"
+subtitle: "How to monitor, debug, and optimize LLM applications in production with proper observability tooling"
+date: 2026-03-12 11:30:00 +0800
+background: '/img/posts/blogpost/25.jpg'
+categories: [blogpost]
+tags: [observability, monitoring, LLM, tracing, debugging, LangSmith, production, logging]
+description: "Learn how to implement proper observability for LLM applications, including prompt tracing, cost tracking,
+latency monitoring, and debugging with tools like LangSmith and LangFuse."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>LLM Observability: Tracing, Logging, and Debugging AI Applications</h1>
+        <br>
+        <h2>Introduction</h2>
+
+        <p>
+            When you first deploy an LLM application, everything seems to work. Users get responses, the system runs,
+            and the logs show successful API calls.
+        </p>
+
+        <p>
+            Then production happens. Users report inconsistent answers. Costs spike unexpectedly. Latency degrades
+            during peak hours. Debugging becomes a nightmare because you cannot see what the model actually received or
+            why it generated a particular response.
+        </p>
+
+        <p>
+            Traditional logging and monitoring tools are not built for LLM applications. You need observability
+            specifically designed for tracking prompts, model behavior, retrieval quality, and token usage.
+        </p>
+
+        <p>
+            This is where LLM observability comes in.
+        </p>
+
+        <p>
+            Observability for LLMs means instrumenting your application to capture traces, logs, and metrics at every
+            step of the execution pipeline. This allows you to debug issues, monitor performance, and optimize costs.
+        </p>
+
+        <p>
+            This post explains what LLM observability is, why it matters, and how to implement it using tools like
+            LangSmith, LangFuse, and custom instrumentation.
+        </p>
+
+        <hr />
+
+        <h2>Why Traditional Monitoring Is Not Enough</h2>
+
+        <p>
+            Traditional application monitoring focuses on metrics like latency, throughput, error rates, and resource
+            utilization.
+        </p>
+
+        <p>
+            These metrics are still important for LLM applications, but they do not capture the behavior that matters
+            most:
+        </p>
+
+        <ul>
+            <li>What prompt was sent to the model?</li>
+            <li>What context was retrieved from the database?</li>
+            <li>What was the model's response?</li>
+            <li>How many tokens were used?</li>
+            <li>Did the retrieval step fail?</li>
+            <li>Why did the model hallucinate?</li>
+        </ul>
+
+        <p>
+            Without visibility into these aspects, debugging is guesswork.
+        </p>
+
+        <p>
+            A user might report that the chatbot gave a wrong answer, but without seeing the exact prompt and retrieved
+            context, you cannot reproduce or fix the issue.
+        </p>
+
+        <hr />
+
+        <h2>What Is LLM Observability?</h2>
+
+        <p>
+            LLM observability is the practice of instrumenting your application to capture detailed execution traces
+            that show:
+        </p>
+
+        <ul>
+            <li>The full sequence of steps in a request (retrieval, prompt construction, model inference,
+                post-processing).</li>
+            <li>The inputs and outputs at each step.</li>
+            <li>Metadata like token counts, latency, and costs.</li>
+            <li>Errors and exceptions at each layer.</li>
+        </ul>
+
+        <p>
+            This goes beyond simple logging. It creates a structured trace that shows exactly how your application
+            processed a request from start to finish.
+        </p>
+
+        <hr />
+
+        <h2>Core Components of LLM Observability</h2>
+
+        <h3>1. Tracing</h3>
+
+        <p>
+            Tracing captures the execution flow of a request across multiple components.
+        </p>
+
+        <p>
+            For example, a RAG application might have the following trace:
+        </p>
+
+        <ul>
+            <li>User query received.</li>
+            <li>Query embedding generated.</li>
+            <li>Vector search executed.</li>
+            <li>Top 5 documents retrieved.</li>
+            <li>Prompt constructed with retrieved context.</li>
+            <li>LLM inference called.</li>
+            <li>Response returned to user.</li>
+        </ul>
+
+        <p>
+            Each step is logged with timestamps, inputs, outputs, and metadata.
+        </p>
+
+        <h3>2. Logging</h3>
+
+        <p>
+            Logging stores the raw data at each step: prompts, responses, retrieved documents, errors.
+        </p>
+
+        <p>
+            Unlike traditional logs, LLM logs must capture high-dimensional data like embeddings, long-form text, and
+            nested structures.
+        </p>
+
+        <h3>3. Metrics</h3>
+
+        <p>
+            Key metrics for LLM applications include:
+        </p>
+
+        <ul>
+            <li><strong>Token usage:</strong> Input tokens, output tokens, total tokens per request.</li>
+            <li><strong>Cost:</strong> API cost per request, total daily cost.</li>
+            <li><strong>Latency:</strong> Time to first token (TTFT), total response time.</li>
+            <li><strong>Retrieval quality:</strong> Number of documents retrieved, relevance scores.</li>
+            <li><strong>Error rates:</strong> Failed API calls, timeouts, rate limit hits.</li>
+        </ul>
+
+        <h3>4. User Feedback</h3>
+
+        <p>
+            Capturing thumbs up/down feedback or explicit user corrections helps identify where the system fails.
+        </p>
+
+        <p>
+            This feedback can be linked to specific traces for debugging.
+        </p>
+
+        <hr />
+
+        <h2>The Observability Stack for LLMs</h2>
+
+        <p>
+            A production LLM observability stack typically includes:
+        </p>
+
+        <ul>
+            <li><strong>Trace collector:</strong> Captures execution traces (LangSmith, LangFuse, OpenTelemetry).</li>
+            <li><strong>Log storage:</strong> Stores prompts, responses, and metadata (PostgreSQL, S3, specialized trace
+                databases).</li>
+            <li><strong>Metrics dashboard:</strong> Visualizes cost, latency, and usage (Grafana, Datadog, custom
+                dashboards).</li>
+            <li><strong>Alerting:</strong> Notifies on anomalies like cost spikes or high error rates (PagerDuty,
+                Slack).</li>
+        </ul>
+
+        <hr />
+
+        <h2>LangSmith: End-to-End Tracing for LangChain</h2>
+
+        <p>
+            LangSmith is a dedicated observability platform for LangChain applications.
+        </p>
+
+        <h3>What LangSmith Provides</h3>
+
+        <ul>
+            <li>Automatic tracing of LangChain chains and agents.</li>
+            <li>Visualization of execution steps with inputs and outputs.</li>
+            <li>Cost and token tracking per trace.</li>
+            <li>Debugging tools to replay and inspect failed requests.</li>
+            <li>Dataset management for evaluation and testing.</li>
+        </ul>
+
+        <h3>Setting Up LangSmith</h3>
+
+        <pre><code>import os
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+ 
+# Set LangSmith API key
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = "your-langsmith-api-key"
+os.environ["LANGCHAIN_PROJECT"] = "my-production-app"
+ 
+# Define a simple chain
+llm = ChatOpenAI(model="gpt-4")
+prompt = PromptTemplate.from_template("Translate {text} to French.")
+chain = LLMChain(llm=llm, prompt=prompt)
+ 
+# Run the chain (automatically traced)
+result = chain.run(text="Hello, how are you?")
+print(result)
+</code></pre>
+
+        <p>
+            Every execution is automatically sent to LangSmith with full trace details.
+        </p>
+
+        <h3>Viewing Traces in LangSmith</h3>
+
+        <p>
+            The LangSmith dashboard shows:
+        </p>
+
+        <ul>
+            <li>A waterfall view of execution steps.</li>
+            <li>Inputs and outputs at each step.</li>
+            <li>Token counts and API costs.</li>
+            <li>Latency breakdown by component.</li>
+        </ul>
+
+        <p>
+            You can filter traces by user, session, or time range, and drill down into specific failures.
+        </p>
+
+        <hr />
+
+        <h2>LangFuse: Open-Source LLM Observability</h2>
+
+        <p>
+            LangFuse is an open-source alternative to LangSmith.
+        </p>
+
+        <p>
+            It supports LangChain, LlamaIndex, and custom LLM applications.
+        </p>
+
+        <h3>Key Features</h3>
+
+        <ul>
+            <li>Self-hosted or cloud-hosted options.</li>
+            <li>Tracing for any Python LLM application.</li>
+            <li>Cost tracking and token usage analytics.</li>
+            <li>Prompt versioning and experimentation.</li>
+            <li>Integration with evaluation frameworks.</li>
+        </ul>
+
+        <h3>Example: Using LangFuse</h3>
+
+        <pre><code>from langfuse import Langfuse
+ 
+langfuse = Langfuse(
+    public_key="your-public-key",
+    secret_key="your-secret-key"
+)
+ 
+# Start a trace
+trace = langfuse.trace(name="user-query")
+ 
+# Log a generation
+generation = trace.generation(
+    name="gpt4-response",
+    model="gpt-4",
+    input="What is the capital of France?",
+    output="The capital of France is Paris.",
+    usage={"input_tokens": 10, "output_tokens": 8}
+)
+ 
+# End trace
+trace.update(status="success")
+</code></pre>
+
+        <p>
+            LangFuse provides a UI similar to LangSmith for exploring traces and debugging issues.
+        </p>
+
+        <hr />
+
+        <h2>Custom Instrumentation with OpenTelemetry</h2>
+
+        <p>
+            For more control, you can build custom tracing using OpenTelemetry.
+        </p>
+
+        <h3>Why OpenTelemetry?</h3>
+
+        <ul>
+            <li>Vendor-neutral standard for distributed tracing.</li>
+            <li>Integrates with existing observability stacks (Jaeger, Zipkin, Datadog).</li>
+            <li>Flexible and extensible.</li>
+        </ul>
+
+        <h3>Example: Tracing an LLM Call</h3>
+
+        <pre><code>from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+ 
+# Set up tracing
+trace.set_tracer_provider(TracerProvider())
+tracer = trace.get_tracer(__name__)
+ 
+trace.get_tracer_provider().add_span_processor(
+    SimpleSpanProcessor(ConsoleSpanExporter())
+)
+ 
+# Trace an LLM call
+with tracer.start_as_current_span("llm-inference") as span:
+    span.set_attribute("model", "gpt-4")
+    span.set_attribute("input_tokens", 120)
+    span.set_attribute("output_tokens", 80)
+    
+    # Simulate LLM call
+    response = "The answer is 42."
+    
+    span.set_attribute("response", response)
+</code></pre>
+
+        <p>
+            This creates a trace that can be exported to any OpenTelemetry-compatible backend.
+        </p>
+
+        <hr />
+
+        <h2>What to Monitor in Production</h2>
+
+        <h3>Cost Tracking</h3>
+
+        <p>
+            Track API costs per user, session, and endpoint. Set alerts for unexpected cost spikes.
+        </p>
+
+        <p>
+            Example: If daily costs exceed $500, trigger an alert.
+        </p>
+
+        <h3>Latency Monitoring</h3>
+
+        <p>
+            Monitor latency at each pipeline stage: retrieval, embedding, inference, post-processing.
+        </p>
+
+        <p>
+            Identify bottlenecks and optimize accordingly.
+        </p>
+
+        <h3>Token Usage</h3>
+
+        <p>
+            Track average input and output tokens per request. Detect if prompts are growing unexpectedly due to bugs.
+        </p>
+
+        <h3>Retrieval Quality</h3>
+
+        <p>
+            Log retrieval scores and document counts. If relevance scores drop, it may indicate embedding drift or index
+            issues.
+        </p>
+
+        <h3>Error Rates</h3>
+
+        <p>
+            Monitor API errors, timeouts, and rate limits. Set up retries and fallback mechanisms.
+        </p>
+
+        <hr />
+
+        <h2>Debugging with Traces</h2>
+
+        <p>
+            When a user reports an issue, traces allow you to:
+        </p>
+
+        <ul>
+            <li>Replay the exact request with the same inputs.</li>
+            <li>Inspect what context was retrieved.</li>
+            <li>See the final prompt sent to the model.</li>
+            <li>Identify where in the pipeline the failure occurred.</li>
+        </ul>
+
+        <p>
+            This turns debugging from guesswork into a systematic process.
+        </p>
+
+        <hr />
+
+        <h2>Privacy and Security Considerations</h2>
+
+        <p>
+            Logging full prompts and responses can expose sensitive user data.
+        </p>
+
+        <h3>Best Practices</h3>
+
+        <ul>
+            <li>Sanitize or redact PII (personally identifiable information) before logging.</li>
+            <li>Encrypt logs at rest and in transit.</li>
+            <li>Limit access to trace data to authorized personnel.</li>
+            <li>Implement data retention policies to delete old traces.</li>
+        </ul>
+
+        <p>
+            Some observability platforms offer automatic PII detection and redaction.
+        </p>
+
+        <hr />
+
+        <h2>Evaluation and Testing</h2>
+
+        <p>
+            Observability platforms often integrate with evaluation frameworks.
+        </p>
+
+        <p>
+            You can:
+        </p>
+
+        <ul>
+            <li>Create test datasets from production traces.</li>
+            <li>Run regression tests when updating prompts or models.</li>
+            <li>Compare model performance across versions.</li>
+        </ul>
+
+        <p>
+            This ensures that changes do not degrade quality.
+        </p>
+
+        <hr />
+
+        <h2>Comparison: Observability Tools</h2>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Type</th>
+                        <th>Best For</th>
+                        <th>Pricing</th>
+                        <th>Key Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LangSmith</td>
+                        <td>Managed</td>
+                        <td>LangChain apps</td>
+                        <td>Paid</td>
+                        <td>Auto-tracing, datasets, evals</td>
+                    </tr>
+                    <tr>
+                        <td>LangFuse</td>
+                        <td>Open-source</td>
+                        <td>Any LLM app</td>
+                        <td>Free (self-hosted)</td>
+                        <td>Flexible, prompt versioning</td>
+                    </tr>
+                    <tr>
+                        <td>Helicone</td>
+                        <td>Managed</td>
+                        <td>OpenAI apps</td>
+                        <td>Freemium</td>
+                        <td>Proxy-based, cost tracking</td>
+                    </tr>
+                    <tr>
+                        <td>OpenTelemetry</td>
+                        <td>Framework</td>
+                        <td>Custom integrations</td>
+                        <td>Free</td>
+                        <td>Vendor-neutral, extensible</td>
+                    </tr>
+                    <tr>
+                        <td>Datadog</td>
+                        <td>Managed</td>
+                        <td>Enterprise monitoring</td>
+                        <td>Paid</td>
+                        <td>Full-stack, APM integration</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr />
+
+        <h2>Building a Custom Observability Layer</h2>
+
+        <p>
+            If you want full control, you can build a custom observability layer.
+        </p>
+
+        <h3>Components</h3>
+
+        <ul>
+            <li><strong>Trace storage:</strong> PostgreSQL or a time-series database.</li>
+            <li><strong>Logging middleware:</strong> Intercepts LLM calls and logs details.</li>
+            <li><strong>Dashboard:</strong> Streamlit, Grafana, or a custom React app.</li>
+            <li><strong>Alerting:</strong> Slack webhooks or email notifications.</li>
+        </ul>
+
+        <h3>Example: Simple Logging Middleware</h3>
+
+        <pre><code>import time
+import json
+ 
+class LLMLogger:
+    def __init__(self, log_file="llm_logs.jsonl"):
+        self.log_file = log_file
+    
+    def log_request(self, prompt, response, metadata):
+        log_entry = {
+            "timestamp": time.time(),
+            "prompt": prompt,
+            "response": response,
+            "metadata": metadata
+        }
+        
+        with open(self.log_file, "a") as f:
+            f.write(json.dumps(log_entry) + "\n")
+ 
+# Usage
+logger = LLMLogger()
+ 
+prompt = "What is the capital of France?"
+response = "The capital of France is Paris."
+metadata = {"model": "gpt-4", "tokens": 18, "cost": 0.0003}
+ 
+logger.log_request(prompt, response, metadata)
+</code></pre>
+
+        <p>
+            This simple logger writes each request to a JSONL file for analysis.
+        </p>
+
+        <hr />
+
+        <h2>Common Pitfalls</h2>
+
+        <h3>Over-Logging</h3>
+
+        <p>
+            Logging every intermediate step can generate massive amounts of data. Log selectively and implement sampling
+            for high-traffic systems.
+        </p>
+
+        <h3>Ignoring Privacy</h3>
+
+        <p>
+            Always sanitize logs to avoid exposing user data. Treat logs as sensitive.
+        </p>
+
+        <h3>Not Setting Alerts</h3>
+
+        <p>
+            Logging is useless if no one monitors it. Set up automated alerts for critical issues.
+        </p>
+
+        <hr />
+
+        <h2>Future of LLM Observability</h2>
+
+        <p>
+            Emerging trends include:
+        </p>
+
+        <ul>
+            <li><strong>Real-time anomaly detection:</strong> Automatically flag unusual behavior in production.</li>
+            <li><strong>AI-powered root cause analysis:</strong> Using LLMs to analyze traces and suggest fixes.</li>
+            <li><strong>Integrated evaluation:</strong> Running evals in production to catch regressions early.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Conclusion</h2>
+
+        <p>
+            Observability is not optional for production LLM applications. Without it, you are flying blind.
+        </p>
+
+        <p>
+            Whether you use LangSmith, LangFuse, OpenTelemetry, or build a custom solution, the key is to instrument
+            your application to capture every step of execution.
+        </p>
+
+        <p>
+            This visibility allows you to debug faster, optimize costs, and build confidence in your system's
+            reliability.
+        </p>
+
+        <p>
+            If your LLM application is already in production and you do not have observability, this should be your next
+            priority.
+        </p>
+
+        <hr />
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>Traditional monitoring does not capture LLM-specific behavior like prompts and token usage.</li>
+            <li>LLM observability requires tracing execution flows with inputs, outputs, and metadata.</li>
+            <li>LangSmith and LangFuse are popular observability platforms for LLM apps.</li>
+            <li>Track key metrics: cost, latency, token usage, retrieval quality, and error rates.</li>
+            <li>Traces enable systematic debugging by replaying exact requests.</li>
+            <li>Always sanitize logs to protect user privacy.</li>
+            <li>Set up alerts for cost spikes, high error rates, and latency degradation.</li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
