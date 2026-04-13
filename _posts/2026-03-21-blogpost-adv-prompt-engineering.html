@@ -1,0 +1,1049 @@
+---
+layout: post
+title: "Advanced Prompt Engineering: Chain-of-Thought, ReAct, and Tree-of-Thoughts Explained"
+subtitle: "Master modern prompting techniques that unlock reasoning, planning, and multi-step problem-solving in large language models"
+date: 2026-03-21 11:00:00 +0800
+background: '/img/posts/blogpost/28.jpg'
+categories: [blogpost]
+tags: [prompt-engineering, chain-of-thought, ReAct, tree-of-thoughts, few-shot, zero-shot, reasoning, LLM]
+description: "A comprehensive guide to advanced prompt engineering techniques including Chain-of-Thought (CoT), ReAct, Tree-of-Thoughts, self-consistency, and prompt optimization strategies for production LLM applications."
+---
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>Advanced Prompt Engineering: Chain-of-Thought, ReAct, and Tree-of-Thoughts Explained</h1>
+        <br>
+        <h2>Introduction</h2>
+
+        <p>
+            The way you prompt a language model fundamentally shapes its output quality. A well-crafted prompt can turn
+            a mediocre response into an excellent one.
+        </p>
+
+        <p>
+            Early LLM applications relied on simple prompts: "Summarize this text" or "Answer this question." These work
+            for basic tasks but fail when problems require reasoning, planning, or multi-step thinking.
+        </p>
+
+        <p>
+            Modern prompt engineering has evolved far beyond simple instructions. Techniques like Chain-of-Thought
+            (CoT), ReAct, and Tree-of-Thoughts enable LLMs to tackle complex problems by breaking them into manageable
+            steps, combining reasoning with action, and exploring multiple solution paths.
+        </p>
+
+        <p>
+            This post explains advanced prompting techniques that have become essential for production LLM applications.
+            You will learn how these methods work, when to use them, and how to implement them effectively.
+        </p>
+
+        <hr />
+
+        <h2>The Foundation: Zero-Shot vs Few-Shot Prompting</h2>
+
+        <p>
+            Before diving into advanced techniques, we need to understand the baseline approaches.
+        </p>
+
+        <h3>Zero-Shot Prompting</h3>
+
+        <p>
+            Zero-shot prompting means asking the model to perform a task without providing any examples.
+        </p>
+
+        <p>
+            Example:
+        </p>
+
+        <pre><code>Classify the sentiment of this review as positive, negative, or neutral:
+"The food was okay but the service was terrible."
+ 
+Sentiment:
+</code></pre>
+
+        <p>
+            The model responds based solely on its pre-training. This works well for common tasks but struggles with
+            domain-specific or nuanced problems.
+        </p>
+
+        <h3>Few-Shot Prompting</h3>
+
+        <p>
+            Few-shot prompting provides a few examples before the actual task.
+        </p>
+
+        <p>
+            Example:
+        </p>
+
+        <pre><code>Classify the sentiment as positive, negative, or neutral:
+ 
+Review: "Amazing experience! Highly recommend."
+Sentiment: Positive
+ 
+Review: "Waste of money. Never coming back."
+Sentiment: Negative
+ 
+Review: "It was fine, nothing special."
+Sentiment: Neutral
+ 
+Review: "The food was okay but the service was terrible."
+Sentiment:
+</code></pre>
+
+        <p>
+            The model learns the task format and expected outputs from examples. This significantly improves
+            performance, especially for custom tasks.
+        </p>
+
+        <h3>When to Use Each</h3>
+
+        <ul>
+            <li><strong>Zero-shot:</strong> Common tasks, simple queries, when latency and cost matter.</li>
+            <li><strong>Few-shot:</strong> Domain-specific tasks, custom formats, when accuracy matters more than speed.
+            </li>
+        </ul>
+
+        <hr />
+
+        <h2>Chain-of-Thought (CoT) Prompting</h2>
+
+        <p>
+            Chain-of-Thought prompting is a breakthrough technique that dramatically improves reasoning by asking the
+            model to think step-by-step.
+        </p>
+
+        <h3>The Core Idea</h3>
+
+        <p>
+            Instead of jumping directly to the answer, the model explicitly generates intermediate reasoning steps. This
+            mirrors how humans solve complex problems: breaking them down, working through logic, and then concluding.
+        </p>
+
+        <h3>Example: Without CoT</h3>
+
+        <pre><code>Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 balls. How many tennis balls does he have now?
+ 
+A: 11
+</code></pre>
+
+        <p>
+            The model might get this right through pattern matching, but it does not show its work.
+        </p>
+
+        <h3>Example: With CoT</h3>
+
+        <pre><code>Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 balls. How many tennis balls does he have now?
+ 
+Let's think step by step:
+1. Roger starts with 5 tennis balls.
+2. He buys 2 cans of tennis balls.
+3. Each can contains 3 balls, so 2 cans contain 2 × 3 = 6 balls.
+4. Total balls = initial balls + new balls = 5 + 6 = 11 balls.
+ 
+A: Roger now has 11 tennis balls.
+</code></pre>
+
+        <p>
+            By generating intermediate steps, the model is forced to engage its reasoning capabilities rather than
+            relying on memorized patterns.
+        </p>
+
+        <h3>Few-Shot Chain-of-Thought</h3>
+
+        <p>
+            The most effective CoT approach provides examples with reasoning chains.
+        </p>
+
+        <pre><code>Q: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are there total?
+A: Let's think step by step. There are initially 3 cars. 2 more cars arrive. 3 + 2 = 5. The answer is 5.
+ 
+Q: John has 4 apples. He gives 2 to his friend. How many apples does John have left?
+A: Let's think step by step. John starts with 4 apples. He gives away 2 apples. 4 - 2 = 2. The answer is 2.
+ 
+Q: A baker made 15 cupcakes. She sold 8 of them. Then she made 6 more. How many cupcakes does she have now?
+A: Let's think step by step.
+</code></pre>
+
+        <p>
+            The model learns to emulate the step-by-step reasoning pattern from the examples.
+        </p>
+
+        <h3>Zero-Shot Chain-of-Thought</h3>
+
+        <p>
+            Remarkably, simply adding "Let's think step by step" triggers reasoning without any examples.
+        </p>
+
+        <pre><code>Q: A farmer has 12 chickens and 8 cows. Each chicken has 2 legs and each cow has 4 legs. How many total legs are there?
+ 
+Let's think step by step:
+</code></pre>
+
+        <p>
+            This phrase acts as a trigger that activates the model's chain-of-thought reasoning mode.
+        </p>
+
+        <h3>When CoT Helps Most</h3>
+
+        <ul>
+            <li>Multi-step arithmetic problems.</li>
+            <li>Logical reasoning tasks.</li>
+            <li>Complex question answering requiring inference.</li>
+            <li>Code debugging and generation.</li>
+            <li>Planning and scheduling problems.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Self-Consistency: Improving CoT Reliability</h2>
+
+        <p>
+            A single reasoning chain can make mistakes. Self-consistency addresses this by generating multiple reasoning
+            paths and voting on the final answer.
+        </p>
+
+        <h3>How It Works</h3>
+
+        <ol>
+            <li>Generate multiple CoT reasoning chains for the same problem (using temperature > 0 for diversity).</li>
+            <li>Extract the final answer from each chain.</li>
+            <li>Select the most common answer (majority vote).</li>
+        </ol>
+
+        <h3>Implementation</h3>
+
+        <pre><code>import openai
+from collections import Counter
+ 
+def self_consistency(question: str, num_samples=5) -> str:
+    """Generate multiple CoT reasoning chains and vote on answer"""
+    
+    prompt = f"{question}\n\nLet's think step by step:"
+    
+    answers = []
+    for _ in range(num_samples):
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7  # Higher temperature for diversity
+        )
+        
+        # Extract final answer from response
+        text = response.choices[0].message.content
+        answer = extract_final_answer(text)
+        answers.append(answer)
+    
+    # Majority vote
+    most_common = Counter(answers).most_common(1)[0][0]
+    return most_common
+ 
+def extract_final_answer(text: str) -> str:
+    """Extract the final numerical or categorical answer"""
+    # Implementation depends on answer format
+    # Could use regex, parsing, or another LLM call
+    pass
+</code></pre>
+
+        <h3>Tradeoffs</h3>
+
+        <ul>
+            <li><strong>Pros:</strong> Significantly higher accuracy on reasoning tasks.</li>
+            <li><strong>Cons:</strong> 5-10× more expensive and slower due to multiple LLM calls.</li>
+        </ul>
+
+        <p>
+            Use self-consistency for critical decisions where accuracy matters more than cost.
+        </p>
+
+        <hr />
+
+        <h2>ReAct: Reasoning and Acting</h2>
+
+        <p>
+            ReAct (Reasoning + Acting) combines chain-of-thought reasoning with the ability to take actions (tool calls,
+            database queries, API calls).
+        </p>
+
+        <p>
+            The model alternates between reasoning about what to do next and actually doing it.
+        </p>
+
+        <h3>The ReAct Pattern</h3>
+
+        <p>
+            Each step follows a Thought → Action → Observation cycle:
+        </p>
+
+        <ul>
+            <li><strong>Thought:</strong> The model reasons about what information it needs.</li>
+            <li><strong>Action:</strong> The model calls a tool or function.</li>
+            <li><strong>Observation:</strong> The result of the action is returned.</li>
+        </ul>
+
+        <p>
+            This continues until the model has enough information to answer.
+        </p>
+
+        <h3>Example: Question Answering with Search</h3>
+
+        <pre><code>Question: What is the population of the capital of France?
+ 
+Thought 1: I need to know the capital of France first.
+Action 1: Search["capital of France"]
+Observation 1: Paris is the capital of France.
+ 
+Thought 2: Now I need the population of Paris.
+Action 2: Search["population of Paris"]
+Observation 2: The population of Paris is approximately 2.2 million.
+ 
+Thought 3: I now have the answer.
+Answer: The population of the capital of France (Paris) is approximately 2.2 million.
+</code></pre>
+
+        <h3>ReAct Prompt Template</h3>
+
+        <pre><code>You can use the following tools:
+- Search[query]: Search for information
+- Calculator[expression]: Perform calculations
+- Finish[answer]: End with final answer
+ 
+Use this format:
+Thought: [your reasoning]
+Action: [tool to use]
+Observation: [result will be provided]
+... (repeat as needed)
+Thought: I now know the final answer
+Finish: [final answer]
+ 
+Question: {user_question}
+ 
+Let's begin:
+</code></pre>
+
+        <h3>Implementation with Function Calling</h3>
+
+        <pre><code>def react_agent(question: str, tools: dict, max_steps=10):
+    """ReAct agent implementation"""
+    
+    conversation = [
+        {"role": "system", "content": build_react_prompt(tools)},
+        {"role": "user", "content": question}
+    ]
+    
+    for step in range(max_steps):
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=conversation,
+            tools=format_tools_for_api(tools),
+            tool_choice="auto"
+        )
+        
+        message = response.choices[0].message
+        
+        # Check if done
+        if message.content and "Finish:" in message.content:
+            return extract_final_answer(message.content)
+        
+        # Execute tool call
+        if message.tool_calls:
+            tool_call = message.tool_calls[0]
+            tool_name = tool_call.function.name
+            tool_args = json.loads(tool_call.function.arguments)
+            
+            # Execute the tool
+            observation = tools[tool_name](**tool_args)
+            
+            # Add to conversation
+            conversation.append(message)
+            conversation.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": str(observation)
+            })
+        else:
+            break
+    
+    return "Failed to reach conclusion"
+</code></pre>
+
+        <h3>When to Use ReAct</h3>
+
+        <ul>
+            <li>Questions requiring external information.</li>
+            <li>Multi-step tasks involving tools (search, database, APIs).</li>
+            <li>Scenarios where the model needs to gather information dynamically.</li>
+            <li>Complex workflows that benefit from explicit reasoning traces.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Tree-of-Thoughts: Exploring Multiple Paths</h2>
+
+        <p>
+            Tree-of-Thoughts (ToT) extends chain-of-thought by exploring multiple reasoning paths in parallel,
+            evaluating them, and selecting the best ones.
+        </p>
+
+        <h3>The Core Concept</h3>
+
+        <p>
+            Instead of following a single linear reasoning chain, ToT maintains a tree of possible reasoning steps. At
+            each node, the model generates multiple next-step options, evaluates them, and expands the most promising
+            ones.
+        </p>
+
+        <p>
+            This is similar to how chess engines explore move trees using search algorithms.
+        </p>
+
+        <h3>ToT Process</h3>
+
+        <ol>
+            <li><strong>Thought generation:</strong> Generate multiple possible next thoughts.</li>
+            <li><strong>Evaluation:</strong> Score each thought for promise/correctness.</li>
+            <li><strong>Search strategy:</strong> Decide which thoughts to expand (BFS, DFS, or beam search).</li>
+            <li><strong>Backtracking:</strong> If a path fails, explore alternatives.</li>
+        </ol>
+
+        <h3>Example: Creative Writing Task</h3>
+
+        <pre><code>Task: Write a coherent story with exactly 4 sentences about a detective solving a mystery.
+ 
+Step 1: Generate 3 possible first sentences
+Option A: "Detective Miller arrived at the crime scene on a rainy Tuesday morning."
+Option B: "The old mansion had been empty for years until tonight."
+Option C: "Everyone knew the butler did it, except Detective Sarah."
+ 
+Step 2: Evaluate each option
+Evaluation: Option A provides good setup, B creates intrigue, C subverts expectations.
+Selected: Option A (most conventional, easier to build on)
+ 
+Step 3: Generate next sentences based on Option A
+... (continue expanding the tree)
+</code></pre>
+
+        <h3>Implementation Sketch</h3>
+
+        <pre><code>def tree_of_thoughts(problem: str, depth=3, breadth=3):
+    """
+    Simplified Tree-of-Thoughts implementation
+    """
+    
+    def generate_thoughts(current_state: str, num=3) -> list:
+        """Generate possible next reasoning steps"""
+        prompt = f"Given this partial solution:\n{current_state}\n\nGenerate {num} different possible next steps. Output as numbered list."
+        response = call_llm(prompt)
+        return parse_numbered_list(response)
+    
+    def evaluate_thought(thought: str) -> float:
+        """Score a thought's promise (0-1)"""
+        prompt = f"Rate this reasoning step for correctness and promise (0-10):\n{thought}"
+        response = call_llm(prompt)
+        return extract_score(response) / 10
+    
+    # Initialize with problem
+    current_best = problem
+    
+    for level in range(depth):
+        # Generate multiple thoughts
+        candidates = generate_thoughts(current_best, breadth)
+        
+        # Evaluate each
+        scored = [(t, evaluate_thought(t)) for t in candidates]
+        
+        # Select best
+        best_thought = max(scored, key=lambda x: x[1])[0]
+        
+        # Expand
+        current_best += "\n" + best_thought
+    
+    return current_best
+</code></pre>
+
+        <h3>When to Use ToT</h3>
+
+        <ul>
+            <li>Problems with multiple valid solution paths.</li>
+            <li>Creative tasks (writing, design, brainstorming).</li>
+            <li>Puzzles and games requiring search.</li>
+            <li>Tasks where a single wrong step leads to failure.</li>
+        </ul>
+
+        <h3>Tradeoffs</h3>
+
+        <ul>
+            <li><strong>Pros:</strong> Explores solution space thoroughly, finds better solutions.</li>
+            <li><strong>Cons:</strong> Very expensive (exponential token usage), high latency.</li>
+        </ul>
+
+        <p>
+            ToT is best reserved for high-value problems where solution quality matters more than cost.
+        </p>
+
+        <hr />
+
+        <h2>Comparison: Prompting Techniques</h2>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technique</th>
+                        <th>Reasoning Type</th>
+                        <th>Cost</th>
+                        <th>Latency</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Zero-Shot</td>
+                        <td>Direct answer</td>
+                        <td>Low</td>
+                        <td>Fast</td>
+                        <td>Simple queries</td>
+                    </tr>
+                    <tr>
+                        <td>Few-Shot</td>
+                        <td>Pattern learning</td>
+                        <td>Low-Medium</td>
+                        <td>Fast</td>
+                        <td>Custom formats</td>
+                    </tr>
+                    <tr>
+                        <td>Chain-of-Thought</td>
+                        <td>Step-by-step</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                        <td>Reasoning tasks</td>
+                    </tr>
+                    <tr>
+                        <td>Self-Consistency</td>
+                        <td>Multiple chains + vote</td>
+                        <td>High</td>
+                        <td>Slow</td>
+                        <td>Critical decisions</td>
+                    </tr>
+                    <tr>
+                        <td>ReAct</td>
+                        <td>Reasoning + action</td>
+                        <td>Medium-High</td>
+                        <td>Slow</td>
+                        <td>Multi-step with tools</td>
+                    </tr>
+                    <tr>
+                        <td>Tree-of-Thoughts</td>
+                        <td>Explore multiple paths</td>
+                        <td>Very High</td>
+                        <td>Very Slow</td>
+                        <td>Complex problems</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr />
+
+        <h2>Prompt Optimization Techniques</h2>
+
+        <h3>1. Role Assignment</h3>
+
+        <p>
+            Explicitly tell the model what role to play.
+        </p>
+
+        <pre><code>You are an expert data scientist with 15 years of experience.
+Analyze the following dataset and provide insights.
+</code></pre>
+
+        <p>
+            This primes the model to adopt domain expertise.
+        </p>
+
+        <h3>2. Output Format Specification</h3>
+
+        <p>
+            Be explicit about desired output structure.
+        </p>
+
+        <pre><code>Provide your answer in this format:
+1. Summary (2-3 sentences)
+2. Key Findings (bullet points)
+3. Recommendations (numbered list)
+</code></pre>
+
+        <h3>3. Constraint Setting</h3>
+
+        <p>
+            Specify limitations and requirements clearly.
+        </p>
+
+        <pre><code>Requirements:
+- Answer must be under 100 words
+- Use simple language (8th grade reading level)
+- Include at least one concrete example
+- Avoid jargon
+</code></pre>
+
+        <h3>4. Negative Examples</h3>
+
+        <p>
+            Show what NOT to do.
+        </p>
+
+        <pre><code>Good answer: "The project will cost approximately $50,000 and take 3 months."
+ 
+Bad answer: "It depends on many factors and could cost anything."
+ 
+Now answer this question: How long will the migration take?
+</code></pre>
+
+        <h3>5. Iterative Refinement</h3>
+
+        <p>
+            Use multi-turn conversations to refine outputs.
+        </p>
+
+        <pre><code>Turn 1: Generate initial answer
+Turn 2: "Now make it more concise"
+Turn 3: "Add a concrete example"
+Turn 4: "Verify the math is correct"
+</code></pre>
+
+        <hr />
+
+        <h2>Production Best Practices</h2>
+
+        <h3>1. Version Your Prompts</h3>
+
+        <pre><code># prompt_templates.py
+ 
+PROMPTS = {
+    "customer_query_v1": "Answer customer questions politely...",
+    "customer_query_v2": "You are a helpful customer service agent...",
+    "customer_query_v3": "...",  # Latest version
+}
+ 
+def get_prompt(name: str, version: str = "latest"):
+    if version == "latest":
+        version = max([k for k in PROMPTS if k.startswith(name)], 
+                     key=lambda x: int(x.split("_v")[1]))
+    return PROMPTS[version]
+</code></pre>
+
+        <h3>2. A/B Test Prompts</h3>
+
+        <pre><code>import random
+ 
+def route_to_prompt(user_id: str):
+    """A/B test different prompt versions"""
+    variant = hash(user_id) % 2
+    
+    if variant == 0:
+        return PROMPTS["customer_query_v2"]
+    else:
+        return PROMPTS["customer_query_v3"]
+</code></pre>
+
+        <h3>3. Log and Monitor Performance</h3>
+
+        <pre><code>def track_prompt_performance(prompt_version: str, response: str, user_feedback: float):
+    """Track which prompts perform best"""
+    log_to_database({
+        "prompt_version": prompt_version,
+        "response_length": len(response),
+        "user_satisfaction": user_feedback,
+        "timestamp": datetime.now()
+    })
+</code></pre>
+
+        <h3>4. Handle Edge Cases</h3>
+
+        <p>
+            Explicitly address common failure modes.
+        </p>
+
+        <pre><code>Important rules:
+- If you don't know the answer, say "I don't have enough information"
+- If the question is ambiguous, ask for clarification
+- If the request violates policy, politely decline
+- Never make up facts or statistics
+</code></pre>
+
+        <hr />
+
+        <h2>Prompt Engineering Tools</h2>
+
+        <h3>LangChain Prompt Templates</h3>
+
+        <pre><code>from langchain.prompts import PromptTemplate
+ 
+template = """
+You are a {role}.
+Task: {task}
+Context: {context}
+ 
+Output format: {format}
+"""
+ 
+prompt = PromptTemplate(
+    input_variables=["role", "task", "context", "format"],
+    template=template
+)
+ 
+final_prompt = prompt.format(
+    role="senior software engineer",
+    task="Review this code for bugs",
+    context=code_snippet,
+    format="Bullet points with severity ratings"
+)
+</code></pre>
+
+        <h3>Prompt Optimization with DSPy</h3>
+
+        <pre><code>import dspy
+ 
+# Define signature
+class QuestionAnswering(dspy.Signature):
+    """Answer questions based on context"""
+    context = dspy.InputField()
+    question = dspy.InputField()
+    answer = dspy.OutputField()
+ 
+# Create module
+qa = dspy.ChainOfThought(QuestionAnswering)
+ 
+# Optimize prompts automatically
+optimizer = dspy.BootstrapFewShot(metric=answer_correctness)
+optimized_qa = optimizer.compile(qa, trainset=examples)
+</code></pre>
+
+        <hr />
+
+        <h2>Common Pitfalls</h2>
+
+        <h3>1. Over-Engineering Prompts</h3>
+
+        <p>
+            Start simple. Add complexity only when needed.
+        </p>
+
+        <h3>2. Ignoring Context Window Limits</h3>
+
+        <p>
+            Few-shot examples and CoT reasoning consume tokens quickly. Monitor usage.
+        </p>
+
+        <h3>3. Not Testing Edge Cases</h3>
+
+        <p>
+            Test your prompts with unusual inputs, empty strings, very long texts, and adversarial examples.
+        </p>
+
+        <h3>4. Assuming Determinism</h3>
+
+        <p>
+            Even at temperature 0, outputs can vary slightly. Design for variability.
+        </p>
+
+        <hr />
+
+        <h2>Future of Prompt Engineering</h2>
+
+        <p>
+            Emerging trends:
+        </p>
+
+        <ul>
+            <li><strong>Automatic prompt optimization:</strong> AI systems that write better prompts than humans.</li>
+            <li><strong>Multimodal prompting:</strong> Combining text, images, and other modalities.</li>
+            <li><strong>Prompt compression:</strong> Achieving the same quality with fewer tokens.</li>
+            <li><strong>Meta-prompting:</strong> LLMs that generate prompts for other LLMs.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Conclusion</h2>
+
+        <p>
+            Prompt engineering is both art and science. While advanced techniques like Chain-of-Thought, ReAct, and
+            Tree-of-Thoughts dramatically improve performance, they come with increased cost and complexity.
+        </p>
+
+        <p>
+            The key is knowing when to apply which technique. Simple queries need simple prompts. Complex reasoning
+            benefits from CoT. Multi-step tasks with tools require ReAct. High-stakes decisions may justify
+            self-consistency or ToT.
+        </p>
+
+        <p>
+            As LLMs continue to improve, prompt engineering will evolve. But the fundamentals remain: clear
+            instructions, appropriate examples, structured reasoning, and continuous testing and refinement.
+        </p>
+
+        <p>
+            Master these techniques, and you will unlock the full potential of language models in your applications.
+        </p>
+
+        <hr />
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>Few-shot prompting dramatically improves performance for custom tasks.</li>
+            <li>Chain-of-Thought enables step-by-step reasoning by adding "Let's think step by step."</li>
+            <li>Self-consistency improves accuracy by generating multiple reasoning paths and voting.</li>
+            <li>ReAct combines reasoning with tool use for multi-step problem solving.</li>
+            <li>Tree-of-Thoughts explores multiple solution paths but is expensive.</li>
+            <li>Choose techniques based on task complexity, accuracy requirements, and budget.</li>
+            <li>Version and A/B test your prompts in production.</li>
+            <li>Start simple and add complexity only when necessary.</li>
+            <li>Always handle edge cases and monitor performance metrics.</li>
+            <li>Prompt engineering is iterative—test, measure, refine continuously.</li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
