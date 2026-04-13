@@ -1,0 +1,1106 @@
+---
+layout: post
+title: "Structured Outputs in LLMs: JSON Mode, Function Calling, and Schema Validation"
+subtitle: "How to extract reliable structured data from language models using JSON mode, grammar constraints, and schema enforcement"
+date: 2026-03-19 09:00:00 +0800
+background: '/img/posts/blogpost/27.jpg'
+categories: [blogpost]
+tags: [structured-output, JSON-mode, function-calling, schema-validation, LLM, pydantic, constrained-generation]
+description: "A comprehensive guide to getting reliable structured outputs from LLMs using JSON mode, function calling, grammar-based generation, and schema validation techniques for production applications."
+---
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Understanding : A Step-by-Step Guide</title>
+
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <style>
+        /* Page background (kept from original) */
+        body {
+            background: url('/img/trig.gif') center center / cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: #111;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* optional: prevent selection via CSS for modern browsers (original used JS too) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Content container for better contrast */
+        .content {
+            background: rgba(255, 255, 255, 0.92);
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin: 14px 0;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            /* Adds horizontal scroll on small screens */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+        }
+
+        .table-responsive table {
+            width: 100%;
+            /* Keep table width 100% of the container */
+            min-width: 600px;
+            /* Optional: prevents columns from squishing too much */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 12px 0 22px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        table th {
+            background: #f8f8f8;
+        }
+
+        .img-fluid {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 14px 0;
+        }
+
+        .github-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .github-link img {
+            width: 40px;
+            height: 40px;
+            margin-right: 8px;
+        }
+
+        /* Back to top button */
+        #myBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 15px;
+            border: none;
+            outline: none;
+            background-color: rgb(238, 208, 37);
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+        /* Make code blocks responsive */
+        pre {
+            overflow-x: auto;
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        /* Put this inside <style> in the <head> */
+        .math-display {
+            overflow-x: auto !important;
+            /* Adds horizontal scroll if still too wide */
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        mjx-container[jax="CHTML"][display="true"] {
+            overflow-x: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            #darkModeToggle {
+                position: fixed;
+                /* keep it fixed */
+                top: 60px;
+                /* slightly lower than the menu button */
+                right: 20px;
+                /* distance from right edge */
+                z-index: 2000;
+                /* above menu */
+            }
+        }
+
+        /* 🌙 Dark mode styles */
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode .content {
+            background: rgba(30, 30, 30, 0.92) !important;
+            color: #f0f0f0 !important;
+        }
+
+        body.dark-mode pre {
+            background: #1e1e1e !important;
+            color: #f0f0f0 !important;
+        }
+
+        /* Toggle button styling */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- 🌙 Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="toggle-btn">🌙</button>
+
+    <div class="content">
+        <script>
+            // 🌙 Dark mode toggle logic
+            const toggleBtn = document.getElementById("darkModeToggle");
+            toggleBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                toggleBtn.textContent = document.body.classList.contains("dark-mode")
+                    ? "☀️"
+                    : "🌙 ";
+            });
+        </script>
+
+        <button onclick="topFunction()" id="myBtn" title="Back to top" aria-label="Back to top">
+            <img class="img-fluid" src="/img/posts/arrow.jpg" height="30" width="30" alt="Back to top">
+        </button>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT STARTS HERE ✅ ✅ ✅ -->
+        <h1>Structured Outputs in LLMs: JSON Mode, Function Calling, and Schema Validation</h1>
+        <br>
+        <h2>Introduction</h2>
+
+        <p>
+            Language models are designed to generate natural language text. They excel at conversations, creative
+            writing, and explanations. However, production applications rarely need just free-form text. They need
+            structured data.
+        </p>
+
+        <p>
+            Consider these common use cases:
+        </p>
+
+        <ul>
+            <li>Extracting customer information from support tickets into a database.</li>
+            <li>Parsing invoices and returning line items as JSON.</li>
+            <li>Generating API requests from natural language commands.</li>
+            <li>Classifying content into predefined categories.</li>
+            <li>Building multi-step agents that call functions and tools.</li>
+        </ul>
+
+        <p>
+            All of these require the LLM to produce output in a specific, machine-readable format. Free-form text is not
+            good enough. You need valid JSON, properly formatted function calls, or data that matches a strict schema.
+        </p>
+
+        <p>
+            This is harder than it sounds. LLMs are probabilistic text generators, not compilers. They can produce
+            malformed JSON, miss required fields, or hallucinate extra keys.
+        </p>
+
+        <p>
+            This post explains how to reliably extract structured outputs from LLMs using JSON mode, function calling,
+            grammar constraints, and schema validation techniques.
+        </p>
+
+        <hr />
+
+        <h2>Why Structured Outputs Are Hard</h2>
+
+        <p>
+            When you ask a language model to produce JSON, it generates text token by token. It does not have an
+            internal representation of JSON structure. It is predicting the next token based on probability
+            distributions.
+        </p>
+
+        <p>
+            This leads to several problems:
+        </p>
+
+        <ul>
+            <li><strong>Syntax errors:</strong> Missing commas, unmatched brackets, trailing commas where not allowed.
+            </li>
+            <li><strong>Type mismatches:</strong> Returning a string when the schema expects an integer.</li>
+            <li><strong>Missing required fields:</strong> The model omits keys that your application depends on.</li>
+            <li><strong>Extra fields:</strong> The model adds fields not in your schema, breaking strict parsers.</li>
+            <li><strong>Wrapper text:</strong> The model includes explanatory text before or after the JSON block.</li>
+        </ul>
+
+        <p>
+            A simple prompt like "Return the answer as JSON" often works, but it is not reliable at scale. In
+            production, even a 2% failure rate can cause thousands of errors daily.
+        </p>
+
+        <hr />
+
+        <h2>Approach 1: Prompt Engineering for Structured Output</h2>
+
+        <p>
+            The simplest method is careful prompt design. You explicitly instruct the model to return only valid JSON
+            with no additional text.
+        </p>
+
+        <h3>Example Prompt</h3>
+
+        <pre><code>Extract the following information from the text and return it as JSON.
+Do not include any explanatory text. Only return valid JSON.
+ 
+Schema:
+{
+  "name": string,
+  "email": string,
+  "phone": string,
+  "issue": string
+}
+ 
+Text: "Hi, I'm Sarah Chen. My email is sarah.chen@example.com and my phone is 555-0123. I can't log into my account."
+ 
+JSON:
+</code></pre>
+
+        <h3>Strengths</h3>
+
+        <ul>
+            <li>Works with any LLM, including older models.</li>
+            <li>No special API features required.</li>
+            <li>Simple to implement.</li>
+        </ul>
+
+        <h3>Weaknesses</h3>
+
+        <ul>
+            <li>Still prone to errors with complex schemas.</li>
+            <li>No guarantee of valid JSON syntax.</li>
+            <li>Requires manual schema description in the prompt.</li>
+            <li>Wrapper text issues (model adds "Here is the JSON:" before output).</li>
+        </ul>
+
+        <p>
+            This approach works for simple cases but is not production-grade for critical workflows.
+        </p>
+
+        <hr />
+
+        <h2>Approach 2: JSON Mode</h2>
+
+        <p>
+            Modern LLM APIs now offer "JSON mode" as a first-class feature. When enabled, the model is constrained to
+            produce only valid JSON.
+        </p>
+
+        <h3>How JSON Mode Works</h3>
+
+        <p>
+            JSON mode works by constraining the model's token generation. At each step, the model can only select tokens
+            that keep the output valid JSON.
+        </p>
+
+        <p>
+            This is implemented at the inference level, not just through prompting. The model's logits (probability
+            scores) are filtered to exclude tokens that would break JSON syntax.
+        </p>
+
+        <p>
+            For example, after generating <code>{"name": "Alice"</code>, the model cannot generate a token that would
+            create invalid syntax like <code>{"name": "Alice" "email"</code>.
+        </p>
+
+        <h3>OpenAI JSON Mode Example</h3>
+
+        <pre><code>import openai
+ 
+response = openai.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {
+            "role": "system",
+            "content": "You are a helpful assistant that outputs valid JSON."
+        },
+        {
+            "role": "user",
+            "content": "Extract name, email, and phone from: 'Contact John Doe at john@example.com or 555-1234'"
+        }
+    ],
+    response_format={"type": "json_object"}
+)
+ 
+print(response.choices[0].message.content)
+</code></pre>
+
+        <p>
+            Output:
+        </p>
+
+        <pre><code>{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "555-1234"
+}
+</code></pre>
+
+        <h3>Anthropic JSON Mode Example</h3>
+
+        <pre><code>import anthropic
+ 
+client = anthropic.Anthropic(api_key="your-api-key")
+ 
+message = client.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=1024,
+    messages=[
+        {
+            "role": "user",
+            "content": "Extract person info as JSON: 'Jane Smith, jane@test.com, 555-9999'"
+        }
+    ],
+    # Note: Anthropic uses different method - prompt engineering with tool use
+)
+</code></pre>
+
+        <h3>Strengths of JSON Mode</h3>
+
+        <ul>
+            <li>Guarantees syntactically valid JSON.</li>
+            <li>No wrapper text or extra explanations.</li>
+            <li>Reduces parsing errors significantly.</li>
+        </ul>
+
+        <h3>Limitations of JSON Mode</h3>
+
+        <ul>
+            <li>Does not enforce schema compliance (field names, types, required fields).</li>
+            <li>You still need to validate the structure after receiving it.</li>
+            <li>The model can still hallucinate field values or miss required keys.</li>
+        </ul>
+
+        <p>
+            JSON mode solves syntax issues but not semantic correctness.
+        </p>
+
+        <hr />
+
+        <h2>Approach 3: Function Calling / Tool Use</h2>
+
+        <p>
+            Function calling (also called tool use) is the most robust way to get structured outputs that match a
+            specific schema.
+        </p>
+
+        <p>
+            Instead of asking the model to produce JSON, you define a function schema upfront. The model is then
+            constrained to produce output that matches that schema exactly.
+        </p>
+
+        <h3>How Function Calling Works</h3>
+
+        <p>
+            You define a function signature with typed parameters. The LLM API enforces that the model's output conforms
+            to this schema.
+        </p>
+
+        <p>
+            Under the hood, function calling uses constrained decoding similar to JSON mode, but with schema-level
+            guarantees.
+        </p>
+
+        <h3>OpenAI Function Calling Example</h3>
+
+        <pre><code>import openai
+ 
+# Define the function schema
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "extract_contact_info",
+            "description": "Extract contact information from text",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Full name of the person"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Email address"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "description": "Phone number"
+                    }
+                },
+                "required": ["name", "email"]
+            }
+        }
+    }
+]
+ 
+# Call the API
+response = openai.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {
+            "role": "user",
+            "content": "Extract info: 'Bob Johnson, bob@company.com, 555-7890'"
+        }
+    ],
+    tools=tools,
+    tool_choice={"type": "function", "function": {"name": "extract_contact_info"}}
+)
+ 
+# Extract the function call
+tool_call = response.choices[0].message.tool_calls[0]
+arguments = json.loads(tool_call.function.arguments)
+print(arguments)
+</code></pre>
+
+        <p>
+            Output:
+        </p>
+
+        <pre><code>{
+  "name": "Bob Johnson",
+  "email": "bob@company.com",
+  "phone": "555-7890"
+}
+</code></pre>
+
+        <h3>Anthropic Tool Use Example</h3>
+
+        <pre><code>import anthropic
+ 
+client = anthropic.Anthropic(api_key="your-api-key")
+ 
+# Define the tool schema
+tools = [
+    {
+        "name": "extract_contact",
+        "description": "Extract contact information",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+                "email": {"type": "string"},
+                "phone": {"type": "string"}
+            },
+            "required": ["name", "email"]
+        }
+    }
+]
+ 
+message = client.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=1024,
+    tools=tools,
+    messages=[
+        {
+            "role": "user",
+            "content": "Extract: 'Alice Brown, alice@example.com, 555-1111'"
+        }
+    ]
+)
+ 
+# Extract tool use
+tool_use = next(block for block in message.content if block.type == "tool_use")
+print(tool_use.input)
+</code></pre>
+
+        <h3>Strengths of Function Calling</h3>
+
+        <ul>
+            <li>Enforces schema compliance (required fields, types).</li>
+            <li>Guarantees syntactically correct JSON.</li>
+            <li>No post-processing or validation needed.</li>
+            <li>Works for multi-step tool use (agents).</li>
+        </ul>
+
+        <h3>When to Use Function Calling</h3>
+
+        <ul>
+            <li>Production systems where reliability is critical.</li>
+            <li>Applications that need to call APIs or databases.</li>
+            <li>Agentic workflows with multiple tool options.</li>
+            <li>Any scenario where schema validation is required.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Approach 4: Pydantic for Schema Validation</h2>
+
+        <p>
+            Even with JSON mode or function calling, you should validate the output against your expected schema.
+            Pydantic is the standard Python library for this.
+        </p>
+
+        <h3>Defining a Pydantic Model</h3>
+
+        <pre><code>from pydantic import BaseModel, EmailStr, validator
+ 
+class ContactInfo(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+    
+    @validator('phone')
+    def validate_phone(cls, v):
+        # Simple phone validation
+        if not v or len(v) < 10:
+            raise ValueError('Phone number must be at least 10 digits')
+        return v
+ 
+# Parse and validate LLM output
+llm_output = '{"name": "Alice", "email": "alice@example.com", "phone": "555-1234567"}'
+contact = ContactInfo.parse_raw(llm_output)
+print(contact)
+</code></pre>
+
+        <p>
+            If the LLM produces invalid data, Pydantic raises a <code>ValidationError</code> with details about what
+            failed.
+        </p>
+
+        <h3>Integrating Pydantic with LLM Calls</h3>
+
+        <pre><code>import openai
+from pydantic import BaseModel, EmailStr
+import json
+ 
+class ContactInfo(BaseModel):
+    name: str
+    email: EmailStr
+    phone: str
+ 
+def extract_contact(text: str) -> ContactInfo:
+    response = openai.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {
+                "role": "system",
+                "content": f"Extract contact info as JSON matching this schema: {ContactInfo.schema_json()}"
+            },
+            {"role": "user", "content": text}
+        ],
+        response_format={"type": "json_object"}
+    )
+    
+    json_output = response.choices[0].message.content
+    return ContactInfo.parse_raw(json_output)
+ 
+# Usage
+result = extract_contact("Contact: Sarah Lee, sarah.lee@test.com, 555-9999")
+print(result.name)  # "Sarah Lee"
+print(result.email)  # "sarah.lee@test.com"
+</code></pre>
+
+        <h3>Automatic Retry on Validation Failure</h3>
+
+        <pre><code>from pydantic import ValidationError
+ 
+def extract_with_retry(text: str, max_retries=3) -> ContactInfo:
+    for attempt in range(max_retries):
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "Extract as JSON"},
+                    {"role": "user", "content": text}
+                ],
+                response_format={"type": "json_object"}
+            )
+            
+            json_output = response.choices[0].message.content
+            return ContactInfo.parse_raw(json_output)
+            
+        except ValidationError as e:
+            if attempt == max_retries - 1:
+                raise
+            # Retry with error feedback
+            text = f"{text}\n\nPrevious attempt failed: {str(e)}. Please fix and try again."
+    
+    raise Exception("Failed after all retries")
+</code></pre>
+
+        <hr />
+
+        <h2>Approach 5: Grammar-Based Constrained Generation</h2>
+
+        <p>
+            For maximum control, you can use grammar-based constrained generation. This forces the model to follow a
+            specific grammar (like JSON, SQL, or custom formats).
+        </p>
+
+        <h3>How It Works</h3>
+
+        <p>
+            Instead of filtering tokens after generation, the grammar is enforced during generation. At each step, only
+            tokens that satisfy the grammar are allowed.
+        </p>
+
+        <p>
+            This is more powerful than JSON mode because you can define custom grammars beyond JSON.
+        </p>
+
+        <h3>llama.cpp Grammar Example</h3>
+
+        <p>
+            The llama.cpp library supports grammar-based generation using GBNF (GGML BNF) format.
+        </p>
+
+        <pre><code># Define a JSON grammar for contact info
+root ::= object
+object ::= "{" ws members ws "}"
+members ::= member ("," ws member)*
+member ::= "\"name\"" ws ":" ws string | "\"email\"" ws ":" ws string | "\"phone\"" ws ":" ws string
+string ::= "\"" ([^"\\] | "\\" .)* "\""
+ws ::= [ \t\n]*
+</code></pre>
+
+        <p>
+            This grammar ensures the model can only generate JSON with the exact fields you specify.
+        </p>
+
+        <h3>Outlines Library (Python)</h3>
+
+        <p>
+            The Outlines library provides grammar-based generation for Hugging Face models.
+        </p>
+
+        <pre><code>from outlines import models, generate
+ 
+# Load model
+model = models.transformers("mistralai/Mistral-7B-Instruct-v0.2")
+ 
+# Define JSON schema
+schema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "email": {"type": "string"},
+        "phone": {"type": "string"}
+    },
+    "required": ["name", "email"]
+}
+ 
+# Generate with schema constraint
+generator = generate.json(model, schema)
+result = generator("Extract contact info: 'Tom White, tom@company.com, 555-4444'")
+print(result)
+</code></pre>
+
+        <h3>When to Use Grammar Constraints</h3>
+
+        <ul>
+            <li>Self-hosted open-source models where you control inference.</li>
+            <li>Custom output formats beyond JSON (SQL, code, DSLs).</li>
+            <li>Maximum reliability requirements (0% syntax errors).</li>
+        </ul>
+
+        <hr />
+
+        <h2>Comparison: Structured Output Methods</h2>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Syntax Guarantee</th>
+                        <th>Schema Enforcement</th>
+                        <th>Ease of Use</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Prompt Engineering</td>
+                        <td>No</td>
+                        <td>No</td>
+                        <td>Easy</td>
+                        <td>Simple cases, prototyping</td>
+                    </tr>
+                    <tr>
+                        <td>JSON Mode</td>
+                        <td>Yes</td>
+                        <td>No</td>
+                        <td>Easy</td>
+                        <td>General JSON output</td>
+                    </tr>
+                    <tr>
+                        <td>Function Calling</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Medium</td>
+                        <td>Production apps, agents</td>
+                    </tr>
+                    <tr>
+                        <td>Pydantic Validation</td>
+                        <td>Post-check</td>
+                        <td>Yes</td>
+                        <td>Medium</td>
+                        <td>Validation layer</td>
+                    </tr>
+                    <tr>
+                        <td>Grammar Constraints</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                        <td>Hard</td>
+                        <td>Custom formats, self-hosted</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <hr />
+
+        <h2>Handling Nested and Complex Schemas</h2>
+
+        <p>
+            Real-world applications often need nested objects and arrays.
+        </p>
+
+        <h3>Example: Order Extraction</h3>
+
+        <pre><code>from pydantic import BaseModel
+from typing import List
+ 
+class LineItem(BaseModel):
+    product: str
+    quantity: int
+    price: float
+ 
+class Order(BaseModel):
+    customer_name: str
+    items: List[LineItem]
+    total: float
+ 
+# Function calling schema
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "extract_order",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "customer_name": {"type": "string"},
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "product": {"type": "string"},
+                                "quantity": {"type": "integer"},
+                                "price": {"type": "number"}
+                            },
+                            "required": ["product", "quantity", "price"]
+                        }
+                    },
+                    "total": {"type": "number"}
+                },
+                "required": ["customer_name", "items", "total"]
+            }
+        }
+    }
+]
+</code></pre>
+
+        <p>
+            The LLM will extract the order as a properly nested structure.
+        </p>
+
+        <hr />
+
+        <h2>Error Handling and Retry Strategies</h2>
+
+        <p>
+            Even with function calling, errors can occur. The model might extract incorrect values or fail to find
+            required information.
+        </p>
+
+        <h3>Retry with Feedback</h3>
+
+        <pre><code>def extract_with_feedback(text: str, schema, max_attempts=3):
+    conversation = [
+        {"role": "system", "content": "Extract structured data"},
+        {"role": "user", "content": text}
+    ]
+    
+    for attempt in range(max_attempts):
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=conversation,
+            tools=[schema],
+            tool_choice={"type": "function", "function": {"name": schema["function"]["name"]}}
+        )
+        
+        try:
+            tool_call = response.choices[0].message.tool_calls[0]
+            arguments = json.loads(tool_call.function.arguments)
+            
+            # Validate with Pydantic
+            validated = YourPydanticModel(**arguments)
+            return validated
+            
+        except (json.JSONDecodeError, ValidationError) as e:
+            # Add error feedback to conversation
+            conversation.append({
+                "role": "assistant",
+                "content": f"Error: {str(e)}"
+            })
+            conversation.append({
+                "role": "user",
+                "content": "Please fix the error and try again."
+            })
+    
+    raise Exception("Failed after all retries")
+</code></pre>
+
+        <hr />
+
+        <h2>Performance Considerations</h2>
+
+        <h3>Latency</h3>
+
+        <p>
+            Function calling and constrained generation add minimal latency (typically under 50ms).
+        </p>
+
+        <p>
+            JSON mode has negligible overhead compared to standard text generation.
+        </p>
+
+        <h3>Token Usage</h3>
+
+        <p>
+            Function schemas consume input tokens. Keep schemas concise to minimize costs.
+        </p>
+
+        <p>
+            Instead of verbose descriptions, use short, clear names and descriptions.
+        </p>
+
+        <h3>Caching</h3>
+
+        <p>
+            For repeated schemas, use prompt caching (if supported by your provider) to reduce costs.
+        </p>
+
+        <hr />
+
+        <h2>Security Considerations</h2>
+
+        <h3>Schema Injection</h3>
+
+        <p>
+            Never allow user input to directly modify function schemas. An attacker could inject malicious schema
+            definitions.
+        </p>
+
+        <h3>Validation is Critical</h3>
+
+        <p>
+            Always validate extracted data before using it in databases or APIs.
+        </p>
+
+        <p>
+            LLMs can hallucinate values that are syntactically correct but semantically wrong (e.g., extracting a fake
+            email address).
+        </p>
+
+        <hr />
+
+        <h2>Best Practices for Production</h2>
+
+        <ul>
+            <li>Use function calling for critical workflows that need reliability.</li>
+            <li>Always validate outputs with Pydantic or similar libraries.</li>
+            <li>Implement retry logic with exponential backoff.</li>
+            <li>Log all structured outputs for debugging and auditing.</li>
+            <li>Monitor extraction success rates and alert on anomalies.</li>
+            <li>Test your schemas against edge cases (empty inputs, malformed text).</li>
+            <li>Version your schemas and track changes over time.</li>
+        </ul>
+
+        <hr />
+
+        <h2>Real-World Use Cases</h2>
+
+        <h3>1. Invoice Processing</h3>
+
+        <p>
+            Extract line items, totals, and customer info from scanned invoices. Function calling ensures all required
+            fields are present.
+        </p>
+
+        <h3>2. API Request Generation</h3>
+
+        <p>
+            Convert natural language commands into API calls. Grammar constraints ensure valid API syntax.
+        </p>
+
+        <h3>3. Database Queries</h3>
+
+        <p>
+            Generate SQL queries from user questions. Constrained generation prevents SQL injection.
+        </p>
+
+        <h3>4. Content Classification</h3>
+
+        <p>
+            Classify content into predefined categories with confidence scores. Function calling returns structured
+            predictions.
+        </p>
+
+        <h3>5. Form Filling</h3>
+
+        <p>
+            Extract information from emails or documents to auto-fill web forms. Schema validation ensures all required
+            fields are captured.
+        </p>
+
+        <hr />
+
+        <h2>Future Directions</h2>
+
+        <p>
+            Structured output capabilities are rapidly improving:
+        </p>
+
+        <ul>
+            <li><strong>Native schema support:</strong> Models trained with schema awareness during pre-training.</li>
+            <li><strong>Multi-modal extraction:</strong> Extracting structured data from images and documents.</li>
+            <li><strong>Learned constraints:</strong> Models that learn custom constraints from examples.</li>
+            <li><strong>Streaming structured outputs:</strong> Receiving partial validated structures during generation.
+            </li>
+        </ul>
+
+        <hr />
+
+        <h2>Conclusion</h2>
+
+        <p>
+            Structured outputs transform LLMs from text generators into reliable data extraction and processing tools.
+        </p>
+
+        <p>
+            For production applications, the combination of function calling, Pydantic validation, and retry logic
+            provides the reliability you need.
+        </p>
+
+        <p>
+            JSON mode is sufficient for simple use cases, but function calling is the gold standard for critical
+            workflows.
+        </p>
+
+        <p>
+            As LLMs continue to improve, structured output capabilities will become more robust, but the principles of
+            schema design, validation, and error handling remain essential.
+        </p>
+
+        <hr />
+
+        <h2>Key Takeaways</h2>
+
+        <ul>
+            <li>LLMs are probabilistic and prone to syntax errors without constraints.</li>
+            <li>JSON mode guarantees valid JSON syntax but not schema compliance.</li>
+            <li>Function calling enforces schema-level constraints for production reliability.</li>
+            <li>Always validate outputs with Pydantic or similar libraries.</li>
+            <li>Implement retry logic with error feedback for robustness.</li>
+            <li>Grammar-based generation provides maximum control for custom formats.</li>
+            <li>Monitor extraction success rates and log all outputs for debugging.</li>
+            <li>Never trust LLM outputs without validation, even with function calling.</li>
+        </ul>
+
+        <!-- ✅ ✅ ✅ BLOGPOST CONTENT END HERE ✅ ✅ ✅ -->
+        {% include related-article.html %}
+    </div>
+    <script src="/includes/blog-style.js"></script>
+</body>
+
+</html>
